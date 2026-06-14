@@ -114,16 +114,20 @@ export function buildCharInfoEmbed(char, ownerId = null) {
   return embed;
 }
 
-export function buildTradeEmbed(initiatorTag, targetTag, offerChar, requestChar) {
-  return new EmbedBuilder()
-    .setColor(0xFEE75C)
-    .setTitle('🔄 Trade Offer')
-    .setDescription(
-      `**${initiatorTag}** wants to trade with **${targetTag}**\n\n` +
+export function buildTradeEmbed(initiatorTag, targetTag, offerChar, requestChar = null) {
+  const isGift = !requestChar;
+  const desc = isGift
+    ? `**${initiatorTag}** is gifting a character to **${targetTag}**!\n\n` +
+      `**Gift →** [${offerChar.name}](${offerChar.wiki_url || '#'})\n\n` +
+      `*Accept or decline within 10 minutes.*`
+    : `**${initiatorTag}** wants to trade with **${targetTag}**\n\n` +
       `**Offering →** [${offerChar.name}](${offerChar.wiki_url || '#'})\n` +
       `**Requesting ←** [${requestChar.name}](${requestChar.wiki_url || '#'})\n\n` +
-      `*Accept or decline within 10 minutes.*`
-    );
+      `*Accept or decline within 10 minutes.*`;
+  return new EmbedBuilder()
+    .setColor(isGift ? 0x57F287 : 0xFEE75C)
+    .setTitle(isGift ? '🎁 Gift Offer' : '🔄 Trade Offer')
+    .setDescription(desc);
 }
 
 export function buildSettingsEmbed(settings) {

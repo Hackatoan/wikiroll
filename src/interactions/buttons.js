@@ -109,23 +109,31 @@ async function handleTrade(interaction, [action, tradeIdStr]) {
 
   if (action === 'accept') {
     const initOwn = stmts.getOwner.get(trade.guild_id, trade.initiator_char_id);
-    const tgtOwn  = stmts.getOwner.get(trade.guild_id, trade.target_char_id);
     if (!initOwn || initOwn.user_id !== trade.initiator_id) {
       stmts.setTradeStatus.run('cancelled', tradeId);
-      return interaction.editReply('Trade cancelled — the other user no longer owns their character.');
+      return interaction.editReply('Trade cancelled — the other user no longer owns that character.');
     }
-    if (!tgtOwn || tgtOwn.user_id !== trade.target_id) {
-      stmts.setTradeStatus.run('cancelled', tradeId);
-      return interaction.editReply('You no longer own the requested character.');
+    if (trade.target_char_id !== null) {
+      const tgtOwn = stmts.getOwner.get(trade.guild_id, trade.target_char_id);
+      if (!tgtOwn || tgtOwn.user_id !== trade.target_id) {
+        stmts.setTradeStatus.run('cancelled', tradeId);
+        return interaction.editReply('Trade cancelled — you no longer own the requested character.');
+      }
+      stmts.transferChar.run(trade.initiator_id, trade.guild_id, trade.target_char_id, trade.target_id);
     }
-    stmts.transferChar.run(trade.target_id,   trade.guild_id, trade.initiator_char_id, trade.initiator_id);
-    stmts.transferChar.run(trade.initiator_id, trade.guild_id, trade.target_char_id,   trade.target_id);
+    stmts.transferChar.run(trade.target_id, trade.guild_id, trade.initiator_char_id, trade.initiator_id);
     stmts.setTradeStatus.run('completed', tradeId);
-    await interaction.editReply('✅ Trade completed!');
+    const isGift = trade.target_char_id === null;
+    await interaction.editReply(isGift ? '✅ Gift accepted!' : '✅ Trade completed!');
     try {
       const ch = interaction.channel ?? await interaction.client.channels.fetch(trade.channel_id ?? interaction.channelId);
       const msg = await ch.messages.fetch(trade.message_id);
-      await msg.edit({ content: `✅ Trade completed between <@${trade.initiator_id}> and <@${trade.target_id}>!`, components: [] });
+      await msg.edit({
+        content: isGift
+          ? `✅ <@${trade.target_id}> accepted a gift from <@${trade.initiator_id}>!`
+          : `✅ Trade completed between <@${trade.initiator_id}> and <@${trade.target_id}>!`,
+        components: [],
+      });
     } catch {}
   } else {
     stmts.setTradeStatus.run('declined', tradeId);

@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Collection, Events } from 'discord.js';
+import { Client, GatewayIntentBits, Collection, Events, ActivityType } from 'discord.js';
 import { readdirSync } from 'fs';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
@@ -29,6 +29,13 @@ for (const file of readdirSync(join(__dirname, 'commands')).filter(f => f.endsWi
 client.once(Events.ClientReady, () => {
   initDatabase();
   console.log(`[WikiRoll] Ready as ${client.user.tag}`);
+  client.user.setPresence({
+    status: 'online',
+    activities: [{
+      name: 'wikiroll.hackatoa.com',
+      type: ActivityType.Watching,
+    }],
+  });
 });
 
 client.on(Events.MessageCreate, async message => {

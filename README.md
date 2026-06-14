@@ -2,7 +2,9 @@
 
 A Discord bot for collecting characters and articles from Wikipedia and 70+ Fandom wikis. Roll, claim, trade, and build your collection — one wiki page at a time.
 
-**[🌐 Website](https://wikiroll.hackatoa.com) · [➕ Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands) · [☕ Buy Me a Coffee](https://buymeacoffee.com/hackatoa)**
+**[🌐 Website](https://wikiroll.hackatoa.com) · [➕ Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands)**
+
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/hackatoa)
 
 ---
 
@@ -65,4 +67,4 @@ Requires Docker. Data is persisted in a named volume (`wikiroll-data`). SQLite d
 
 ---
 
-A project by [Hackatoa](https://hackatoa.com) · [☕ Support](https://buymeacoffee.com/hackatoa)
+[hackatoa.com](https://hackatoa.com) · [GitHub](https://github.com/Hackatoan) · [![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/hackatoa)

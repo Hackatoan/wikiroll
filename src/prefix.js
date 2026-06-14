@@ -2,7 +2,7 @@
  * Prefix command handler for `w.` commands
  * Mirrors slash commands but via chat messages.
  */
-import { stmts, getCharsByIds, getSettings } from './database.js';
+import { db, stmts, getCharsByIds, getSettings } from './database.js';
 import { fetchTenCharacters, searchWikipedia, fetchWikiPage } from './wiki.js';
 import {
   buildRollEmbeds, buildClaimButtons, buildCollectionEmbed,
@@ -43,6 +43,7 @@ export async function handlePrefix(message) {
       case 'divorce':    return await prefixRemove(message, args.join(' '), guildId, userId);
       case 'wl':
       case 'wishlist':   return await prefixWishlist(message, args, guildId, userId);
+      case 'about':      return await prefixAbout(message);
       case 'help':       return await prefixHelp(message);
       default:           return; // ignore unknown
     }
@@ -306,6 +307,44 @@ async function prefixWishlist(message, args, guildId, userId) {
 }
 
 // ── Help ──────────────────────────────────────────────────────────────────
+
+async function prefixAbout(message) {
+  const guildId = message.guild.id;
+  const totalChars   = db.prepare('SELECT COUNT(*) AS n FROM characters').get().n;
+  const guildOwned   = db.prepare('SELECT COUNT(*) AS n FROM ownership WHERE guild_id = ?').get(guildId).n;
+  const guildRollers = db.prepare('SELECT COUNT(DISTINCT user_id) AS n FROM ownership WHERE guild_id = ?').get(guildId).n;
+
+  const embed = new EmbedBuilder()
+    .setColor(0x7c3aed)
+    .setTitle('WikiRoll')
+    .setDescription('Collect characters and articles from **Wikipedia + 70+ Fandom wikis**.\nRoll, claim, trade, and build your collection — one wiki page at a time.')
+    .addFields(
+      {
+        name: '📊 Stats',
+        value: [
+          `**${totalChars.toLocaleString()}** characters in the global pool`,
+          `**${guildOwned.toLocaleString()}** claimed in this server`,
+          `**${guildRollers.toLocaleString()}** collectors here`,
+        ].join('\n'),
+      },
+      {
+        name: '🔗 Links',
+        value: [
+          '🌐 [Website](https://wikiroll.hackatoa.com)',
+          '➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands)',
+          '💻 [GitHub](https://github.com/Hackatoan/wikiroll)',
+          '☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)',
+        ].join('\n'),
+      },
+      {
+        name: '⚡ Quick Start',
+        value: '`w.roll` to roll 10 characters · click a button to claim · `w.c` to view collection',
+      },
+    )
+    .setFooter({ text: 'Built by Hackatoa · hackatoa.com' })
+    .setTimestamp();
+  await message.reply({ embeds: [embed] });
+}
 
 async function prefixHelp(message) {
   const embed = new EmbedBuilder()

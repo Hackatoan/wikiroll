@@ -1,0 +1,11 @@
+services:
+  wikiroll:
+    build: .
+    container_name: wikiroll
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - wikiroll-data:/data
+
+volumes:
+  wikiroll-data:

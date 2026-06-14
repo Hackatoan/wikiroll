@@ -1,0 +1,14 @@
+{
+  "name": "wikiroll",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "deploy": "node src/deploy-commands.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.18.0",
+    "better-sqlite3": "^9.6.0",
+    "axios": "^1.7.2"
+  }
+}

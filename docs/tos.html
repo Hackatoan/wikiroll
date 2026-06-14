@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — WikiRoll</title>
+  <meta name="theme-color" content="#0d1117" />
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161d2e; --border: #1f2d4a;
+      --indigo: #8b5cf6; --gold: #f59e0b; --text: #e2e8f0; --muted: #8892a4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; line-height: 1.8; }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 56px;
+      background: rgba(13,17,23,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav a { color: var(--text); text-decoration: none; font-family: monospace; font-size: .85rem; }
+    nav .logo { font-size: 1.1rem; font-weight: 700; color: var(--indigo); font-family: monospace; }
+    nav .links { display: flex; gap: 1.5rem; }
+    nav .links a { color: var(--muted); transition: color .2s; }
+    nav .links a:hover { color: var(--text); }
+    main { max-width: 760px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    h1 { font-size: 2rem; font-weight: 700; color: var(--indigo); font-family: monospace; margin-bottom: .5rem; }
+    .meta { color: var(--muted); font-size: .85rem; margin-bottom: 3rem; font-family: monospace; }
+    h2 { font-size: 1.1rem; font-weight: 700; color: var(--gold); font-family: monospace;
+         margin: 2.5rem 0 .75rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
+    p { color: #b0bcc8; margin-bottom: 1rem; }
+    ul { color: #b0bcc8; padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: .4rem; }
+    a { color: var(--indigo); }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .8rem; font-family: monospace;
+             border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">WikiRoll</a>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/privacy">Privacy</a>
+    <a href="https://github.com/Hackatoan/wikiroll">GitHub</a>
+  </div>
+</nav>
+
+<main>
+  <h1>Terms of Service</h1>
+  <p class="meta">Last updated: June 2026 &nbsp;·&nbsp; WikiRoll Discord Bot</p>
+
+  <h2>1. Acceptance</h2>
+  <p>By adding WikiRoll to your Discord server or using any of its commands, you agree to these Terms of Service. If you do not agree, please remove the bot from your server.</p>
+
+  <h2>2. Description of Service</h2>
+  <p>WikiRoll is a free Discord bot that lets users roll, claim, and trade characters sourced from Wikipedia and third-party Fandom wikis. All character data is fetched from publicly available wiki APIs and is owned by its respective wikis and contributors.</p>
+
+  <h2>3. Acceptable Use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Use the bot to spam, harass, or abuse other users</li>
+    <li>Attempt to exploit, reverse-engineer, or disrupt the bot</li>
+    <li>Submit malicious image URLs or content</li>
+    <li>Use the bot in violation of Discord's <a href="https://discord.com/terms" target="_blank">Terms of Service</a></li>
+  </ul>
+
+  <h2>4. Data</h2>
+  <p>WikiRoll stores the minimum data necessary to operate: Discord user IDs, server (guild) IDs, character ownership records, wishlists, and user-submitted image URLs. No personal information beyond what Discord provides is collected. See our <a href="/privacy">Privacy Policy</a> for full details.</p>
+
+  <h2>5. Content</h2>
+  <p>Character data is pulled from Wikipedia and Fandom wikis under their respective licenses (CC-BY-SA and others). WikiRoll does not claim ownership of any wiki content. Image URLs submitted by users must link to content on Discord's CDN and must not contain illegal or harmful material.</p>
+
+  <h2>6. Availability</h2>
+  <p>WikiRoll is provided free of charge on a best-effort basis. We make no guarantees of uptime, availability, or data retention. The service may be modified, suspended, or discontinued at any time without notice.</p>
+
+  <h2>7. Server Administrators</h2>
+  <p>Server administrators are responsible for how the bot is used within their server. Administrators can configure cooldowns, remove characters, and restrict usage via the <code>/settings</code> command.</p>
+
+  <h2>8. Termination</h2>
+  <p>We reserve the right to block any user or server from using WikiRoll at our sole discretion, particularly in cases of abuse or violations of these terms.</p>
+
+  <h2>9. Disclaimer</h2>
+  <p>WikiRoll is provided "as is" without warranties of any kind. We are not liable for any loss of data, interruption of service, or damages arising from use of the bot.</p>
+
+  <h2>10. Contact</h2>
+  <p>Questions? Reach out via <a href="https://github.com/Hackatoan/wikiroll/issues" target="_blank">GitHub Issues</a> or <a href="https://hackatoa.com" target="_blank">hackatoa.com</a>.</p>
+</main>
+
+<footer>WikiRoll &nbsp;·&nbsp; <a href="https://hackatoa.com">hackatoa.com</a> &nbsp;·&nbsp; <a href="/privacy">Privacy Policy</a></footer>
+</body>
+</html>

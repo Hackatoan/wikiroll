@@ -1,5 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { stmts, getCharsByIds, getSettings } from '../database.js';
+
+function fmtTimeLeft(secs) {
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
 import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
 
 export async function handleButtonInteraction(interaction) {
@@ -23,14 +28,27 @@ async function handleClaim(interaction, [rollId, idxStr]) {
   const charId = charIds[idx];
   if (charId === undefined) return interaction.editReply('Invalid selection.');
 
-  const guildId = interaction.guildId;
+  const guildId   = interaction.guildId;
+  const userId    = interaction.user.id;
+  const settings  = getSettings(guildId);
+  const cooldownSecs = settings.roll_cooldown_minutes * 60;
+
+  // Per-user claim cooldown — same window as roll cooldown (default 1 hr)
+  const cd = stmts.getCooldown.get(userId, guildId);
+  if (cd?.last_claim) {
+    const elapsed = now - cd.last_claim;
+    if (elapsed < cooldownSecs) {
+      const left = cooldownSecs - elapsed;
+      return interaction.editReply(`⏳ You already claimed a character recently. Try again in **${fmtTimeLeft(left)}**.`);
+    }
+  }
 
   const existing = stmts.getOwner.get(guildId, charId);
   if (existing) {
     return interaction.editReply(`Already claimed by <@${existing.user_id}>!`);
   }
 
-  const result = stmts.claim.run(guildId, interaction.user.id, charId);
+  const result = stmts.claim.run(guildId, userId, charId);
   if (result.changes === 0) {
     const owner = stmts.getOwner.get(guildId, charId);
     return interaction.editReply(`Too slow! <@${owner?.user_id}> just grabbed that one.`);
@@ -38,6 +56,8 @@ async function handleClaim(interaction, [rollId, idxStr]) {
 
   const chars = getCharsByIds(charIds);
   const claimed = chars.find(c => c.id === charId);
+
+  stmts.setClaimCooldown.run(userId, guildId);
 
   await interaction.editReply(
     `✅ **${claimed?.name ?? 'Character'}** is now in your collection!`
@@ -64,7 +84,7 @@ async function handleClaim(interaction, [rollId, idxStr]) {
       try {
         const u = await interaction.client.users.fetch(user_id);
         await u.send(
-          `🔔 **${claimed.name}** (on your wishlist) was just claimed by <@${interaction.user.id}> in **${interaction.guild?.name}**!`
+          `🔔 **${claimed.name}** (on your wishlist) was just claimed by <@${userId}> in **${interaction.guild?.name}**!`
         );
       } catch {}
     }

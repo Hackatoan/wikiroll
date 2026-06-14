@@ -8,6 +8,8 @@ export const db = new Database('/data/wikiroll.db');
 function initDatabase() {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
+  // Migrate existing cooldowns table to add last_claim if needed
+  try { db.exec(`ALTER TABLE cooldowns ADD COLUMN last_claim INTEGER`); } catch {}
   db.exec(`
     CREATE TABLE IF NOT EXISTS characters (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -175,10 +177,16 @@ export const stmts = {
 
   // ── Cooldowns ──────────────────────────────────────────────────────────────
 
-  getCooldown: db.prepare(`SELECT last_roll FROM cooldowns WHERE user_id = ? AND guild_id = ?`),
+  getCooldown: db.prepare(`SELECT last_roll, last_claim FROM cooldowns WHERE user_id = ? AND guild_id = ?`),
   setCooldown: db.prepare(`
-    INSERT OR REPLACE INTO cooldowns (user_id, guild_id, last_roll)
+    INSERT INTO cooldowns (user_id, guild_id, last_roll)
     VALUES (?, ?, unixepoch())
+    ON CONFLICT(user_id, guild_id) DO UPDATE SET last_roll = unixepoch()
+  `),
+  setClaimCooldown: db.prepare(`
+    INSERT INTO cooldowns (user_id, guild_id, last_roll, last_claim)
+    VALUES (?, ?, COALESCE((SELECT last_roll FROM cooldowns WHERE user_id = ?1 AND guild_id = ?2), 0), unixepoch())
+    ON CONFLICT(user_id, guild_id) DO UPDATE SET last_claim = unixepoch()
   `),
 
   // ── Wishlists ─────────────────────────────────────────────────────────────

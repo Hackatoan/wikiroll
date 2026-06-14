@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { stmts, getCharsByIds, getSettings } from '../database.js';
+import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
 
 function fmtTimeLeft(secs) {
   const m = Math.floor(secs / 60), s = secs % 60;
@@ -43,14 +43,15 @@ async function handleClaim(interaction, [rollId, idxStr]) {
     }
   }
 
-  const existing = stmts.getOwner.get(guildId, charId);
+  const linkedGuilds = getLinkedGuildIds(guildId);
+  const existing = getOwnerCrossGuild(linkedGuilds, charId);
   if (existing) {
     return interaction.editReply(`Already claimed by <@${existing.user_id}>!`);
   }
 
   const result = stmts.claim.run(guildId, userId, charId);
   if (result.changes === 0) {
-    const owner = stmts.getOwner.get(guildId, charId);
+    const owner = getOwnerCrossGuild(linkedGuilds, charId);
     return interaction.editReply(`Too slow! <@${owner?.user_id}> just grabbed that one.`);
   }
 
@@ -63,17 +64,18 @@ async function handleClaim(interaction, [rollId, idxStr]) {
     `✅ **${claimed?.name ?? 'Character'}** is now in your collection!`
   );
 
-  // Rebuild buttons marking claimed slots
+  // Rebuild message: remove claimed button, update embed, post public announcement
   try {
     const channel = interaction.channel ?? await interaction.client.channels.fetch(roll.channel_id);
     const msg = await channel.messages.fetch(roll.message_id);
-    const disabledSet = new Set();
+    const claimedSet = new Set();
     for (let i = 0; i < charIds.length; i++) {
-      if (stmts.getOwner.get(guildId, charIds[i])) disabledSet.add(i);
+      if (getOwnerCrossGuild(linkedGuilds, charIds[i])) claimedSet.add(i);
     }
-    const embeds = buildRollEmbeds(chars, disabledSet);
-    const components = buildClaimButtons(rollIdInt, chars.length, disabledSet);
+    const embeds = buildRollEmbeds(chars, claimedSet);
+    const components = buildClaimButtons(rollIdInt, chars.length, claimedSet);
     await msg.edit({ embeds, components });
+    await channel.send(`🎉 <@${userId}> just claimed **${claimed?.name ?? 'a character'}**!`);
   } catch {}
 
   // Wishlist DM notifications

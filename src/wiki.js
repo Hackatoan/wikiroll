@@ -92,6 +92,7 @@ export const BUILTIN_FANDOMS = [
   'https://warhammer40k.fandom.com',
   'https://dungeons-and-dragons.fandom.com',
   'https://transformers.fandom.com',
+  'https://villains.fandom.com',
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -145,14 +146,34 @@ async function fetchOneFandomChar(wikiBase) {
   const domain = new URL(wikiBase).hostname;
   const api = `${wikiBase}/api.php`;
   try {
-    // Step 1: get random page title
-    const rand = await queryWiki({ action: 'query', list: 'random', rnnamespace: 0, rnlimit: 1 }, api);
-    const title = rand.query?.random?.[0]?.title;
+    let title = null;
+
+    // Prefer pages from Category:Characters for actual character bias
+    try {
+      const catData = await queryWiki({
+        action: 'query',
+        list: 'categorymembers',
+        cmtitle: 'Category:Characters',
+        cmlimit: 50,
+        cmtype: 'page',
+        cmnamespace: 0,
+      }, api);
+      const members = catData.query?.categorymembers ?? [];
+      if (members.length > 0) {
+        title = members[Math.floor(Math.random() * members.length)].title;
+      }
+    } catch {}
+
+    // Fallback: truly random page
+    if (!title) {
+      const rand = await queryWiki({ action: 'query', list: 'random', rnnamespace: 0, rnlimit: 1 }, api);
+      title = rand.query?.random?.[0]?.title;
+    }
+
     if (!title) return null;
 
     await sleep(150);
 
-    // Step 2: get page details
     const detail = await queryWiki({
       action: 'query',
       titles: title,
@@ -166,8 +187,7 @@ async function fetchOneFandomChar(wikiBase) {
 
     const page = Object.values(detail.query?.pages ?? {})[0];
     return formatPage(page, domain, wikiBase);
-  } catch (e) {
-    // silently skip failed wikis
+  } catch {
     return null;
   }
 }
@@ -255,7 +275,7 @@ export async function fetchTenCharacters({ guildSources = [], wishedChars = [], 
   const wikiSlots      = Math.max(2, remainingSlots - picked.length); // at least 2 Wikipedia slots
 
   const tasks = [
-    fetchRandomWikipedia(wikiSlots + 4),
+    fetchRandomWikipedia(wikiSlots + 2),
     ...picked.map(base => fetchOneFandomChar(base)),
     ...wishedKeywords.slice(0, 3).map(kw => fetchWikipediaSearch(kw)),
   ];

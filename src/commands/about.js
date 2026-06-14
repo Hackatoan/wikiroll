@@ -39,7 +39,12 @@ export default {
         },
         {
           name: '⚡ Quick Start',
-          value: '`/roll` to roll 10 characters · click a button to claim · `/collection` to view yours',
+          value: '`/roll` to roll 10 characters · click a button to claim · `/collection` to view yours\n`/wishlist` · `/trade` · `/info` · `/search` · `/settings`',
+          inline: false,
+        },
+        {
+          name: '🛠️ Admin Commands',
+          value: '`/setrollchannel set` — restrict rolls to one channel\n`/linkserver start` — share claimed ownership with another server\n`/ghostroll` — owner-only test roll (no cooldown)',
           inline: false,
         },
       )

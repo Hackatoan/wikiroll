@@ -33,21 +33,20 @@ export function buildRollEmbeds(characters, ownedIndices = new Set()) {
   });
 }
 
-export function buildClaimButtons(rollId, count, disabledIndices = new Set()) {
+export function buildClaimButtons(rollId, count, claimedIndices = new Set()) {
   const rows = [];
   for (let row = 0; row < 2; row++) {
     const ar = new ActionRowBuilder();
     for (let col = 0; col < 5; col++) {
       const idx = row * 5 + col;
       if (idx >= count) break;
-      const disabled = disabledIndices.has(idx);
+      if (claimedIndices.has(idx)) continue;
       ar.addComponents(
         new ButtonBuilder()
           .setCustomId(`claim_${rollId}_${idx}`)
           .setLabel(String(idx + 1))
-          .setStyle(disabled ? ButtonStyle.Success : ButtonStyle.Primary)
-          .setDisabled(disabled)
-          .setEmoji(disabled ? '✅' : '🎯')
+          .setStyle(ButtonStyle.Primary)
+          .setEmoji('🎯')
       );
     }
     if (ar.components.length) rows.push(ar);

@@ -3,47 +3,39 @@ import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
 
+async function isOwner(interaction) {
+  const app = await interaction.client.application.fetch();
+  const owner = app.owner;
+  if (!owner) return false;
+  if (owner.id) return owner.id === interaction.user.id;
+  // team
+  return owner.members?.some(m => m.user.id === interaction.user.id) ?? false;
+}
+
 export default {
   data: new SlashCommandBuilder()
-    .setName('roll')
-    .setDescription('Roll 10 characters to claim! (Once per hour by default)'),
+    .setName('ghostroll')
+    .setDescription('(Owner only) Test a roll without consuming your cooldown.'),
 
   async execute(interaction) {
-    await interaction.deferReply();
+    if (!await isOwner(interaction)) {
+      return interaction.reply({ content: '❌ Owner only.', flags: 64 });
+    }
 
-    const userId  = interaction.user.id;
+    await interaction.deferReply({ flags: 64 });
+
     const guildId = interaction.guildId;
+    const userId  = interaction.user.id;
     const now     = Math.floor(Date.now() / 1000);
     const settings = getSettings(guildId);
-    const cooldownSecs = settings.roll_cooldown_minutes * 60;
-
-    if (settings.roll_channel && interaction.channelId !== settings.roll_channel) {
-      return interaction.editReply({ content: `🎲 Rolls are restricted to <#${settings.roll_channel}>.`, flags: 64 });
-    }
-
-    const cd = stmts.getCooldown.get(userId, guildId);
-    if (cd) {
-      const remaining = cooldownSecs - (now - cd.last_roll);
-      if (remaining > 0) {
-        const mins = Math.ceil(remaining / 60);
-        return interaction.editReply(
-          `⏳ You can roll again in **${mins} minute${mins !== 1 ? 's' : ''}**.`
-        );
-      }
-    }
 
     const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
     const wishedChars   = stmts.getGuildWishChars.all(guildId);
     const wishedSources = stmts.getGuildWishSources.all(guildId);
 
     const rawChars = await fetchTenCharacters({ guildSources, wishedChars, wishedSources });
+    if (!rawChars.length) return interaction.editReply('❌ Failed to fetch characters.');
 
-    if (!rawChars.length) {
-      return interaction.editReply('❌ Failed to fetch characters. Please try again in a moment.');
-    }
-
-    // Persist characters and collect IDs
-    // DB rows (from wishedChars) already have an `id`; fresh fetches need upsert
     const chars = [];
     for (const raw of rawChars) {
       try {
@@ -53,14 +45,9 @@ export default {
           const row = stmts.upsertChar.get(raw);
           chars.push({ ...raw, id: row.id });
         }
-      } catch (e) {
-        console.error('upsert error', e.message);
-      }
+      } catch {}
     }
-
-    if (!chars.length) {
-      return interaction.editReply('❌ Failed to save characters. Please try again.');
-    }
+    if (!chars.length) return interaction.editReply('❌ Failed to save characters.');
 
     const claimWindowSecs = settings.claim_window_minutes * 60;
     const expiresAt = now + claimWindowSecs;
@@ -74,30 +61,22 @@ export default {
       expires_at: expiresAt,
     });
     const rollId = roll.lastInsertRowid;
-
-    stmts.setCooldown.run(userId, guildId);
+    // No cooldown set — ghost roll doesn't consume rate limit
 
     const embeds     = buildRollEmbeds(chars);
     const components = buildClaimButtons(rollId, chars.length);
     const mins = settings.claim_window_minutes;
 
     const msg = await interaction.editReply({
-      content: `🎲 **${interaction.user.username}** rolled! Claim within **${mins} minute${mins !== 1 ? 's' : ''}**!`,
+      content: `👻 **Ghost roll** — visible only to you. Claims work normally. Expires in **${mins}m**.`,
       embeds,
       components,
     });
 
     stmts.setRollMessageId.run(msg.id, rollId);
 
-    // Disable buttons after window expires
     setTimeout(async () => {
-      try {
-        await msg.edit({
-          content: `🎲 ~~${interaction.user.username}'s roll~~ *(expired)*`,
-          embeds,
-          components: [],
-        });
-      } catch {}
+      try { await msg.edit({ content: '👻 *(ghost roll expired)*', embeds, components: [] }); } catch {}
     }, claimWindowSecs * 1000);
   },
 };

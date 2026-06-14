@@ -903,6 +903,10 @@
       white-space: nowrap;
       align-self: center;
     }
+    .cmd-admin[data-role="owner"] {
+      background: rgba(139,92,246,0.15);
+      color: var(--indigo-light);
+    }
 
     /* Prefix block styling */
     .prefix-block {
@@ -1384,6 +1388,21 @@
                 <span class="cmd-name">/settings</span>
                 <span class="cmd-desc">Configure roll cooldown, claim window &amp; wiki sources.</span>
                 <span class="cmd-admin">Admin</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/setrollchannel set/clear</span>
+                <span class="cmd-desc">Restrict rolls to a specific channel, or remove the restriction.</span>
+                <span class="cmd-admin">Admin</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/linkserver start/confirm/status/unlink</span>
+                <span class="cmd-desc">Link two servers to share claimed character ownership (mutual admin confirmation required).</span>
+                <span class="cmd-admin">Admin</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/ghostroll</span>
+                <span class="cmd-desc">Test a roll without consuming your hourly cooldown. Ephemeral — visible only to you.</span>
+                <span class="cmd-admin" data-role="owner">Owner</span>
               </div>
             </div>
           </div>

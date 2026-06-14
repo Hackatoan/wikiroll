@@ -10,6 +10,8 @@ function initDatabase() {
   db.pragma('foreign_keys = ON');
   // Migrate existing cooldowns table to add last_claim if needed
   try { db.exec(`ALTER TABLE cooldowns ADD COLUMN last_claim INTEGER`); } catch {}
+  // Migrate guild_settings to add roll_channel
+  try { db.exec(`ALTER TABLE guild_settings ADD COLUMN roll_channel TEXT`); } catch {}
   db.exec(`
     CREATE TABLE IF NOT EXISTS characters (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,6 +90,24 @@ function initDatabase() {
       roll_cooldown_minutes INTEGER DEFAULT 60,
       claim_window_minutes INTEGER DEFAULT 5,
       notify_channel TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS guild_links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      guild_a TEXT NOT NULL,
+      guild_b TEXT NOT NULL,
+      created_at INTEGER DEFAULT (unixepoch()),
+      UNIQUE(guild_a, guild_b)
+    );
+
+    CREATE TABLE IF NOT EXISTS link_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      initiator_guild TEXT NOT NULL,
+      initiator_user TEXT NOT NULL,
+      target_guild TEXT NOT NULL,
+      code TEXT NOT NULL UNIQUE,
+      created_at INTEGER DEFAULT (unixepoch()),
+      expires_at INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS wishlist_sources (
@@ -185,7 +205,7 @@ export const stmts = {
   `),
   setClaimCooldown: db.prepare(`
     INSERT INTO cooldowns (user_id, guild_id, last_roll, last_claim)
-    VALUES (?, ?, COALESCE((SELECT last_roll FROM cooldowns WHERE user_id = ?1 AND guild_id = ?2), 0), unixepoch())
+    VALUES (?, ?, 0, unixepoch())
     ON CONFLICT(user_id, guild_id) DO UPDATE SET last_claim = unixepoch()
   `),
 
@@ -249,6 +269,32 @@ export const stmts = {
       claim_window_minutes  = COALESCE(@claim_window_minutes,  guild_settings.claim_window_minutes),
       notify_channel        = COALESCE(@notify_channel,        guild_settings.notify_channel)
   `),
+
+  setRollChannel: db.prepare(`
+    INSERT INTO guild_settings (guild_id, roll_channel) VALUES (?, ?)
+    ON CONFLICT(guild_id) DO UPDATE SET roll_channel = excluded.roll_channel
+  `),
+
+  // ── Server links ──────────────────────────────────────────────────────────
+
+  createLinkRequest: db.prepare(`
+    INSERT OR REPLACE INTO link_requests (initiator_guild, initiator_user, target_guild, code, expires_at)
+    VALUES (?, ?, ?, ?, ?)
+  `),
+  getLinkRequest: db.prepare(`SELECT * FROM link_requests WHERE code = ? AND expires_at > unixepoch()`),
+  deleteLinkRequest: db.prepare(`DELETE FROM link_requests WHERE code = ?`),
+  createLink: db.prepare(`
+    INSERT OR IGNORE INTO guild_links (guild_a, guild_b) VALUES (?, ?);
+  `),
+  getGuildLinks: db.prepare(`
+    SELECT guild_b AS other_guild FROM guild_links WHERE guild_a = ?
+    UNION
+    SELECT guild_a AS other_guild FROM guild_links WHERE guild_b = ?
+  `),
+  removeLink: db.prepare(`
+    DELETE FROM guild_links WHERE (guild_a = ? AND guild_b = ?) OR (guild_a = ? AND guild_b = ?)
+  `),
+  getPendingLinksByGuild: db.prepare(`SELECT * FROM link_requests WHERE initiator_guild = ? OR target_guild = ?`),
 };
 
 export function getCharsByIds(ids) {
@@ -263,5 +309,17 @@ export function getSettings(guildId) {
     roll_cooldown_minutes: 60,
     claim_window_minutes: 5,
     notify_channel: null,
+    roll_channel: null,
   };
+}
+
+export function getLinkedGuildIds(guildId) {
+  const rows = stmts.getGuildLinks.all(guildId, guildId);
+  return [guildId, ...rows.map(r => r.other_guild)];
+}
+
+export function getOwnerCrossGuild(guildIds, charId) {
+  if (guildIds.length === 1) return stmts.getOwner.get(guildIds[0], charId);
+  const ph = guildIds.map(() => '?').join(',');
+  return db.prepare(`SELECT * FROM ownership WHERE character_id = ? AND guild_id IN (${ph})`).get(charId, ...guildIds);
 }

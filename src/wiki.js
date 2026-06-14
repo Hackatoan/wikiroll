@@ -102,11 +102,33 @@ async function queryWiki(params, base = 'https://en.wikipedia.org/w/api.php') {
   return res.data;
 }
 
+function isListLike(title) {
+  if (!title) return true;
+  const t = title.toLowerCase();
+  return (
+    t.startsWith('list of ') ||
+    t.startsWith('lists of ') ||
+    t.startsWith('index of ') ||
+    t.includes('(disambiguation)') ||
+    t.includes('/gallery') ||
+    t.includes('/relationships') ||
+    t.includes('/history') ||
+    t.includes('/trivia') ||
+    t.includes('/navigation') ||
+    t.includes('/techniques') ||
+    t.includes('/abilities') ||
+    /^characters (of|in) /i.test(title)
+  );
+}
+
 function formatPage(page, source, baseUrl) {
   if (!page || page.missing !== undefined || (page.pageid !== undefined && page.pageid < 0)) return null;
+  if (isListLike(page.title)) return null;
   const desc = page.extract
     ? page.extract.replace(/\n+/g, ' ').replace(/\s{2,}/g, ' ').trim().slice(0, 280)
     : null;
+  // Skip disambiguation pages (extract will say "may refer to")
+  if (desc && /^\S+ may refer to:/i.test(desc)) return null;
   return {
     name: page.title,
     page_id: String(page.pageid),

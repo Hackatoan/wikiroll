@@ -2,7 +2,7 @@
 
 A Discord bot for collecting characters and articles from Wikipedia and 70+ Fandom wikis. Roll, claim, trade, and build your collection — one wiki page at a time.
 
-**[🌐 Website](https://wikiroll.hackatoa.com) · [➕ Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands)**
+**[🌐 Website](https://wikiroll.hackatoa.com) · [➕ Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands) · [🗳️ Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) · [🚀 Community](https://discord.gg/7eh3q2u8V)**
 
 [![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/hackatoa)
 
@@ -18,6 +18,7 @@ A Discord bot for collecting characters and articles from Wikipedia and 70+ Fand
 - **Search** — Find any character, see who owns them in your server.
 - **Custom images** — Submit Discord CDN image URLs for any character.
 - **Server settings** — Admins can configure roll cooldown, claim window, and custom wiki sources.
+- **Vote rewards** — Vote on top.gg every 12 hours to earn a free bonus roll (bypasses cooldown).
 - **Prefix + slash commands** — Full slash command support + `w.` prefix commands.
 
 ## Commands
@@ -37,7 +38,13 @@ A Discord bot for collecting characters and articles from Wikipedia and 70+ Fand
 | `/submitimage <name> <url>` | — | Set custom image via URL |
 | `/source add <url>` | — | Add Fandom wiki (Manage Server) |
 | `/settings` | — | Configure bot (Manage Server) |
-| `/help` | `w.help` | Command reference |
+| `/vote` | — | Check vote credits + top.gg link |
+| `/server` | — | Join the Orbital Outpost community server |
+| `/about` | `w.help` | Bot info, stats, and links |
+
+## Vote for Free Rolls
+
+Voting for WikiRoll on [top.gg](https://top.gg/bot/1343100226537259018/vote) takes 5 seconds and earns a bonus roll credit that bypasses your hourly cooldown. Votes refresh every 12 hours. Use `/vote` in Discord to check your credit balance.
 
 ## Built-in Fandom Wikis (70+)
 
@@ -49,19 +56,24 @@ Naruto, One Piece, Dragon Ball, Bleach, Fairy Tail, Attack on Titan, My Hero Aca
 git clone https://github.com/Hackatoan/wikiroll
 cd wikiroll
 cp .env.example .env
-# Fill in .env with your BOT_TOKEN and CLIENT_ID
+# Fill in BOT_TOKEN, CLIENT_ID, and optionally TOPGG_WEBHOOK_SECRET
 docker compose up -d
 ```
 
 Requires Docker. Data is persisted in a named volume (`wikiroll-data`). SQLite database at `/data/wikiroll.db`.
 
-> **Note:** You must enable the **Message Content** privileged intent in the [Discord Developer Portal](https://discord.com/developers/applications) for prefix commands (`w.`) to work.
+> **Note:** Enable the **Message Content** privileged intent in the [Discord Developer Portal](https://discord.com/developers/applications) for prefix commands (`w.`) to work.
+
+### top.gg Webhook (optional)
+
+To enable vote rewards, set up a webhook in your top.gg bot dashboard pointing to `https://your-domain/topgg/vote`. Set the webhook secret and add it to your `.env` as `TOPGG_WEBHOOK_SECRET`. The bot exposes the webhook server on port `3015`.
 
 ## Stack
 
 - [discord.js](https://discord.js.org/) v14
 - [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
 - [axios](https://axios-http.com/)
+- [express](https://expressjs.com/) (webhook server)
 - Wikipedia REST API + MediaWiki Action API
 - Fandom MediaWiki APIs
 

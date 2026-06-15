@@ -33,14 +33,17 @@ A Discord bot for collecting characters and articles from Wikipedia and 70+ Fand
 | `/remove <name>` | `w.remove <name>` | Remove from collection |
 | `/wishlist add <name>` | `w.wl add <name>` | Add to wishlist |
 | `/wishlist addsource <url\|keyword>` | `w.wl addsource <url\|keyword>` | Boost a source 3× |
-| `/wishlist view` | `w.wl view` | View wishlist |
+| `/wishlist remove <name>` | `w.wl rm <name>` | Remove from wishlist |
+| `/wishlist view` | `w.wl view` | View wishlisted characters |
 | `/wishlist sources` | `w.wl sources` | View boosted sources |
 | `/submitimage <name> <url>` | — | Set custom image via URL |
+| `/vote` | `w.vote` | Check vote credits + top.gg link |
+| `/server` | `w.server` | Join the Orbital Outpost community server |
+| `/about` | `w.help` | Bot info, stats, and links |
 | `/source add <url>` | — | Add Fandom wiki (Manage Server) |
 | `/settings` | — | Configure bot (Manage Server) |
-| `/vote` | — | Check vote credits + top.gg link |
-| `/server` | — | Join the Orbital Outpost community server |
-| `/about` | `w.help` | Bot info, stats, and links |
+| `/setrollchannel set` | — | Restrict rolls to one channel (Manage Server) |
+| `/linkserver start` | — | Share claimed ownership with another server (Manage Server) |
 
 ## Vote for Free Rolls
 

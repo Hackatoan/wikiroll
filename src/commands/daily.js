@@ -3,14 +3,22 @@ import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
 
-function todayUTC() {
-  return new Date().toISOString().slice(0, 10);
+function todayInTz(tz) {
+  return new Date().toLocaleDateString('en-CA', { timeZone: tz });
 }
 
-function yesterdayUTC() {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - 1);
-  return d.toISOString().slice(0, 10);
+function yesterdayInTz(tz) {
+  return new Date(Date.now() - 864e5).toLocaleDateString('en-CA', { timeZone: tz });
+}
+
+function secsTillMidnightInTz(tz) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false,
+  }).formatToParts(new Date());
+  const h = parseInt(parts.find(p => p.type === 'hour').value);
+  const m = parseInt(parts.find(p => p.type === 'minute').value);
+  const s = parseInt(parts.find(p => p.type === 'second').value);
+  return 86400 - (h * 3600 + m * 60 + s);
 }
 
 export default {
@@ -23,9 +31,11 @@ export default {
 
     const userId  = interaction.user.id;
     const guildId = interaction.guildId;
-    const now     = Math.floor(Date.now() / 1000);
-    const today   = todayUTC();
+    const now      = Math.floor(Date.now() / 1000);
     const settings = getSettings(guildId);
+    const tz       = settings.timezone;
+    const today    = todayInTz(tz);
+    const yesterday = yesterdayInTz(tz);
 
     if (settings.roll_channel && interaction.channelId !== settings.roll_channel) {
       return interaction.editReply({
@@ -37,9 +47,7 @@ export default {
     const dailyRec = stmts.getDaily.get(userId, guildId);
 
     if (dailyRec?.last_daily === today) {
-      const tomorrow = new Date();
-      tomorrow.setUTCHours(24, 0, 0, 0);
-      const secsLeft = Math.ceil(tomorrow.getTime() / 1000 - now);
+      const secsLeft = secsTillMidnightInTz(tz);
       const h = Math.floor(secsLeft / 3600);
       const m = Math.ceil((secsLeft % 3600) / 60);
       const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
@@ -47,7 +55,7 @@ export default {
     }
 
     // Consecutive day streak (cap stored value at 100 to prevent overflow)
-    const streak = dailyRec?.last_daily === yesterdayUTC()
+    const streak = dailyRec?.last_daily === yesterday
       ? Math.min(dailyRec.streak + 1, 100)
       : 1;
 

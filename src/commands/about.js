@@ -16,7 +16,7 @@ export default {
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
       .setTitle('WikiRoll')
-      .setDescription('Collect characters and articles from **Wikipedia + 70+ Fandom wikis**.\nRoll, claim, trade, and build your collection — one wiki page at a time.')
+      .setDescription('Collect characters and articles from **Wikipedia + 150+ Fandom wikis**.\nRoll, claim, trade, and build your collection — one wiki page at a time.')
       .addFields(
         {
           name: '📊 Stats',

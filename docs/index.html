@@ -4,39 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WikiRoll — Collect the Wiki</title>
-  <meta name="description" content="WikiRoll is a Discord bot that lets server members roll characters from Wikipedia & 70+ Fandom wikis — Naruto, Marvel, Harry Potter, and more. Claim them, trade them, build your collection." />
-  <meta name="keywords" content="WikiRoll, Discord bot, character collection, Wikipedia bot, Fandom wiki bot, Discord game, anime characters, Marvel characters, Harry Potter, collect and trade" />
-  <meta name="author" content="Jacob Harris" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://wikiroll.hackatoa.com/" />
-  <!-- Open Graph -->
+  <meta name="description" content="WikiRoll is a Discord bot that lets server members roll characters from Wikipedia & 150+ Fandom wikis — Naruto, Marvel, Harry Potter, and more. Claim them, trade them, build your collection." />
   <meta property="og:title" content="WikiRoll — Collect the Wiki" />
-  <meta property="og:description" content="Roll characters from Wikipedia & 70+ Fandom wikis. Claim them. Trade them. Build your collection." />
+  <meta property="og:description" content="Roll characters from Wikipedia & 150+ Fandom wikis. Claim them. Trade them. Build your collection." />
   <meta property="og:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://wikiroll.hackatoa.com/" />
-  <meta property="og:site_name" content="WikiRoll" />
-  <!-- Twitter -->
+  <meta name="theme-color" content="#0d1117" />
+  <meta property="og:url" content="https://wikiroll.hackatoa.com" />
+  <meta property="og:site_name" content="Hackatoa" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@jhackatoa" />
   <meta name="twitter:title" content="WikiRoll — Collect the Wiki" />
-  <meta name="twitter:description" content="Roll characters from Wikipedia & 70+ Fandom wikis. Claim them. Trade them. Build your collection." />
+  <meta name="twitter:description" content="WikiRoll is a Discord bot that lets server members roll characters from Wikipedia and 150+ Fandom wikis — Naruto, Marvel, Harry Potter, and more." />
   <meta name="twitter:image" content="https://wikiroll.hackatoa.com/og-image.png" />
-  <!-- JSON-LD -->
+  <meta name="twitter:site" content="@jhackatoa" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Jacob Harris" />
+  <meta name="keywords" content="WikiRoll, Discord bot, Wikipedia characters, collect characters, Discord gacha bot, Fandom wiki bot, character collection Discord" />
+  <link rel="canonical" href="https://wikiroll.hackatoa.com" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "WikiRoll",
-    "url": "https://wikiroll.hackatoa.com/",
-    "description": "WikiRoll is a Discord bot that lets server members roll characters from Wikipedia and 70+ Fandom wikis. Claim them, trade them, build your collection.",
-    "applicationCategory": "GameApplication",
+    "description": "A Discord bot that lets server members roll and collect characters from Wikipedia and 150+ Fandom wikis. Claim them, trade them, build your collection.",
+    "url": "https://wikiroll.hackatoa.com",
+    "applicationCategory": "EntertainmentApplication",
     "operatingSystem": "Discord",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "Jacob Harris", "alternateName": "Hackatoa", "url": "https://hackatoa.com" }
+    "author": { "@type": "Person", "name": "Jacob Harris", "url": "https://hackatoa.com" }
   }
   </script>
-  <meta name="theme-color" content="#0d1117" />
 
   <style>
     /* ─── Custom Properties ─────────────────────────────────────────── */
@@ -287,6 +284,246 @@
     .nav-link-coffee:hover {
       background: rgba(245, 158, 11, 0.12);
       color: var(--gold-light);
+    }
+
+    .nav-link-vote {
+      color: #ff3366;
+      border: 1px solid rgba(255, 51, 102, 0.3);
+      background: rgba(255, 51, 102, 0.06);
+    }
+    .nav-link-vote:hover {
+      background: rgba(255, 51, 102, 0.12);
+      color: #ff6690;
+    }
+
+    .nav-link-community {
+      color: var(--indigo-light);
+      border: 1px solid var(--border);
+      background: rgba(139, 92, 246, 0.06);
+    }
+    .nav-link-community:hover {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--text-primary);
+    }
+
+    /* ─── VOTE BANNER ────────────────────────────────────────────────── */
+    .vote-section {
+      padding: 80px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vote-banner {
+      background: linear-gradient(135deg, rgba(255,51,102,0.08) 0%, rgba(124,58,237,0.08) 100%);
+      border: 1px solid rgba(255, 51, 102, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 52px 56px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vote-banner::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(255,51,102,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .vote-banner-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 13px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(255, 51, 102, 0.12);
+      border: 1px solid rgba(255, 51, 102, 0.3);
+      color: #ff6690;
+      margin-bottom: 18px;
+    }
+
+    .vote-banner-title {
+      font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .vote-banner-title span {
+      background: linear-gradient(90deg, #ff3366, #ff6690);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .vote-banner-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 520px;
+    }
+
+    .vote-steps {
+      display: flex;
+      gap: 24px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .vote-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .vote-step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 51, 102, 0.15);
+      border: 1px solid rgba(255, 51, 102, 0.4);
+      color: #ff6690;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-vote {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e02050 0%, #c0143c 100%);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(255, 51, 102, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+      flex-shrink: 0;
+    }
+    .btn-vote:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba(255, 51, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+
+    /* ─── COMMUNITY SECTION ──────────────────────────────────────────── */
+    .community-section {
+      padding: 80px 0;
+    }
+
+    .community-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    .community-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .community-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(139, 92, 246, 0.35);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4), var(--shadow-glow);
+    }
+
+    .community-card-icon {
+      font-size: 40px;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .community-card-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .community-card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .btn-community {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--indigo) 0%, #6d28d9 100%);
+      color: #fff;
+      box-shadow: 0 3px 14px rgba(124, 58, 237, 0.4);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .btn-community:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.55);
+    }
+
+    .community-card-feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .community-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+    }
+
+    .community-feature::before {
+      content: '✓';
+      color: var(--indigo-light);
+      font-weight: 800;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 900px) {
+      .vote-banner {
+        grid-template-columns: 1fr;
+        padding: 36px 28px;
+      }
+      .community-inner { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .vote-steps { flex-direction: column; gap: 12px; }
     }
 
     /* ─── HERO ───────────────────────────────────────────────────────── */
@@ -920,6 +1157,25 @@
       line-height: 1.4;
     }
 
+    .cmd-prefix {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 4px;
+      padding: 1px 7px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .cmd-no-prefix {
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.4;
+      flex-shrink: 0;
+    }
+
     .cmd-admin {
       font-size: 10px;
       padding: 1px 6px;
@@ -929,10 +1185,6 @@
       font-weight: 700;
       white-space: nowrap;
       align-self: center;
-    }
-    .cmd-admin[data-role="owner"] {
-      background: rgba(139,92,246,0.15);
-      color: var(--indigo-light);
     }
 
     /* Prefix block styling */
@@ -1181,6 +1433,8 @@
           <svg class="icon-github" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
           GitHub
         </a>
+        <a href="https://top.gg/bot/1343100226537259018/vote" class="nav-link nav-link-vote" target="_blank" rel="noopener">🗳️ Vote</a>
+        <a href="https://discord.gg/7eh3q2u8V" class="nav-link nav-link-community" target="_blank" rel="noopener">🚀 Community</a>
         <a href="https://buymeacoffee.com/hackatoa" class="nav-link nav-link-coffee" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
       </div>
     </div>
@@ -1202,16 +1456,16 @@
 
       <div class="container hero-grid">
         <div>
-          <div class="hero-eyebrow animate-in">Discord Bot · 70+ Wikis</div>
+          <div class="hero-eyebrow animate-in">Discord Bot · 150+ Wikis</div>
           <h1 class="hero-heading animate-in delay-1">
             <span class="hero-heading-line1">Collect the Wiki.</span>
             <span class="hero-heading-line2">Own the Lore.</span>
           </h1>
           <p class="hero-subtext animate-in delay-2">
-            Roll characters from Wikipedia &amp; 70+ Fandom wikis. Claim them. Trade them. Build your collection.
+            Roll characters from Wikipedia &amp; 150+ Fandom wikis. Claim them. Trade them. Build your collection.
           </p>
           <div class="hero-buttons animate-in delay-3">
-            <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands"
+            <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands"
                class="btn-primary" target="_blank" rel="noopener">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.13.12 18.2.141 18.267a19.905 19.905 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
               Add to Discord →
@@ -1222,7 +1476,7 @@
             </a>
           </div>
           <div class="hero-badges animate-in delay-4">
-            <span class="badge"><span class="badge-dot"></span>70+ Fandom Wikis</span>
+            <span class="badge"><span class="badge-dot"></span>150+ Fandom Wikis</span>
             <span class="badge"><span class="badge-dot"></span>Free</span>
             <span class="badge"><span class="badge-dot"></span>Open Source</span>
           </div>
@@ -1273,7 +1527,7 @@
             <span class="feature-icon">📚</span>
             <div class="feature-title">Wikipedia + 70 Fandoms</div>
             <p class="feature-desc">Characters pulled from Naruto, Marvel, Harry Potter, Star Wars, Genshin, Elder Scrolls, and dozens more — plus random Wikipedia articles.</p>
-            <span class="feature-tag tag-gold">70+ sources</span>
+            <span class="feature-tag tag-gold">150+ sources</span>
           </div>
 
           <div class="feature-card">
@@ -1381,55 +1635,74 @@
             <div class="cmd-list">
               <div class="cmd-row">
                 <span class="cmd-name">/roll</span>
+                <span class="cmd-prefix">w.roll</span>
                 <span class="cmd-desc">Roll 10 random characters from across all enabled wikis.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/collection [@user]</span>
+                <span class="cmd-prefix">w.c [@user]</span>
                 <span class="cmd-desc">Browse your collection, or anyone else's.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/search &lt;name&gt;</span>
+                <span class="cmd-prefix">w.s &lt;name&gt;</span>
                 <span class="cmd-desc">Search all collections for a specific character.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/info &lt;name&gt;</span>
+                <span class="cmd-prefix">w.info &lt;name&gt;</span>
                 <span class="cmd-desc">Get detailed info about a character including wiki source.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/trade @user</span>
+                <span class="cmd-prefix">w.trade @user</span>
                 <span class="cmd-desc">Initiate a trade offer with another server member.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/remove &lt;name&gt;</span>
+                <span class="cmd-prefix">w.remove &lt;name&gt;</span>
                 <span class="cmd-desc">Remove a character from your collection.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/wishlist add/addsource</span>
+                <span class="cmd-prefix">w.wl add/src</span>
                 <span class="cmd-desc">Wishlist a character or an entire Fandom wiki source (3× boost).</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/submitimage &lt;name&gt; &lt;url&gt;</span>
+                <span class="cmd-no-prefix">slash only</span>
                 <span class="cmd-desc">Submit a community image for a character card.</span>
               </div>
               <div class="cmd-row">
+                <span class="cmd-name">/daily</span>
+                <span class="cmd-prefix">w.daily</span>
+                <span class="cmd-desc">Free daily roll! Build a streak for a bonus claim.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/leaderboard</span>
+                <span class="cmd-no-prefix">slash only</span>
+                <span class="cmd-desc">Top collectors in this server ranked by collection size.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/vote</span>
+                <span class="cmd-prefix">w.vote</span>
+                <span class="cmd-desc">Vote for WikiRoll on top.gg.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/server</span>
+                <span class="cmd-prefix">w.server</span>
+                <span class="cmd-desc">Get an invite to the Orbital Outpost community Discord.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/about</span>
+                <span class="cmd-prefix">w.help</span>
+                <span class="cmd-desc">Bot info, stats, and all links.</span>
+              </div>
+              <div class="cmd-row">
                 <span class="cmd-name">/settings</span>
-                <span class="cmd-desc">Configure roll cooldown, claim window &amp; wiki sources.</span>
+                <span class="cmd-no-prefix">slash only</span>
+                <span class="cmd-desc">Configure roll cooldown, claim window, timezone &amp; wiki sources.</span>
                 <span class="cmd-admin">Admin</span>
-              </div>
-              <div class="cmd-row">
-                <span class="cmd-name">/setrollchannel set/clear</span>
-                <span class="cmd-desc">Restrict rolls to a specific channel, or remove the restriction.</span>
-                <span class="cmd-admin">Admin</span>
-              </div>
-              <div class="cmd-row">
-                <span class="cmd-name">/linkserver start/confirm/status/unlink</span>
-                <span class="cmd-desc">Link two servers to share claimed character ownership (mutual admin confirmation required).</span>
-                <span class="cmd-admin">Admin</span>
-              </div>
-              <div class="cmd-row">
-                <span class="cmd-name">/ghostroll</span>
-                <span class="cmd-desc">Test a roll without consuming your hourly cooldown. Ephemeral — visible only to you.</span>
-                <span class="cmd-admin" data-role="owner">Owner</span>
               </div>
             </div>
           </div>
@@ -1448,14 +1721,87 @@
               <span class="prefix-chip"><span>w.roll</span> roll</span>
               <span class="prefix-chip"><span>w.c</span> collection</span>
               <span class="prefix-chip"><span>w.s</span> search</span>
-              <span class="prefix-chip"><span>w.i</span> info</span>
-              <span class="prefix-chip"><span>w.t</span> trade</span>
-              <span class="prefix-chip"><span>w.rm</span> remove</span>
+              <span class="prefix-chip"><span>w.info</span> info</span>
+              <span class="prefix-chip"><span>w.trade</span> trade</span>
+              <span class="prefix-chip"><span>w.remove</span> remove</span>
               <span class="prefix-chip"><span>w.wl add</span> wishlist add</span>
               <span class="prefix-chip"><span>w.wl src</span> wishlist addsource</span>
-              <span class="prefix-chip"><span>w.img</span> submitimage</span>
-              <span class="prefix-chip"><span>w.cfg</span> settings (admin)</span>
+              <span class="prefix-chip"><span>w.daily</span> daily</span>
+              <span class="prefix-chip"><span>w.vote</span> vote</span>
+              <span class="prefix-chip"><span>w.server</span> server</span>
+              <span class="prefix-chip"><span>w.help</span> about</span>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ─── VOTE ────────────────────────────────────────────────────── -->
+    <section class="vote-section" id="vote">
+      <div class="container">
+        <div class="vote-banner">
+          <div>
+            <div class="vote-banner-tag">🗳️ Free Bonus Roll</div>
+            <h2 class="vote-banner-title">Vote for WikiRoll.</h2>
+            <p class="vote-banner-desc">
+              Voting for WikiRoll on top.gg takes 5 seconds and earns you a bonus roll that
+              bypasses your hourly cooldown. You can vote every 12 hours — every vote counts.
+            </p>
+            <div class="vote-steps">
+              <div class="vote-step"><div class="vote-step-num">1</div> Click Vote on top.gg</div>
+              <div class="vote-step"><div class="vote-step-num">2</div> Confirm (no account needed)</div>
+              <div class="vote-step"><div class="vote-step-num">3</div> Help WikiRoll reach more servers</div>
+              <div class="vote-step"><div class="vote-step-num">4</div> Come back every 12 hours to vote again</div>
+            </div>
+          </div>
+          <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
+            🗳️ Vote on top.gg
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ─── COMMUNITY ────────────────────────────────────────────────── -->
+    <section class="community-section" id="community">
+      <div class="container">
+        <div style="text-align:center;margin-bottom:52px;">
+          <div class="section-label">Community</div>
+          <h2 class="section-heading">More ways to play.</h2>
+          <p class="section-subtext">Support the bot and connect with other collectors.</p>
+        </div>
+        <div class="community-inner">
+          <div class="community-card">
+            <span class="community-card-icon">🚀</span>
+            <div class="community-card-title">Orbital Outpost</div>
+            <p class="community-card-desc">The official Discord for WikiRoll and all Hackatoa projects. Share your collection, report bugs, suggest wikis, and hang out.</p>
+            <div class="community-card-feature-list">
+              <div class="community-feature">Collection showcases &amp; trading</div>
+              <div class="community-feature">Bug reports &amp; feature requests</div>
+              <div class="community-feature">Homelab &amp; dev chat</div>
+              <div class="community-feature">Early access to new features</div>
+            </div>
+            <a href="https://discord.gg/7eh3q2u8V" class="btn-community" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.13.12 18.2.141 18.267a19.905 19.905 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+              Join the Server
+            </a>
+          </div>
+          <div class="community-card">
+            <span class="community-card-icon">☕</span>
+            <div class="community-card-title">Support Development</div>
+            <p class="community-card-desc">WikiRoll is free and open source. If you're enjoying it, a coffee helps keep the homelab running and new features coming.</p>
+            <div class="community-card-feature-list">
+              <div class="community-feature">Keep the server online</div>
+              <div class="community-feature">Fund new wiki integrations</div>
+              <div class="community-feature">Support solo indie dev</div>
+              <div class="community-feature">Eternal gratitude</div>
+            </div>
+            <a href="https://buymeacoffee.com/hackatoa" class="btn-community" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 3px 14px rgba(245,158,11,0.4);">
+              ☕ Buy Me a Coffee
+            </a>
           </div>
         </div>
       </div>
@@ -1475,7 +1821,7 @@
           <span>Open source</span>
         </p>
         <div class="cta-button-wrap">
-          <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands"
+          <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands"
              class="btn-primary-large" target="_blank" rel="noopener">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.13.12 18.2.141 18.267a19.905 19.905 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
             Add to Discord →
@@ -1494,6 +1840,10 @@
         © 2026 Jacob Harris
       </div>
       <div class="footer-links">
+        <a href="https://top.gg/bot/1343100226537259018/vote" class="footer-link" target="_blank" rel="noopener">🗳️ Vote</a>
+        <span class="footer-sep">·</span>
+        <a href="https://discord.gg/7eh3q2u8V" class="footer-link" target="_blank" rel="noopener">🚀 Community</a>
+        <span class="footer-sep">·</span>
         <a href="https://buymeacoffee.com/hackatoa" class="footer-link" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
         <span class="footer-sep">·</span>
         <a href="https://github.com/Hackatoan/wikiroll" class="footer-link" target="_blank" rel="noopener">

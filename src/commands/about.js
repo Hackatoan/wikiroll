@@ -9,8 +9,8 @@ export default {
   async execute(interaction) {
     const guildId = interaction.guildId;
 
-    const totalChars  = db.prepare('SELECT COUNT(*) AS n FROM characters').get().n;
-    const guildOwned  = db.prepare('SELECT COUNT(*) AS n FROM ownership WHERE guild_id = ?').get(guildId).n;
+    const totalChars   = db.prepare('SELECT COUNT(*) AS n FROM characters').get().n;
+    const guildOwned   = db.prepare('SELECT COUNT(*) AS n FROM ownership WHERE guild_id = ?').get(guildId).n;
     const guildRollers = db.prepare('SELECT COUNT(DISTINCT user_id) AS n FROM ownership WHERE guild_id = ?').get(guildId).n;
 
     const embed = new EmbedBuilder()
@@ -31,7 +31,9 @@ export default {
           name: '🔗 Links',
           value: [
             '🌐 [Website](https://wikiroll.hackatoa.com)',
-            '➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands)',
+            '➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands)',
+            '🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) — earn a free roll!',
+            '🚀 [Join Orbital Outpost](https://discord.gg/7eh3q2u8V) — the community server',
             '💻 [GitHub](https://github.com/Hackatoan/wikiroll)',
             '☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)',
           ].join('\n'),
@@ -39,12 +41,12 @@ export default {
         },
         {
           name: '⚡ Quick Start',
-          value: '`/roll` to roll 10 characters · click a button to claim · `/collection` to view yours\n`/wishlist` · `/trade` · `/info` · `/search` · `/settings`',
+          value: '`/roll` to roll 10 characters · click a button to claim · `/collection` to view yours\n`/wishlist` · `/trade` · `/info` · `/search` · `/vote` · `/server`',
           inline: false,
         },
         {
           name: '🛠️ Admin Commands',
-          value: '`/setrollchannel set` — restrict rolls to one channel\n`/linkserver start` — share claimed ownership with another server\n`/ghostroll` — owner-only test roll (no cooldown)',
+          value: '`/setrollchannel set` — restrict rolls to one channel\n`/linkserver start` — share claimed ownership with another server',
           inline: false,
         },
       )

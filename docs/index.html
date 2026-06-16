@@ -1479,6 +1479,7 @@
             <span class="badge"><span class="badge-dot"></span>150+ Fandom Wikis</span>
             <span class="badge"><span class="badge-dot"></span>Free</span>
             <span class="badge"><span class="badge-dot"></span>Open Source</span>
+            <span class="badge" id="wr-server-badge" style="display:none"><span class="badge-dot" style="background:#57F287"></span><span id="wr-server-count">—</span> Servers</span>
           </div>
         </div>
 
@@ -1856,5 +1857,15 @@
     </div>
   </footer>
 
+<script>
+  fetch('https://wikiroll-api.hackatoa.com/stats')
+    .then(r => r.json())
+    .then(d => {
+      if (!d.guilds) return;
+      document.getElementById('wr-server-count').textContent = d.guilds.toLocaleString();
+      document.getElementById('wr-server-badge').style.display = '';
+    })
+    .catch(() => {});
+</script>
 </body>
 </html>

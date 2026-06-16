@@ -17,14 +17,22 @@ export function isPrefix(content) {
   return content.toLowerCase().startsWith(PREFIX);
 }
 
-function todayUTC() {
-  return new Date().toISOString().slice(0, 10);
+function todayInTz(tz) {
+  return new Date().toLocaleDateString('en-CA', { timeZone: tz });
 }
 
-function yesterdayUTC() {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - 1);
-  return d.toISOString().slice(0, 10);
+function yesterdayInTz(tz) {
+  return new Date(Date.now() - 864e5).toLocaleDateString('en-CA', { timeZone: tz });
+}
+
+function secsTillMidnightInTz(tz) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false,
+  }).formatToParts(new Date());
+  const h = parseInt(parts.find(p => p.type === 'hour').value);
+  const m = parseInt(parts.find(p => p.type === 'minute').value);
+  const s = parseInt(parts.find(p => p.type === 'second').value);
+  return 86400 - (h * 3600 + m * 60 + s);
 }
 
 export async function handlePrefix(message) {
@@ -138,9 +146,11 @@ async function prefixRoll(message, guildId, userId) {
 // ── Daily ─────────────────────────────────────────────────────────────────
 
 async function prefixDaily(message, guildId, userId) {
-  const now      = Math.floor(Date.now() / 1000);
-  const settings = getSettings(guildId);
-  const today    = todayUTC();
+  const now       = Math.floor(Date.now() / 1000);
+  const settings  = getSettings(guildId);
+  const tz        = settings.timezone;
+  const today     = todayInTz(tz);
+  const yesterday = yesterdayInTz(tz);
 
   if (settings.roll_channel && message.channel.id !== settings.roll_channel) {
     return message.reply(`🗓️ Daily rolls are restricted to <#${settings.roll_channel}>.`);
@@ -149,16 +159,14 @@ async function prefixDaily(message, guildId, userId) {
   const dailyRec = stmts.getDaily.get(userId, guildId);
 
   if (dailyRec?.last_daily === today) {
-    const tomorrow = new Date();
-    tomorrow.setUTCHours(24, 0, 0, 0);
-    const secsLeft = Math.ceil(tomorrow.getTime() / 1000 - now);
+    const secsLeft = secsTillMidnightInTz(tz);
     const h = Math.floor(secsLeft / 3600);
     const m = Math.ceil((secsLeft % 3600) / 60);
     const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
     return message.reply(`⏳ Already rolled today. Next daily in **${timeStr}**.`);
   }
 
-  const streak = dailyRec?.last_daily === yesterdayUTC()
+  const streak = dailyRec?.last_daily === yesterday
     ? Math.min(dailyRec.streak + 1, 100)
     : 1;
 

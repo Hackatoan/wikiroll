@@ -32,7 +32,7 @@ export default {
           value: [
             '🌐 [Website](https://wikiroll.hackatoa.com)',
             '➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands)',
-            '🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) — earn a free roll!',
+            '🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)',
             '🚀 [Join Orbital Outpost](https://discord.gg/7eh3q2u8V) — the community server',
             '💻 [GitHub](https://github.com/Hackatoan/wikiroll)',
             '☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)',

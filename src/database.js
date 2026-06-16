@@ -8,10 +8,9 @@ export const db = new Database('/data/wikiroll.db');
 function initDatabase() {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
-  // Migrate existing cooldowns table to add last_claim if needed
   try { db.exec(`ALTER TABLE cooldowns ADD COLUMN last_claim INTEGER`); } catch {}
-  // Migrate guild_settings to add roll_channel
   try { db.exec(`ALTER TABLE guild_settings ADD COLUMN roll_channel TEXT`); } catch {}
+  try { db.exec(`ALTER TABLE rolls ADD COLUMN daily_claims INTEGER DEFAULT 0`); } catch {}
   db.exec(`
     CREATE TABLE IF NOT EXISTS characters (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,6 +107,14 @@ function initDatabase() {
       code TEXT NOT NULL UNIQUE,
       created_at INTEGER DEFAULT (unixepoch()),
       expires_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS daily_streaks (
+      user_id TEXT NOT NULL,
+      guild_id TEXT NOT NULL,
+      last_daily TEXT NOT NULL,
+      streak INTEGER DEFAULT 1,
+      PRIMARY KEY (user_id, guild_id)
     );
 
     CREATE TABLE IF NOT EXISTS wishlist_sources (
@@ -208,6 +215,23 @@ export const stmts = {
     VALUES (?, ?, 0, unixepoch())
     ON CONFLICT(user_id, guild_id) DO UPDATE SET last_claim = unixepoch()
   `),
+
+  // ── Daily ─────────────────────────────────────────────────────────────────
+
+  getDaily: db.prepare(`SELECT last_daily, streak FROM daily_streaks WHERE user_id = ? AND guild_id = ?`),
+
+  setDaily: db.prepare(`
+    INSERT INTO daily_streaks (user_id, guild_id, last_daily, streak)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(user_id, guild_id) DO UPDATE SET last_daily = excluded.last_daily, streak = excluded.streak
+  `),
+
+  createDailyRoll: db.prepare(`
+    INSERT INTO rolls (guild_id, channel_id, user_id, message_id, character_ids, expires_at, daily_claims)
+    VALUES (@guild_id, @channel_id, @user_id, @message_id, @character_ids, @expires_at, @daily_claims)
+  `),
+
+  decrementDailyClaims: db.prepare(`UPDATE rolls SET daily_claims = daily_claims - 1 WHERE id = ? AND daily_claims > 0`),
 
   // ── Wishlists ─────────────────────────────────────────────────────────────
 
@@ -323,3 +347,4 @@ export function getOwnerCrossGuild(guildIds, charId) {
   const ph = guildIds.map(() => '?').join(',');
   return db.prepare(`SELECT * FROM ownership WHERE character_id = ? AND guild_id IN (${ph})`).get(charId, ...guildIds);
 }
+

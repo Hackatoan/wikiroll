@@ -17,6 +17,16 @@ export function isPrefix(content) {
   return content.toLowerCase().startsWith(PREFIX);
 }
 
+function todayUTC() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function yesterdayUTC() {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
 export async function handlePrefix(message) {
   if (message.author.bot || !message.guild) return;
   const content = message.content.trim();
@@ -33,6 +43,7 @@ export async function handlePrefix(message) {
   try {
     switch (cmdLower) {
       case 'roll':       return await prefixRoll(message, guildId, userId);
+      case 'daily':      return await prefixDaily(message, guildId, userId);
       case 'c':
       case 'collection': return await prefixCollection(message, args, guildId);
       case 'search':
@@ -121,6 +132,95 @@ async function prefixRoll(message, guildId, userId) {
 
   setTimeout(async () => {
     try { await msg.edit({ content: `🎲 ~~${message.author.username}'s roll~~ *(expired)*`, embeds, components: [] }); } catch {}
+  }, claimWindowSecs * 1000);
+}
+
+// ── Daily ─────────────────────────────────────────────────────────────────
+
+async function prefixDaily(message, guildId, userId) {
+  const now      = Math.floor(Date.now() / 1000);
+  const settings = getSettings(guildId);
+  const today    = todayUTC();
+
+  if (settings.roll_channel && message.channel.id !== settings.roll_channel) {
+    return message.reply(`🗓️ Daily rolls are restricted to <#${settings.roll_channel}>.`);
+  }
+
+  const dailyRec = stmts.getDaily.get(userId, guildId);
+
+  if (dailyRec?.last_daily === today) {
+    const tomorrow = new Date();
+    tomorrow.setUTCHours(24, 0, 0, 0);
+    const secsLeft = Math.ceil(tomorrow.getTime() / 1000 - now);
+    const h = Math.floor(secsLeft / 3600);
+    const m = Math.ceil((secsLeft % 3600) / 60);
+    const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    return message.reply(`⏳ Already rolled today. Next daily in **${timeStr}**.`);
+  }
+
+  const streak = dailyRec?.last_daily === yesterdayUTC()
+    ? Math.min(dailyRec.streak + 1, 100)
+    : 1;
+
+  const claims = Math.min(streak >= 2 ? 2 : 1, 2);
+
+  stmts.setDaily.run(userId, guildId, today, streak);
+
+  const rolling = await message.reply('🗓️ Rolling your daily...');
+
+  const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
+  const wishedChars   = stmts.getGuildWishChars.all(guildId);
+  const wishedSources = stmts.getGuildWishSources.all(guildId);
+  const rawChars = await fetchTenCharacters({ guildSources, wishedChars, wishedSources });
+
+  const chars = [];
+  for (const raw of rawChars) {
+    try {
+      const row = raw.id ? raw : stmts.upsertChar.get(raw);
+      chars.push({ ...raw, id: row.id });
+    } catch (e) {
+      console.error('daily upsert error', e.message);
+    }
+  }
+
+  const claimWindowSecs = settings.claim_window_minutes * 60;
+  const expiresAt = now + claimWindowSecs;
+
+  const roll = stmts.createDailyRoll.run({
+    guild_id: guildId,
+    channel_id: message.channel.id,
+    user_id: userId,
+    message_id: null,
+    character_ids: JSON.stringify(chars.map(c => c.id)),
+    expires_at: expiresAt,
+    daily_claims: claims,
+  });
+  const rollId = roll.lastInsertRowid;
+
+  const embeds     = buildRollEmbeds(chars);
+  const components = buildClaimButtons(rollId, chars.length);
+  const mins       = settings.claim_window_minutes;
+
+  const streakLine = streak >= 2
+    ? `🔥 **${streak}-day streak** — you get **${claims} claims** from this roll!\n`
+    : '';
+
+  const msg = await rolling.edit({
+    content: `🗓️ **${message.author.username}'s daily roll!**\n${streakLine}Claim within **${mins} minute${mins !== 1 ? 's' : ''}**!`,
+    embeds,
+    components,
+  });
+
+  stmts.setRollMessageId.run(msg.id, rollId);
+
+  setTimeout(async () => {
+    try {
+      await msg.edit({
+        content: `🗓️ ~~${message.author.username}'s daily roll~~ *(expired)*`,
+        embeds,
+        components: [],
+      });
+    } catch {}
   }, claimWindowSecs * 1000);
 }
 
@@ -352,7 +452,7 @@ async function prefixHelp(message) {
     .setTitle('WikiRoll — Commands')
     .setDescription('Also available as slash commands (`/roll`, `/collection`, etc.)')
     .addFields(
-      { name: '🎲 Rolling', value: '`w.roll` — Roll 10 characters (1hr cooldown)' },
+      { name: '🎲 Rolling', value: '`w.roll` — Roll 10 characters (1hr cooldown)\n`w.daily` — Free daily roll (streak bonus at 2+ days)' },
       { name: '📦 Collection', value: '`w.collection [@user] [page]`\n`w.info <name>`\n`w.remove <name>`' },
       { name: '🔍 Search', value: '`w.search <query>` — Find characters, see who owns them' },
       { name: '🔄 Trading', value: '`w.trade @user <your char> <their char>`' },

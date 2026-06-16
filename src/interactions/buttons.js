@@ -33,13 +33,17 @@ async function handleClaim(interaction, [rollId, idxStr]) {
   const settings  = getSettings(guildId);
   const cooldownSecs = settings.roll_cooldown_minutes * 60;
 
-  // Per-user claim cooldown — same window as roll cooldown (default 1 hr)
-  const cd = stmts.getCooldown.get(userId, guildId);
-  if (cd?.last_claim) {
-    const elapsed = now - cd.last_claim;
-    if (elapsed < cooldownSecs) {
-      const left = cooldownSecs - elapsed;
-      return interaction.editReply(`⏳ You already claimed a character recently. Try again in **${fmtTimeLeft(left)}**.`);
+  // Daily rolls: the original roller bypasses claim cooldown while daily_claims > 0
+  const isDailyBonus = roll.daily_claims > 0 && userId === roll.user_id;
+
+  if (!isDailyBonus) {
+    const cd = stmts.getCooldown.get(userId, guildId);
+    if (cd?.last_claim) {
+      const elapsed = now - cd.last_claim;
+      if (elapsed < cooldownSecs) {
+        const left = cooldownSecs - elapsed;
+        return interaction.editReply(`⏳ You already claimed a character recently. Try again in **${fmtTimeLeft(left)}**.`);
+      }
     }
   }
 
@@ -58,10 +62,18 @@ async function handleClaim(interaction, [rollId, idxStr]) {
   const chars = getCharsByIds(charIds);
   const claimed = chars.find(c => c.id === charId);
 
+  if (isDailyBonus) {
+    stmts.decrementDailyClaims.run(rollIdInt);
+  }
   stmts.setClaimCooldown.run(userId, guildId);
 
+  const remaining = isDailyBonus ? roll.daily_claims - 1 : 0;
+  const claimsLine = remaining > 0
+    ? `\n📋 You have **${remaining}** daily claim${remaining > 1 ? 's' : ''} remaining on this roll!`
+    : '';
+
   await interaction.editReply(
-    `✅ **${claimed?.name ?? 'Character'}** is now in your collection!`
+    `✅ **${claimed?.name ?? 'Character'}** is now in your collection!${claimsLine}`
   );
 
   // Rebuild message: remove claimed button, update embed, post public announcement
@@ -145,3 +157,4 @@ async function handleTrade(interaction, [action, tradeIdStr]) {
     } catch {}
   }
 }
+

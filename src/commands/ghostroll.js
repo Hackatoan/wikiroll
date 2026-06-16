@@ -3,13 +3,8 @@ import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
 
-async function isOwner(interaction) {
-  const app = await interaction.client.application.fetch();
-  const owner = app.owner;
-  if (!owner) return false;
-  if (owner.id) return owner.id === interaction.user.id;
-  // team
-  return owner.members?.some(m => m.user.id === interaction.user.id) ?? false;
+function isOwner(interaction) {
+  return interaction.user.id === process.env.OWNER_ID;
 }
 
 export default {
@@ -18,7 +13,7 @@ export default {
     .setDescription('(Owner only) Test a roll without consuming your cooldown.'),
 
   async execute(interaction) {
-    if (!await isOwner(interaction)) {
+    if (!isOwner(interaction)) {
       return interaction.reply({ content: '❌ Owner only.', flags: 64 });
     }
 

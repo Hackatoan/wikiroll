@@ -137,7 +137,8 @@ export function buildSettingsEmbed(settings) {
     .addFields(
       { name: '⏱ Roll Cooldown', value: `${settings.roll_cooldown_minutes} minutes`, inline: true },
       { name: '⌛ Claim Window', value: `${settings.claim_window_minutes} minutes`, inline: true },
-      { name: '📢 Notify Channel', value: settings.notify_channel ? `<#${settings.notify_channel}>` : 'None', inline: true }
+      { name: '📢 Notify Channel', value: settings.notify_channel ? `<#${settings.notify_channel}>` : 'None', inline: true },
+      { name: '🕐 Timezone', value: settings.timezone || 'America/Los_Angeles', inline: true }
     );
 }
 

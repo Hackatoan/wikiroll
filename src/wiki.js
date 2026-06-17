@@ -93,6 +93,8 @@ export const BUILTIN_FANDOMS = [
   'https://dungeons-and-dragons.fandom.com',
   'https://transformers.fandom.com',
   'https://villains.fandom.com',
+  // Independent MediaWiki instances
+  'https://consumerrights.wiki',
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────

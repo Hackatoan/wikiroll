@@ -64,6 +64,17 @@ export async function handlePrefix(message) {
       case 'wishlist':   return await prefixWishlist(message, args, guildId, userId);
       case 'about':      return await prefixAbout(message);
       case 'help':       return await prefixHelp(message);
+      case 'leaderboard':
+      case 'lb':         return await prefixLeaderboard(message, guildId);
+      case 'server':     return await prefixServer(message);
+      case 'vote':       return await prefixVote(message);
+      case 'settings':   return await prefixSettings(message, args, guildId);
+      case 'source':     return await prefixSource(message, args, guildId);
+      case 'submitimage':
+      case 'si':         return await prefixSubmitimage(message, args, guildId);
+      case 'setrollchannel':
+      case 'setrc':      return await prefixSetrollchannel(message, args, guildId);
+      case 'linkserver': return await prefixLinkserver(message, args, guildId, userId);
       default:           return; // ignore unknown
     }
   } catch (e) {
@@ -474,6 +485,7 @@ async function prefixHelp(message) {
           '`w.info <name>` — Detailed info on a character',
           '`w.search <query>` — See if a character is claimed',
           '`w.remove <name>` — Remove a character from your collection',
+          '`w.si <name> <url>` — Set a custom image for a character',
         ].join('\n'),
       },
       {
@@ -482,13 +494,263 @@ async function prefixHelp(message) {
           '`w.trade @user <your char> [their char]` — Trade or gift',
           '`w.wl view` · `w.wl add <name>` · `w.wl rm <name>`',
           '`w.wl addsource <url_or_keyword>` · `w.wl sources`',
+          '`w.lb` — Top collectors in this server',
+        ].join('\n'),
+      },
+      {
+        name: '⚙️ Server Setup (admin)',
+        value: [
+          '`w.settings view` · `w.settings cooldown <min>` · `w.settings claimwindow <min>`',
+          '`w.settings timezone <tz>` · `w.settings notifychannel [#ch]`',
+          '`w.source add <url>` · `w.source remove <url>` · `w.source list`',
+          '`w.setrc set [#ch]` · `w.setrc clear`',
+          '`w.linkserver start <id>` · `w.linkserver confirm <code>` · `w.linkserver status`',
         ].join('\n'),
       },
       {
         name: '🔗 Other',
-        value: '`w.about` — Stats and links',
+        value: '`w.about` · `w.vote` · `w.server`',
       },
     )
     .setFooter({ text: 'Wishlisted characters & sources appear more often in rolls! · wikiroll.hackatoa.com' });
   await message.reply({ embeds: [embed] });
+}
+
+// ── Leaderboard ───────────────────────────────────────────────────────────────
+
+const MEDALS = ['🥇', '🥈', '🥉'];
+
+async function prefixLeaderboard(message, guildId) {
+  const rows = db.prepare(`
+    SELECT user_id, COUNT(*) AS total
+    FROM ownership WHERE guild_id = ?
+    GROUP BY user_id ORDER BY total DESC LIMIT 10
+  `).all(guildId);
+
+  if (!rows.length) return message.reply('📭 No one has claimed anything yet — use `w.roll` to get started!');
+
+  const lines = [];
+  for (let i = 0; i < rows.length; i++) {
+    const { user_id, total } = rows[i];
+    const medal = MEDALS[i] ?? `**${i + 1}.**`;
+    let name;
+    try { name = (await message.guild.members.fetch(user_id)).displayName; }
+    catch { try { name = (await message.client.users.fetch(user_id)).username; } catch { name = `<@${user_id}>`; } }
+    const highlight = user_id === message.author.id ? ' ← you' : '';
+    lines.push(`${medal} **${name}** — ${total} character${total !== 1 ? 's' : ''}${highlight}`);
+  }
+
+  let footerText = `${rows.reduce((s, r) => s + r.total, 0)} characters claimed total`;
+  if (!rows.some(r => r.user_id === message.author.id)) {
+    const me = db.prepare(`SELECT COUNT(*) AS total FROM ownership WHERE guild_id = ? AND user_id = ?`).get(guildId, message.author.id);
+    if (me?.total > 0) {
+      const rank = db.prepare(`SELECT COUNT(DISTINCT user_id) AS r FROM ownership WHERE guild_id = ? AND user_id IN (SELECT user_id FROM ownership WHERE guild_id = ? GROUP BY user_id HAVING COUNT(*) >= ?)`).get(guildId, guildId, me.total);
+      footerText += ` · You're #${rank?.r ?? '?'} with ${me.total}`;
+    }
+  }
+
+  const embed = new EmbedBuilder()
+    .setColor(0xFEE75C)
+    .setTitle(`🏆 ${message.guild.name} — Top Collectors`)
+    .setDescription(lines.join('\n'))
+    .setFooter({ text: footerText })
+    .setTimestamp();
+  await message.reply({ embeds: [embed] });
+}
+
+// ── Server ────────────────────────────────────────────────────────────────────
+
+async function prefixServer(message) {
+  const embed = new EmbedBuilder()
+    .setColor(0x7c3aed)
+    .setTitle('🚀 Orbital Outpost')
+    .setDescription('The official community server for WikiRoll and all things Hackatoa.\n\nHang out, share your collection, report bugs, suggest features, and chat with the dev.')
+    .addFields({ name: '🔗 Invite Link', value: '[discord.gg/7eh3q2u8V](https://discord.gg/7eh3q2u8V)' })
+    .setFooter({ text: 'Homelab talk · dev projects · gaming · vibes' });
+  await message.reply({ embeds: [embed] });
+}
+
+// ── Vote ──────────────────────────────────────────────────────────────────────
+
+async function prefixVote(message) {
+  const embed = new EmbedBuilder()
+    .setColor(0xff3366)
+    .setTitle('🗳️ Vote for WikiRoll')
+    .setDescription('Voting helps WikiRoll grow and reach more servers. It takes 5 seconds and is completely free!')
+    .addFields({ name: '🔗 Vote Link', value: '[Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)' })
+    .setFooter({ text: 'top.gg votes refresh every 12 hours' });
+  await message.reply({ embeds: [embed] });
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+async function prefixSettings(message, args, guildId) {
+  if (!message.member.permissions.has('ManageGuild')) {
+    return message.reply('❌ You need the **Manage Server** permission to change settings.');
+  }
+
+  const sub = (args[0] ?? 'view').toLowerCase();
+
+  if (sub === 'view') {
+    const settings = getSettings(guildId);
+    return message.reply({ embeds: [buildSettingsEmbed(settings)] });
+  }
+
+  if (sub === 'cooldown') {
+    const mins = parseInt(args[1]);
+    if (!mins || mins < 1 || mins > 1440) return message.reply('Usage: `w.settings cooldown <1-1440>`');
+    stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: mins, claim_window_minutes: null, notify_channel: null, timezone: null });
+    return message.reply(`✅ Roll cooldown set to **${mins} minutes**.`);
+  }
+
+  if (sub === 'claimwindow') {
+    const mins = parseInt(args[1]);
+    if (!mins || mins < 1 || mins > 60) return message.reply('Usage: `w.settings claimwindow <1-60>`');
+    stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: null, claim_window_minutes: mins, notify_channel: null, timezone: null });
+    return message.reply(`✅ Claim window set to **${mins} minutes**.`);
+  }
+
+  if (sub === 'notifychannel') {
+    const ch = message.mentions.channels.first() ?? null;
+    stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: null, claim_window_minutes: null, notify_channel: ch?.id ?? null, timezone: null });
+    return message.reply(ch ? `✅ Notify channel set to <#${ch.id}>.` : '✅ Notify channel cleared.');
+  }
+
+  if (sub === 'timezone') {
+    const tz = args[1];
+    if (!tz) return message.reply('Usage: `w.settings timezone <IANA_tz>` e.g. `America/New_York`');
+    try { new Intl.DateTimeFormat('en', { timeZone: tz }); } catch { return message.reply('❌ Invalid timezone. Use an IANA timezone like `America/New_York`.'); }
+    stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: null, claim_window_minutes: null, notify_channel: null, timezone: tz });
+    return message.reply(`✅ Timezone set to **${tz}**.`);
+  }
+
+  return message.reply('Usage: `w.settings view|cooldown|claimwindow|notifychannel|timezone`');
+}
+
+// ── Source ────────────────────────────────────────────────────────────────────
+
+async function prefixSource(message, args, guildId) {
+  if (!message.member.permissions.has('ManageGuild')) {
+    return message.reply('❌ You need the **Manage Server** permission to manage sources.');
+  }
+
+  const sub = (args[0] ?? 'list').toLowerCase();
+
+  if (sub === 'list') {
+    const sources = stmts.getSources.all(guildId);
+    const embed = new EmbedBuilder()
+      .setColor(0x3498DB)
+      .setTitle('🌐 Wiki Sources')
+      .setDescription(sources.length ? sources.map(s => `• **${s.wiki_name ?? s.wiki_url}** — ${s.wiki_url}`).join('\n') : '*No custom sources. Using Wikipedia only.*');
+    return message.reply({ embeds: [embed] });
+  }
+
+  const rawUrl = args[1];
+  if (!rawUrl) return message.reply(`Usage: \`w.source ${sub} <url>\``);
+  let parsed;
+  try { parsed = new URL(rawUrl); } catch { return message.reply('❌ Invalid URL.'); }
+  const cleanUrl = `${parsed.protocol}//${parsed.hostname}`;
+
+  if (sub === 'add') {
+    const name = args[2] ?? parsed.hostname;
+    stmts.addSource.run(guildId, cleanUrl, name, message.author.id);
+    return message.reply(`✅ Added **${name}** (${cleanUrl}) as a roll source!`);
+  }
+
+  if (sub === 'remove' || sub === 'rm') {
+    stmts.removeSource.run(guildId, cleanUrl);
+    return message.reply(`Removed **${cleanUrl}** from sources.`);
+  }
+
+  return message.reply('Usage: `w.source list|add|remove`');
+}
+
+// ── Submit Image ──────────────────────────────────────────────────────────────
+
+async function prefixSubmitimage(message, args, guildId) {
+  if (args.length < 2) return message.reply('Usage: `w.si <name> <url>`');
+  const url = args[args.length - 1];
+  const name = args.slice(0, -1).join(' ');
+  try { new URL(url); } catch { return message.reply('❌ Invalid URL.'); }
+  const results = stmts.searchChars.all(guildId, `%${name}%`);
+  if (!results.length) return message.reply(`Character **"${name}"** not found. Try \`w.search\` first.`);
+  stmts.setUserImage.run(url, results[0].id);
+  await message.reply(`🖼️ Image updated for **${results[0].name}**!`);
+}
+
+// ── Set Roll Channel ──────────────────────────────────────────────────────────
+
+async function prefixSetrollchannel(message, args, guildId) {
+  if (!message.member.permissions.has('ManageGuild')) {
+    return message.reply('❌ You need the **Manage Server** permission.');
+  }
+
+  const sub = (args[0] ?? 'set').toLowerCase();
+
+  if (sub === 'clear') {
+    stmts.setRollChannel.run(guildId, null);
+    return message.reply('✅ Roll channel restriction removed — rolls allowed anywhere.');
+  }
+
+  const channel = message.mentions.channels.first() ?? message.channel;
+  stmts.setRollChannel.run(guildId, channel.id);
+  return message.reply(`✅ Rolls are now restricted to <#${channel.id}>.`);
+}
+
+// ── Link Server ───────────────────────────────────────────────────────────────
+
+function randomCode() {
+  return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+async function prefixLinkserver(message, args, guildId, userId) {
+  if (!message.member.permissions.has('ManageGuild')) {
+    return message.reply('❌ You need the **Manage Server** permission.');
+  }
+
+  const sub = (args[0] ?? 'status').toLowerCase();
+
+  if (sub === 'start') {
+    const targetGuild = args[1];
+    if (!targetGuild) return message.reply('Usage: `w.linkserver start <server_id>`');
+    if (targetGuild === guildId) return message.reply('❌ Cannot link a server to itself.');
+    const existing = stmts.getGuildLinks.all(guildId, guildId);
+    if (existing.some(r => r.other_guild === targetGuild)) return message.reply('❌ Already linked with that server.');
+    const code = randomCode();
+    stmts.createLinkRequest.run(guildId, userId, targetGuild, code, Math.floor(Date.now() / 1000) + 86400);
+    return message.reply(`✅ Link request created!\n\nHave an admin in server **${targetGuild}** run:\n\`\`\`\nw.linkserver confirm ${code}\n\`\`\`\nCode expires in 24 hours.`);
+  }
+
+  if (sub === 'confirm') {
+    const code = args[1]?.toUpperCase();
+    if (!code) return message.reply('Usage: `w.linkserver confirm <code>`');
+    const request = stmts.getLinkRequest.get(code);
+    if (!request) return message.reply('❌ Invalid or expired link code.');
+    if (request.target_guild !== guildId) return message.reply(`❌ This code was created for server \`${request.target_guild}\`, not this server.`);
+    if (request.initiator_guild === guildId) return message.reply('❌ Cannot confirm your own link request.');
+    stmts.createLink.run(request.initiator_guild, guildId);
+    stmts.createLink.run(guildId, request.initiator_guild);
+    stmts.deleteLinkRequest.run(code);
+    return message.reply(`✅ Servers linked! This server and **${request.initiator_guild}** now share claimed character ownership.`);
+  }
+
+  if (sub === 'status') {
+    const links = stmts.getGuildLinks.all(guildId, guildId);
+    const pending = stmts.getPendingLinksByGuild.all(guildId, guildId);
+    let msg = links.length ? `**Linked servers:**\n${links.map(r => `• \`${r.other_guild}\``).join('\n')}\n\n` : '**Linked servers:** None\n\n';
+    const outgoing = pending.filter(r => r.initiator_guild === guildId);
+    const incoming = pending.filter(r => r.target_guild === guildId);
+    if (outgoing.length) msg += `**Pending outgoing:**\n${outgoing.map(r => `• Code \`${r.code}\` → \`${r.target_guild}\``).join('\n')}\n\n`;
+    if (incoming.length) msg += `**Pending incoming:**\n${incoming.map(r => `• Code \`${r.code}\` from \`${r.initiator_guild}\``).join('\n')}\n\n`;
+    return message.reply(msg.trim() || 'No links or pending requests.');
+  }
+
+  if (sub === 'unlink') {
+    const targetGuild = args[1];
+    if (!targetGuild) return message.reply('Usage: `w.linkserver unlink <server_id>`');
+    stmts.removeLink.run(guildId, targetGuild, targetGuild, guildId);
+    return message.reply(`✅ Unlinked from server \`${targetGuild}\`.`);
+  }
+
+  return message.reply('Usage: `w.linkserver start|confirm|status|unlink`');
 }

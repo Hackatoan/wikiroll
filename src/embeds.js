@@ -1,4 +1,4 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from 'discord.js';
 
 const PALETTE = [
   0x5865F2, 0xEB459E, 0xFEE75C, 0x57F287, 0xED4245,
@@ -33,25 +33,25 @@ export function buildRollEmbeds(characters, ownedIndices = new Set()) {
   });
 }
 
-export function buildClaimButtons(rollId, count, claimedIndices = new Set()) {
-  const rows = [];
-  for (let row = 0; row < 2; row++) {
-    const ar = new ActionRowBuilder();
-    for (let col = 0; col < 5; col++) {
-      const idx = row * 5 + col;
-      if (idx >= count) break;
-      if (claimedIndices.has(idx)) continue;
-      ar.addComponents(
-        new ButtonBuilder()
-          .setCustomId(`claim_${rollId}_${idx}`)
-          .setLabel(String(idx + 1))
-          .setStyle(ButtonStyle.Primary)
-          .setEmoji('🎯')
-      );
-    }
-    if (ar.components.length) rows.push(ar);
-  }
-  return rows;
+export function buildClaimSelect(rollId, characters, claimedIndices = new Set()) {
+  const options = characters
+    .map((c, i) => ({ c, i }))
+    .filter(({ i }) => !claimedIndices.has(i))
+    .map(({ c, i }) => ({
+      label: `${i + 1}. ${c.name}`.slice(0, 100),
+      description: c.source?.slice(0, 100) ?? undefined,
+      value: String(i),
+      emoji: '🎯',
+    }));
+
+  if (!options.length) return [];
+
+  const select = new StringSelectMenuBuilder()
+    .setCustomId(`claimselect_${rollId}`)
+    .setPlaceholder('Claim a character…')
+    .addOptions(options);
+
+  return [new ActionRowBuilder().addComponents(select)];
 }
 
 export function buildCollectionEmbed(user, chars, page = 1) {

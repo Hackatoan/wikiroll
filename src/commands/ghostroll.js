@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
-import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
+import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 
 function isOwner(interaction) {
   return interaction.user.id === process.env.OWNER_ID;
@@ -59,7 +59,7 @@ export default {
     // No cooldown set — ghost roll doesn't consume rate limit
 
     const embeds     = buildRollEmbeds(chars);
-    const components = buildClaimButtons(rollId, chars.length);
+    const components = buildClaimSelect(rollId, chars);
     const mins = settings.claim_window_minutes;
 
     const msg = await interaction.editReply({

@@ -5,7 +5,7 @@
 import { db, stmts, getCharsByIds, getSettings } from './database.js';
 import { fetchTenCharacters, searchWikipedia, fetchWikiPage } from './wiki.js';
 import {
-  buildRollEmbeds, buildClaimButtons, buildCollectionEmbed,
+  buildRollEmbeds, buildClaimSelect, buildCollectionEmbed,
   buildSearchEmbed, buildCharInfoEmbed, buildWishlistEmbed,
   buildSettingsEmbed,
 } from './embeds.js';
@@ -138,7 +138,7 @@ async function prefixRoll(message, guildId, userId) {
   stmts.setCooldown.run(userId, guildId);
 
   const embeds     = buildRollEmbeds(chars);
-  const components = buildClaimButtons(rollId, chars.length);
+  const components = buildClaimSelect(rollId, chars);
   const mins = settings.claim_window_minutes;
 
   const msg = await rolling.edit({
@@ -217,7 +217,7 @@ async function prefixDaily(message, guildId, userId) {
   const rollId = roll.lastInsertRowid;
 
   const embeds     = buildRollEmbeds(chars);
-  const components = buildClaimButtons(rollId, chars.length);
+  const components = buildClaimSelect(rollId, chars);
   const mins       = settings.claim_window_minutes;
 
   const streakLine = streak >= 2

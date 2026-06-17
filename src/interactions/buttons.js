@@ -1,23 +1,28 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
+import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 
 function fmtTimeLeft(secs) {
   const m = Math.floor(secs / 60), s = secs % 60;
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
-import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
 
 export async function handleButtonInteraction(interaction) {
   const [type, ...parts] = interaction.customId.split('_');
-  if (type === 'claim') return handleClaim(interaction, parts);
   if (type === 'trade') return handleTrade(interaction, parts);
 }
 
-async function handleClaim(interaction, [rollId, idxStr]) {
+export async function handleSelectInteraction(interaction) {
+  if (interaction.customId.startsWith('claimselect_')) {
+    const rollId = parseInt(interaction.customId.split('_')[1]);
+    const idx = parseInt(interaction.values[0]);
+    return handleClaim(interaction, rollId, idx);
+  }
+}
+
+async function handleClaim(interaction, rollIdInt, idx) {
   await interaction.deferReply({ ephemeral: true });
 
-  const rollIdInt = parseInt(rollId);
-  const idx = parseInt(idxStr);
   const roll = stmts.getRoll.get(rollIdInt);
   if (!roll) return interaction.editReply('This roll no longer exists.');
 
@@ -85,7 +90,7 @@ async function handleClaim(interaction, [rollId, idxStr]) {
       if (getOwnerCrossGuild(linkedGuilds, charIds[i])) claimedSet.add(i);
     }
     const embeds = buildRollEmbeds(chars, claimedSet);
-    const components = buildClaimButtons(rollIdInt, chars.length, claimedSet);
+    const components = buildClaimSelect(rollIdInt, chars, claimedSet);
     await msg.edit({ embeds, components });
     await channel.send(`🎉 <@${userId}> just claimed **${claimed?.name ?? 'a character'}**!`);
   } catch {}

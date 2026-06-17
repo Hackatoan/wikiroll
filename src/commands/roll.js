@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
-import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
+import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -78,7 +78,7 @@ export default {
     stmts.setCooldown.run(userId, guildId);
 
     const embeds     = buildRollEmbeds(chars);
-    const components = buildClaimButtons(rollId, chars.length);
+    const components = buildClaimSelect(rollId, chars);
     const mins = settings.claim_window_minutes;
 
     const msg = await interaction.editReply({

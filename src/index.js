@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
 import { createServer } from 'http';
 import { initDatabase, stmts, db } from './database.js';
-import { handleButtonInteraction } from './interactions/buttons.js';
+import { handleButtonInteraction, handleSelectInteraction } from './interactions/buttons.js';
 import { handlePrefix, isPrefix } from './prefix.js';
 import { buildCollectionEmbed } from './embeds.js';
 
@@ -49,12 +49,13 @@ client.on(Events.InteractionCreate, async interaction => {
       const cmd = client.commands.get(interaction.commandName);
       if (cmd) await cmd.execute(interaction);
     } else if (interaction.isButton()) {
-      // Collection pagination handled inline here
       if (interaction.customId.startsWith('col_')) {
         await handleCollectionPage(interaction);
       } else {
         await handleButtonInteraction(interaction);
       }
+    } else if (interaction.isStringSelectMenu()) {
+      await handleSelectInteraction(interaction);
     }
   } catch (err) {
     console.error('[WikiRoll] Interaction error:', err);

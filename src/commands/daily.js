@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
-import { buildRollEmbeds, buildClaimButtons } from '../embeds.js';
+import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 
 function todayInTz(tz) {
   return new Date().toLocaleDateString('en-CA', { timeZone: tz });
@@ -94,7 +94,7 @@ export default {
     const rollId = roll.lastInsertRowid;
 
     const embeds     = buildRollEmbeds(chars);
-    const components = buildClaimButtons(rollId, chars.length);
+    const components = buildClaimSelect(rollId, chars);
     const mins       = settings.claim_window_minutes;
 
     const streakLine = streak >= 2

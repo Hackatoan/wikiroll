@@ -1526,7 +1526,7 @@
 
           <div class="feature-card">
             <span class="feature-icon">📚</span>
-            <div class="feature-title">Wikipedia + 70 Fandoms</div>
+            <div class="feature-title">Wikipedia + 150+ Fandoms</div>
             <p class="feature-desc">Characters pulled from Naruto, Marvel, Harry Potter, Star Wars, Genshin, Elder Scrolls, and dozens more — plus random Wikipedia articles.</p>
             <span class="feature-tag tag-gold">150+ sources</span>
           </div>
@@ -1671,8 +1671,8 @@
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/submitimage &lt;name&gt; &lt;url&gt;</span>
-                <span class="cmd-no-prefix">slash only</span>
-                <span class="cmd-desc">Submit a community image for a character card.</span>
+                <span class="cmd-prefix">w.si</span>
+                <span class="cmd-desc">Submit a custom image for a character card.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/daily</span>
@@ -1681,7 +1681,7 @@
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/leaderboard</span>
-                <span class="cmd-no-prefix">slash only</span>
+                <span class="cmd-prefix">w.lb</span>
                 <span class="cmd-desc">Top collectors in this server ranked by collection size.</span>
               </div>
               <div class="cmd-row">
@@ -1696,13 +1696,36 @@
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/about</span>
-                <span class="cmd-prefix">w.help</span>
+                <span class="cmd-prefix">w.about</span>
                 <span class="cmd-desc">Bot info, stats, and all links.</span>
               </div>
               <div class="cmd-row">
+                <span class="cmd-name">/help</span>
+                <span class="cmd-prefix">w.help</span>
+                <span class="cmd-desc">List all commands grouped by category.</span>
+              </div>
+              <div class="cmd-row">
                 <span class="cmd-name">/settings</span>
-                <span class="cmd-no-prefix">slash only</span>
-                <span class="cmd-desc">Configure roll cooldown, claim window, timezone &amp; wiki sources.</span>
+                <span class="cmd-prefix">w.settings</span>
+                <span class="cmd-desc">Configure roll cooldown, claim window, timezone &amp; notify channel.</span>
+                <span class="cmd-admin">Admin</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/source add/remove/list</span>
+                <span class="cmd-prefix">w.source</span>
+                <span class="cmd-desc">Add or remove Fandom wiki sources for rolling.</span>
+                <span class="cmd-admin">Admin</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/setrollchannel set/clear</span>
+                <span class="cmd-prefix">w.setrc</span>
+                <span class="cmd-desc">Restrict rolls to a specific channel.</span>
+                <span class="cmd-admin">Admin</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/linkserver start/confirm/status</span>
+                <span class="cmd-prefix">w.linkserver</span>
+                <span class="cmd-desc">Link two servers to share claimed character ownership.</span>
                 <span class="cmd-admin">Admin</span>
               </div>
             </div>
@@ -1720,17 +1743,24 @@
             </div>
             <div class="prefix-list">
               <span class="prefix-chip"><span>w.roll</span> roll</span>
+              <span class="prefix-chip"><span>w.daily</span> daily</span>
               <span class="prefix-chip"><span>w.c</span> collection</span>
               <span class="prefix-chip"><span>w.s</span> search</span>
               <span class="prefix-chip"><span>w.info</span> info</span>
-              <span class="prefix-chip"><span>w.trade</span> trade</span>
               <span class="prefix-chip"><span>w.remove</span> remove</span>
+              <span class="prefix-chip"><span>w.si</span> submitimage</span>
+              <span class="prefix-chip"><span>w.trade</span> trade</span>
               <span class="prefix-chip"><span>w.wl add</span> wishlist add</span>
               <span class="prefix-chip"><span>w.wl src</span> wishlist addsource</span>
-              <span class="prefix-chip"><span>w.daily</span> daily</span>
+              <span class="prefix-chip"><span>w.lb</span> leaderboard</span>
               <span class="prefix-chip"><span>w.vote</span> vote</span>
               <span class="prefix-chip"><span>w.server</span> server</span>
-              <span class="prefix-chip"><span>w.help</span> about</span>
+              <span class="prefix-chip"><span>w.about</span> about</span>
+              <span class="prefix-chip"><span>w.help</span> help</span>
+              <span class="prefix-chip"><span>w.settings</span> settings</span>
+              <span class="prefix-chip"><span>w.source</span> source</span>
+              <span class="prefix-chip"><span>w.setrc</span> setrollchannel</span>
+              <span class="prefix-chip"><span>w.linkserver</span> linkserver</span>
             </div>
           </div>
         </div>

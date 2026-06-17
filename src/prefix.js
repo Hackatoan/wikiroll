@@ -456,16 +456,39 @@ async function prefixAbout(message) {
 
 async function prefixHelp(message) {
   const embed = new EmbedBuilder()
-    .setColor(0x5865F2)
+    .setColor(0x7c3aed)
     .setTitle('WikiRoll — Commands')
-    .setDescription('Also available as slash commands (`/roll`, `/collection`, etc.)')
+    .setDescription('Also available as slash commands (`/roll`, `/daily`, etc.)')
     .addFields(
-      { name: '🎲 Rolling', value: '`w.roll` — Roll 10 characters (1hr cooldown)\n`w.daily` — Free daily roll (streak bonus at 2+ days)' },
-      { name: '📦 Collection', value: '`w.collection [@user] [page]`\n`w.info <name>`\n`w.remove <name>`' },
-      { name: '🔍 Search', value: '`w.search <query>` — Find characters, see who owns them' },
-      { name: '🔄 Trading', value: '`w.trade @user <your char> <their char>`' },
-      { name: '⭐ Wishlist', value: '`w.wl view` · `w.wl add <name>` · `w.wl rm <name>`\n`w.wl addsource <url_or_keyword>` · `w.wl sources`' },
+      {
+        name: '🎲 Rolling & Claiming',
+        value: [
+          '`w.roll` — Roll 10 characters (1hr cooldown)',
+          '`w.daily` — Free daily roll; 2+ day streak = 2 claims',
+        ].join('\n'),
+      },
+      {
+        name: '📦 Collection',
+        value: [
+          '`w.collection [@user] [page]` — View a collection',
+          '`w.info <name>` — Detailed info on a character',
+          '`w.search <query>` — See if a character is claimed',
+          '`w.remove <name>` — Remove a character from your collection',
+        ].join('\n'),
+      },
+      {
+        name: '🤝 Social',
+        value: [
+          '`w.trade @user <your char> [their char]` — Trade or gift',
+          '`w.wl view` · `w.wl add <name>` · `w.wl rm <name>`',
+          '`w.wl addsource <url_or_keyword>` · `w.wl sources`',
+        ].join('\n'),
+      },
+      {
+        name: '🔗 Other',
+        value: '`w.about` — Stats and links',
+      },
     )
-    .setFooter({ text: 'Wishlisted characters & sources appear more often in rolls!' });
+    .setFooter({ text: 'Wishlisted characters & sources appear more often in rolls! · wikiroll.hackatoa.com' });
   await message.reply({ embeds: [embed] });
 }

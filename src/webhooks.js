@@ -65,6 +65,7 @@ export function startWebhookServer(client, port = 3015) {
       const { user, type } = body;
       if (!user) { res.writeHead(400); res.end('Bad Request'); return; }
 
+      console.log(`[webhook] vote from ${user} type=${type}`);
       if (type === 'upvote' || type === 'test') {
         db.prepare(`
           INSERT INTO vote_credits (user_id, credits, last_voted)
@@ -81,7 +82,8 @@ export function startWebhookServer(client, port = 3015) {
             'You earned **1 free roll** — your next `/roll` will skip the cooldown.\n\n' +
             '> You can vote again after 12 hours to stock up!'
           );
-        } catch {}
+          console.log(`[webhook] DM sent to ${user}`);
+        } catch (e) { console.log(`[webhook] DM failed for ${user}:`, e.code, e.message); }
       }
 
       res.writeHead(200);

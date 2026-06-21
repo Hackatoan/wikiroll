@@ -1,15 +1,28 @@
 import { createServer } from 'http';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { db } from './database.js';
 
-async function readBody(req) {
+async function readRawBody(req) {
   return new Promise((resolve, reject) => {
-    let data = '';
-    req.on('data', chunk => { data += chunk; });
-    req.on('end', () => {
-      try { resolve(JSON.parse(data)); } catch { resolve({}); }
-    });
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
+}
+
+function verifyTopggSignature(rawBody, signatureHeader, secret) {
+  // header format: t={timestamp},v1={signature}
+  const parts = Object.fromEntries(signatureHeader.split(',').map(p => p.split('=')));
+  if (!parts.t || !parts.v1) return false;
+  const expected = createHmac('sha256', secret)
+    .update(`${parts.t}.${rawBody}`)
+    .digest('hex');
+  try {
+    return timingSafeEqual(Buffer.from(parts.v1, 'hex'), Buffer.from(expected, 'hex'));
+  } catch {
+    return false;
+  }
 }
 
 export function startWebhookServer(client, port = 3015) {
@@ -36,18 +49,21 @@ export function startWebhookServer(client, port = 3015) {
 
     if (url.startsWith('/topgg/vote') && method === 'POST') {
       const secret = process.env.TOPGG_WEBHOOK_SECRET;
-      const auth = req.headers['authorization'];
+      const rawBody = await readRawBody(req);
+      const sigHeader = req.headers['x-topgg-signature'];
 
-      const body = await readBody(req);
+      if (secret && sigHeader) {
+        if (!verifyTopggSignature(rawBody, sigHeader, secret)) {
+          res.writeHead(401);
+          res.end('Unauthorized');
+          return;
+        }
+      }
+
+      let body;
+      try { body = JSON.parse(rawBody.toString()); } catch { body = {}; }
       const { user, type } = body;
       if (!user) { res.writeHead(400); res.end('Bad Request'); return; }
-
-      // Require auth for real votes; allow test pings through unauthenticated
-      if (type === 'upvote' && secret && auth !== secret) {
-        res.writeHead(401);
-        res.end('Unauthorized');
-        return;
-      }
 
       if (type === 'upvote' || type === 'test') {
         db.prepare(`

@@ -34,12 +34,10 @@ export function startWebhookServer(client, port = 3015) {
       return;
     }
 
-    if (url === '/topgg/vote' && method === 'POST') {
+    if (url.startsWith('/topgg/vote') && method === 'POST') {
       const secret = process.env.TOPGG_WEBHOOK_SECRET;
-      console.log('[webhook] auth header:', req.headers['authorization']);
-      console.log('[webhook] expected:   ', secret);
-      if (secret && req.headers['authorization'] !== secret) {
-        console.log('[webhook] 401 - auth mismatch');
+      const qs = new URL(url, 'http://x').searchParams;
+      if (secret && qs.get('secret') !== secret) {
         res.writeHead(401);
         res.end('Unauthorized');
         return;

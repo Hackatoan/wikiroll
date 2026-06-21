@@ -2,11 +2,11 @@ import { Client, GatewayIntentBits, Collection, Events, ActivityType } from 'dis
 import { readdirSync } from 'fs';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
-import { createServer } from 'http';
-import { initDatabase, stmts, db } from './database.js';
+import { initDatabase, stmts } from './database.js';
 import { handleButtonInteraction, handleSelectInteraction } from './interactions/buttons.js';
 import { handlePrefix, isPrefix } from './prefix.js';
 import { buildCollectionEmbed } from './embeds.js';
+import { startWebhookServer } from './webhooks.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
@@ -29,6 +29,7 @@ for (const file of readdirSync(join(__dirname, 'commands')).filter(f => f.endsWi
 
 client.once(Events.ClientReady, () => {
   initDatabase();
+  startWebhookServer(client, 3015);
   console.log(`[WikiRoll] Ready as ${client.user.tag}`);
   client.user.setPresence({
     status: 'online',
@@ -104,21 +105,3 @@ async function handleCollectionPage(interaction) {
 }
 
 client.login(process.env.BOT_TOKEN);
-
-// Stats HTTP server — used by wikiroll-api.hackatoa.com
-createServer((req, res) => {
-  if (req.url === '/stats' && req.method === 'GET') {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    const totalChars = db.prepare('SELECT COUNT(*) AS n FROM characters').get().n;
-    const totalUsers = db.prepare('SELECT COUNT(DISTINCT user_id) AS n FROM ownership').get().n;
-    res.end(JSON.stringify({
-      guilds: client.guilds.cache.size,
-      characters: totalChars,
-      users: totalUsers,
-    }));
-  } else {
-    res.writeHead(404);
-    res.end();
-  }
-}).listen(3015);

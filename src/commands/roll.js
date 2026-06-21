@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { stmts, getSettings } from '../database.js';
+import { stmts, getSettings, db } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 
@@ -21,15 +21,26 @@ export default {
       return interaction.editReply({ content: `🎲 Rolls are restricted to <#${settings.roll_channel}>.`, flags: 64 });
     }
 
-    const cd = stmts.getCooldown.get(userId, guildId);
-    if (cd) {
-      const remaining = cooldownSecs - (now - cd.last_roll);
-      if (remaining > 0) {
-        const mins = Math.ceil(remaining / 60);
-        return interaction.editReply(
-          `⏳ You can roll again in **${mins} minute${mins !== 1 ? 's' : ''}**.`
-        );
+    // Check vote credits — spend one to bypass cooldown
+    const voteRow = db.prepare('SELECT credits FROM vote_credits WHERE user_id = ?').get(userId);
+    const usedVoteCredit = voteRow?.credits > 0;
+
+    if (!usedVoteCredit) {
+      const cd = stmts.getCooldown.get(userId, guildId);
+      if (cd) {
+        const remaining = cooldownSecs - (now - cd.last_roll);
+        if (remaining > 0) {
+          const mins = Math.ceil(remaining / 60);
+          return interaction.editReply(
+            `⏳ You can roll again in **${mins} minute${mins !== 1 ? 's' : ''}**.\n` +
+            `> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) to earn a free bonus roll!`
+          );
+        }
       }
+    }
+
+    if (usedVoteCredit) {
+      db.prepare('UPDATE vote_credits SET credits = credits - 1 WHERE user_id = ?').run(userId);
     }
 
     const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);

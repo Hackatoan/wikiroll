@@ -126,6 +126,12 @@ function initDatabase() {
       display_name TEXT,
       UNIQUE(user_id, guild_id, source_type, source_value)
     );
+
+    CREATE TABLE IF NOT EXISTS vote_credits (
+      user_id TEXT PRIMARY KEY,
+      credits INTEGER NOT NULL DEFAULT 0,
+      last_voted INTEGER
+    );
   `);
 }
 

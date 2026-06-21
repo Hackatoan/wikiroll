@@ -36,16 +36,18 @@ export function startWebhookServer(client, port = 3015) {
 
     if (url.startsWith('/topgg/vote') && method === 'POST') {
       const secret = process.env.TOPGG_WEBHOOK_SECRET;
-      const qs = new URL(url, 'http://x').searchParams;
-      if (secret && qs.get('secret') !== secret) {
-        res.writeHead(401);
-        res.end('Unauthorized');
-        return;
-      }
+      const auth = req.headers['authorization'];
 
       const body = await readBody(req);
       const { user, type } = body;
       if (!user) { res.writeHead(400); res.end('Bad Request'); return; }
+
+      // Require auth for real votes; allow test pings through unauthenticated
+      if (type === 'upvote' && secret && auth !== secret) {
+        res.writeHead(401);
+        res.end('Unauthorized');
+        return;
+      }
 
       if (type === 'upvote' || type === 'test') {
         db.prepare(`

@@ -74,6 +74,8 @@ export function buildCollectionEmbed(user, chars, page = 1) {
       return `**${idx}.** [${c.name}](${c.wiki_url || 'https://en.wikipedia.org'}) ${src}`;
     });
     embed.setDescription(lines.join('\n'));
+    const thumb = slice.find(c => c.user_image || c.image_url);
+    if (thumb) embed.setThumbnail(thumb.user_image || thumb.image_url);
   }
   return embed;
 }

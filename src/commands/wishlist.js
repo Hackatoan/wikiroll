@@ -69,7 +69,8 @@ export default {
     if (sub === 'add') {
       await interaction.deferReply({ ephemeral: true });
       const name = interaction.options.getString('name');
-      const url  = interaction.options.getString('url');
+      // Allow pasting a URL into the name field
+      const url  = interaction.options.getString('url') ?? (name.startsWith('http') ? name : null);
 
       // 1. Direct URL — single precise result, no disambiguation needed
       if (url) {

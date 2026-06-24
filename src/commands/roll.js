@@ -43,11 +43,10 @@ export default {
       db.prepare('UPDATE vote_credits SET credits = credits - 1 WHERE user_id = ?').run(userId);
     }
 
-    const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
-    const wishedChars   = stmts.getGuildWishChars.all(guildId);
-    const wishedSources = stmts.getGuildWishSources.all(guildId);
+    const guildSources = stmts.getSources.all(guildId).map(s => s.wiki_url);
+    const wishedChars  = stmts.getGuildWishChars.all(guildId);
 
-    const rawChars = await fetchTenCharacters({ guildSources, wishedChars, wishedSources });
+    const rawChars = await fetchTenCharacters({ guildSources, wishedChars });
 
     if (!rawChars.length) {
       return interaction.editReply('❌ Failed to fetch characters. Please try again in a moment.');

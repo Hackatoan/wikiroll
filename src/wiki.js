@@ -256,7 +256,7 @@ async function fetchWikipediaSearch(term) {
  * @param {object[]}  opts.wishedChars    - DB character rows from guild wishlists
  * @param {object[]}  opts.wishedSources  - [{source_type, source_value}] from wishlist_sources
  */
-export async function fetchTenCharacters({ guildSources = [], wishedChars = [], wishedSources = [] } = {}) {
+export async function fetchTenCharacters({ guildSources = [], wishedChars = [] } = {}) {
   const seen  = new Set();
   const chars = [];
 
@@ -269,36 +269,20 @@ export async function fetchTenCharacters({ guildSources = [], wishedChars = [], 
     chars.push(c);
   }
 
-  // ── Step 2: build weighted Fandom pool ────────────────────────────────
-  // Wishlist sources appear 3× to increase their pull weight
-  const wishedFandoms  = wishedSources.filter(s => s.source_type === 'fandom').map(s => s.source_value);
-  const wishedKeywords = wishedSources.filter(s => s.source_type === 'search').map(s => s.source_value);
+  // ── Step 2: build flat Fandom pool (no weighting — bigger wikis win naturally) ──
+  const fandomPool = [...BUILTIN_FANDOMS, ...guildSources];
 
-  const fandomPool = [
-    ...wishedFandoms, ...wishedFandoms, ...wishedFandoms, // 3× boost
-    ...BUILTIN_FANDOMS,
-    ...guildSources,
-  ];
-
-  // Pick 8 Fandom wikis from weighted pool (deduped after shuffle)
+  // Pick 8 Fandom wikis at random
   const shuffledPool = fandomPool.sort(() => Math.random() - 0.5);
-  const picked = [];
-  const usedBases = new Set();
-  for (const base of shuffledPool) {
-    if (usedBases.has(base)) continue;
-    usedBases.add(base);
-    picked.push(base);
-    if (picked.length >= 8) break;
-  }
+  const picked = shuffledPool.slice(0, 8);
 
   // ── Step 3: parallel fetch ────────────────────────────────────────────
   const remainingSlots = 10 - chars.length;
-  const wikiSlots      = Math.max(2, remainingSlots - picked.length); // at least 2 Wikipedia slots
+  const wikiSlots      = Math.max(2, remainingSlots - picked.length);
 
   const tasks = [
     fetchRandomWikipedia(wikiSlots + 2),
     ...picked.map(base => fetchOneFandomChar(base)),
-    ...wishedKeywords.slice(0, 3).map(kw => fetchWikipediaSearch(kw)),
   ];
 
   const results = await Promise.allSettled(tasks);

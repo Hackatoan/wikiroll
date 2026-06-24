@@ -1,7 +1,10 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from 'discord.js';
 import { stmts } from '../database.js';
 import { searchWikipedia, fetchWikiPage, searchFandomWiki, validateFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
 import { buildWishlistEmbed } from '../embeds.js';
+
+// Temporary storage for multi-version wishlist selections (5-min TTL)
+export const pendingWishCandidates = new Map();
 
 function titleMatches(query, title) {
   const q = query.toLowerCase();
@@ -68,7 +71,7 @@ export default {
       const name = interaction.options.getString('name');
       const url  = interaction.options.getString('url');
 
-      // 1. Direct URL — fetch exact page, fail loudly if it doesn't work
+      // 1. Direct URL — single precise result, no disambiguation needed
       if (url) {
         let char = null;
         try {
@@ -89,35 +92,75 @@ export default {
         return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
       }
 
-      // 2. Local DB — only accept if title closely matches the query
+      // 2. Collect ALL matching candidates across every source
+      const candidates = [];
+      const seen = new Set();
+
+      const addCandidate = (char, fromDb = false) => {
+        if (!char || !titleMatches(name, char.name)) return;
+        const key = `${char.source}:${char.page_id}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        candidates.push(fromDb ? { ...char, _fromDb: true } : char);
+      };
+
+      // Local DB
       const local = stmts.searchChars.all(guildId, `%${name}%`);
-      if (local.length && titleMatches(name, local[0].name)) {
-        stmts.addWish.run(userId, guildId, local[0].id, local[0].name);
-        return interaction.editReply(`⭐ Added **${local[0].name}** to your wishlist!`);
+      for (const c of local) addCandidate(c, true);
+
+      // Wikipedia + all Fandom wikis in parallel
+      const [wikiTitles, ...fandomResults] = await Promise.all([
+        searchWikipedia(name),
+        ...BUILTIN_FANDOMS.map(base => searchFandomWiki(name, base).catch(() => null)),
+      ]);
+
+      if (wikiTitles.length) {
+        const wc = await fetchWikiPage(wikiTitles[0]);
+        addCandidate(wc);
+      }
+      for (const r of fandomResults) addCandidate(r);
+
+      if (!candidates.length) {
+        return interaction.editReply(`❌ Couldn't find **"${name}"** with confidence. Paste the wiki page URL using the \`url\` option for an exact match.`);
       }
 
-      // 3. Wikipedia search — only accept if title matches
-      let char = null;
-      const titles = await searchWikipedia(name);
-      if (titles.length) {
-        const candidate = await fetchWikiPage(titles[0]);
-        if (candidate && titleMatches(name, candidate.name)) char = candidate;
+      // Single result: add immediately
+      if (candidates.length === 1) {
+        const char = candidates[0];
+        const charId = char._fromDb ? char.id : stmts.upsertChar.get(char).id;
+        stmts.addWish.run(userId, guildId, charId, char.name);
+        return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
       }
 
-      // 4. Fandom search — search all wikis in parallel, pick best title match
-      if (!char) {
-        const results = await Promise.all(
-          BUILTIN_FANDOMS.map(base => searchFandomWiki(name, base).catch(() => null))
-        );
-        const match = results.find(r => r && titleMatches(name, r.name));
-        if (match) char = match;
-      }
+      // Multiple results: let user pick
+      const storeKey = `${userId}:${guildId}`;
+      pendingWishCandidates.set(storeKey, candidates);
+      setTimeout(() => pendingWishCandidates.delete(storeKey), 5 * 60 * 1000);
 
-      if (!char) return interaction.editReply(`❌ Couldn't find **"${name}"** with confidence. Paste the wiki page URL using the \`url\` option for an exact match.`);
+      const options = candidates.slice(0, 24).map((c, i) =>
+        new StringSelectMenuOptionBuilder()
+          .setLabel(c.name.slice(0, 100))
+          .setDescription(`from ${c.source}`.slice(0, 100))
+          .setValue(String(i))
+      );
+      options.push(
+        new StringSelectMenuOptionBuilder()
+          .setLabel('All versions')
+          .setDescription(`Add all ${candidates.length} version${candidates.length !== 1 ? 's' : ''} to your wishlist`)
+          .setValue('__all__')
+      );
 
-      const row = stmts.upsertChar.get(char);
-      stmts.addWish.run(userId, guildId, row.id, char.name);
-      return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
+      const select = new StringSelectMenuBuilder()
+        .setCustomId(`wishpick_${userId}_${guildId}`)
+        .setPlaceholder('Choose which version(s) to add…')
+        .setMinValues(1)
+        .setMaxValues(options.length)
+        .addOptions(options);
+
+      return interaction.editReply({
+        content: `Found **${candidates.length} versions** of **"${name}"** across different wikis — pick which to add:`,
+        components: [new ActionRowBuilder().addComponents(select)],
+      });
     }
 
     // ── Remove character ──────────────────────────────────────────────────

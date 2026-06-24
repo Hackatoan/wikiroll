@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
+import { pendingWishCandidates } from '../commands/wishlist.js';
 
 function fmtTimeLeft(secs) {
   const m = Math.floor(secs / 60), s = secs % 60;
@@ -18,6 +19,41 @@ export async function handleSelectInteraction(interaction) {
     const idx = parseInt(interaction.values[0]);
     return handleClaim(interaction, rollId, idx);
   }
+  if (interaction.customId.startsWith('wishpick_')) {
+    return handleWishPick(interaction);
+  }
+}
+
+async function handleWishPick(interaction) {
+  await interaction.deferReply({ ephemeral: true });
+  const [, userId, guildId] = interaction.customId.split('_');
+
+  if (interaction.user.id !== userId) {
+    return interaction.editReply('This selection is not for you.');
+  }
+
+  const storeKey = `${userId}:${guildId}`;
+  const candidates = pendingWishCandidates.get(storeKey);
+  if (!candidates) {
+    return interaction.editReply('⏰ This selection has expired. Run `/wishlist add` again.');
+  }
+
+  const values = interaction.values;
+  const toAdd = values.includes('__all__') ? candidates : values.map(v => candidates[parseInt(v)]);
+
+  pendingWishCandidates.delete(storeKey);
+
+  const added = [];
+  for (const char of toAdd) {
+    try {
+      const charId = char._fromDb && char.id ? char.id : stmts.upsertChar.get(char).id;
+      stmts.addWish.run(userId, guildId, charId, char.name);
+      added.push(`**${char.name}** *(${char.source})*`);
+    } catch {}
+  }
+
+  if (!added.length) return interaction.editReply('❌ Nothing could be added.');
+  return interaction.editReply(`⭐ Added to your wishlist:\n${added.join('\n')}`);
 }
 
 async function handleClaim(interaction, rollIdInt, idx) {

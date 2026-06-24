@@ -256,6 +256,8 @@ async function fetchWikipediaSearch(term) {
  * @param {object[]}  opts.wishedChars    - DB character rows from guild wishlists
  * @param {object[]}  opts.wishedSources  - [{source_type, source_value}] from wishlist_sources
  */
+const WIKIPEDIA = 'https://en.wikipedia.org';
+
 export async function fetchTenCharacters({ guildSources = [], wishedChars = [] } = {}) {
   const seen  = new Set();
   const chars = [];
@@ -264,48 +266,29 @@ export async function fetchTenCharacters({ guildSources = [], wishedChars = [] }
   const shuffledWished = [...wishedChars].sort(() => Math.random() - 0.5);
   if (shuffledWished.length > 0 && Math.random() < 0.02) {
     const c = shuffledWished[0];
-    const key = `${c.source}:${c.page_id}`;
-    seen.add(key);
+    seen.add(`${c.source}:${c.page_id}`);
     chars.push(c);
   }
 
-  // ── Step 2: build flat Fandom pool (no weighting — bigger wikis win naturally) ──
-  const fandomPool = [...BUILTIN_FANDOMS, ...guildSources];
-
-  // Pick 8 Fandom wikis at random
-  const shuffledPool = fandomPool.sort(() => Math.random() - 0.5);
-  const picked = shuffledPool.slice(0, 8);
+  // ── Step 2: flat pool — Wikipedia is just another source ──────────────
+  const pool = [WIKIPEDIA, ...BUILTIN_FANDOMS, ...guildSources];
+  const slots = 10 - chars.length;
+  const picked = pool.sort(() => Math.random() - 0.5).slice(0, slots);
 
   // ── Step 3: parallel fetch ────────────────────────────────────────────
-  const remainingSlots = 10 - chars.length;
-  const wikiSlots      = Math.max(2, remainingSlots - picked.length);
-
-  const tasks = [
-    fetchRandomWikipedia(wikiSlots + 2),
-    ...picked.map(base => fetchOneFandomChar(base)),
-  ];
+  const tasks = picked.map(base =>
+    base === WIKIPEDIA ? fetchRandomWikipedia(1) : fetchOneFandomChar(base)
+  );
 
   const results = await Promise.allSettled(tasks);
-  const [wikiResult, ...otherResults] = results;
 
-  // Fandom + keyword results first (character bias)
-  for (const r of otherResults) {
+  for (const r of results) {
     if (chars.length >= 10) break;
-    if (r.status === 'fulfilled' && r.value) {
-      const c = r.value;
-      const key = `${c.source}:${c.page_id}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        chars.push(c);
-      }
-    }
-  }
-
-  // Fill remaining with Wikipedia
-  if (wikiResult.status === 'fulfilled') {
-    for (const c of wikiResult.value) {
+    if (r.status !== 'fulfilled' || !r.value) continue;
+    const items = Array.isArray(r.value) ? r.value : [r.value];
+    for (const c of items) {
       if (chars.length >= 10) break;
-      const key = `wiki:${c.page_id}`;
+      const key = `${c.source}:${c.page_id}`;
       if (!seen.has(key)) {
         seen.add(key);
         chars.push(c);

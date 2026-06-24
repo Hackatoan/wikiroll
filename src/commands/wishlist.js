@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { stmts } from '../database.js';
-import { searchWikipedia, fetchWikiPage, searchFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
+import { searchWikipedia, fetchWikiPage, searchFandomWiki, validateFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
 import { buildWishlistEmbed } from '../embeds.js';
 
 export default {
@@ -157,10 +157,19 @@ export default {
         displayName = raw;
       }
 
+      if (sourceType === 'fandom') {
+        await interaction.deferReply({ ephemeral: true });
+        const valid = await validateFandomWiki(sourceValue);
+        if (!valid) {
+          return interaction.editReply(`❌ \`${displayName}\` doesn't look like a working wiki — couldn't reach its API. Double-check the URL.`);
+        }
+        stmts.addWishSource.run(userId, guildId, sourceType, sourceValue, displayName);
+        return interaction.editReply(`✅ **🌐 Fandom wiki** \`${displayName}\` added and verified!`);
+      }
+
       stmts.addWishSource.run(userId, guildId, sourceType, sourceValue, displayName);
-      const typeLabel = sourceType === 'fandom' ? '🌐 Fandom wiki' : '🔍 Keyword';
       return interaction.reply({
-        content: `✅ **${typeLabel}** \`${displayName}\` added to your sources!`,
+        content: `✅ **🔍 Keyword** \`${displayName}\` added to your sources!`,
         ephemeral: true,
       });
     }

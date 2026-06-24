@@ -21,12 +21,12 @@ export const BUILTIN_FANDOMS = [
   'https://attackontitan.fandom.com',
   'https://myheroacademia.fandom.com',
   'https://hunterxhunter.fandom.com',
-  'https://fullmetalalchemist.fandom.com',
+  'https://fma.fandom.com',
   'https://tokyoghoul.fandom.com',
   'https://swordartonline.fandom.com',
-  'https://re-zero.fandom.com',
-  'https://one-punch-man.fandom.com',
-  'https://demonslayer.fandom.com',
+  'https://rezero.fandom.com',
+  'https://onepunchman.fandom.com',
+  'https://kimetsu-no-yaiba.fandom.com',
   'https://jujutsu-kaisen.fandom.com',
   'https://blackclover.fandom.com',
   'https://haikyuu.fandom.com',
@@ -34,7 +34,7 @@ export const BUILTIN_FANDOMS = [
   'https://gintama.fandom.com',
   'https://toriko.fandom.com',
   'https://saintseiya.fandom.com',
-  'https://shugo-chara.fandom.com',
+  'https://shugochara.fandom.com',
   'https://yugioh.fandom.com',
   // Video Games
   'https://leagueoflegends.fandom.com',
@@ -56,9 +56,9 @@ export const BUILTIN_FANDOMS = [
   'https://pathofexile.fandom.com',
   'https://diablo.fandom.com',
   'https://deadbydaylight.fandom.com',
-  'https://honkai-impact-3rd.fandom.com',
+  'https://honkaiimpact3.fandom.com',
   'https://battlerite.fandom.com',
-  'https://tales-of-graces.fandom.com',
+  'https://tales-of.fandom.com',
   'https://dragonage.fandom.com',
   'https://borderlands.fandom.com',
   // Western Animation / Comics
@@ -66,31 +66,31 @@ export const BUILTIN_FANDOMS = [
   'https://marvel.fandom.com',
   'https://avatar.fandom.com',
   'https://steven-universe.fandom.com',
-  'https://gravity-falls.fandom.com',
+  'https://gravityfalls.fandom.com',
   'https://adventuretime.fandom.com',
   'https://mlp.fandom.com',
   'https://rwby.fandom.com',
   'https://amphibia.fandom.com',
-  'https://the-owl-house.fandom.com',
+  'https://theowlhouse.fandom.com',
   'https://theloudhouse.fandom.com',
   'https://ben10.fandom.com',
   'https://dannyphantom.fandom.com',
-  'https://teen-titans.fandom.com',
+  'https://teentitans.fandom.com',
   // TV / Movies / Books
   'https://harrypotter.fandom.com',
   'https://starwars.fandom.com',
   'https://gameofthrones.fandom.com',
   'https://lotr.fandom.com',
-  'https://startrek.fandom.com',
-  'https://thewitcher.fandom.com',
-  'https://breaking-bad.fandom.com',
-  'https://stranger-things.fandom.com',
-  'https://critical-role.fandom.com',
-  'https://percyjackson.fandom.com',
-  'https://eragon.fandom.com',
-  'https://warrior-cats.fandom.com',
+  'https://memory-alpha.fandom.com',
+  'https://witcher.fandom.com',
+  'https://breakingbad.fandom.com',
+  'https://strangerthings.fandom.com',
+  'https://criticalrole.fandom.com',
+  'https://riordan.fandom.com',
+  'https://inheritance.fandom.com',
+  'https://warriors.fandom.com',
   'https://warhammer40k.fandom.com',
-  'https://dungeons-and-dragons.fandom.com',
+  'https://dungeons.fandom.com',
   'https://transformers.fandom.com',
   'https://villains.fandom.com',
   // Disney / Pixar
@@ -330,6 +330,19 @@ export async function searchWikipedia(query) {
     return (data.query?.search ?? []).map(r => r.title);
   } catch {
     return [];
+  }
+}
+
+// Check a wiki base URL is reachable and has a working API
+export async function validateFandomWiki(base) {
+  try {
+    const api = base.includes('wikipedia.org')
+      ? 'https://en.wikipedia.org/w/api.php'
+      : `${base}/api.php`;
+    const data = await queryWiki({ action: 'query', list: 'random', rnnamespace: 0, rnlimit: 1 }, api);
+    return Array.isArray(data.query?.random) && data.query.random.length > 0;
+  } catch {
+    return false;
   }
 }
 

@@ -3,6 +3,16 @@ import { stmts } from '../database.js';
 import { searchWikipedia, fetchWikiPage, searchFandomWiki, validateFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
 import { buildWishlistEmbed } from '../embeds.js';
 
+function titleMatches(query, title) {
+  const q = query.toLowerCase();
+  const t = title.toLowerCase();
+  if (t === q) return true;
+  const words = q.split(/\s+/).filter(w => w.length > 2);
+  if (!words.length) return true;
+  const hits = words.filter(w => t.includes(w));
+  return hits.length >= Math.ceil(words.length * 0.75);
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName('wishlist')
@@ -58,10 +68,9 @@ export default {
       const name = interaction.options.getString('name');
       const url  = interaction.options.getString('url');
 
-      let char = null;
-
-      // 1. Direct URL provided — fetch the exact page
+      // 1. Direct URL — fetch exact page, fail loudly if it doesn't work
       if (url) {
+        let char = null;
         try {
           const parsed = new URL(url);
           const isFandom = parsed.hostname.endsWith('.fandom.com');
@@ -74,36 +83,41 @@ export default {
             char = await fetchWikiPage(title);
           }
         } catch {}
+        if (!char) return interaction.editReply(`❌ Couldn't fetch that page. Double-check the URL and try again.`);
+        const row = stmts.upsertChar.get(char);
+        stmts.addWish.run(userId, guildId, row.id, char.name);
+        return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
       }
 
-      // 2. Check local DB
+      // 2. Local DB — only accept if title closely matches the query
+      const local = stmts.searchChars.all(guildId, `%${name}%`);
+      if (local.length && titleMatches(name, local[0].name)) {
+        stmts.addWish.run(userId, guildId, local[0].id, local[0].name);
+        return interaction.editReply(`⭐ Added **${local[0].name}** to your wishlist!`);
+      }
+
+      // 3. Wikipedia search — only accept if title matches
+      let char = null;
+      const titles = await searchWikipedia(name);
+      if (titles.length) {
+        const candidate = await fetchWikiPage(titles[0]);
+        if (candidate && titleMatches(name, candidate.name)) char = candidate;
+      }
+
+      // 4. Fandom search — search all wikis in parallel, pick best title match
       if (!char) {
-        const local = stmts.searchChars.all(guildId, `%${name}%`);
-        if (local.length) {
-          stmts.addWish.run(userId, guildId, local[0].id, local[0].name);
-          return interaction.editReply(`⭐ Added **${local[0].name}** to your wishlist!`);
-        }
+        const results = await Promise.all(
+          BUILTIN_FANDOMS.map(base => searchFandomWiki(name, base).catch(() => null))
+        );
+        const match = results.find(r => r && titleMatches(name, r.name));
+        if (match) char = match;
       }
 
-      // 3. Wikipedia search
-      if (!char) {
-        const titles = await searchWikipedia(name);
-        if (titles.length) char = await fetchWikiPage(titles[0]);
-      }
-
-      // 4. Fandom search fallback — try each built-in wiki until we get a hit
-      if (!char) {
-        for (const base of BUILTIN_FANDOMS) {
-          char = await searchFandomWiki(name, base);
-          if (char) break;
-        }
-      }
-
-      if (!char) return interaction.editReply(`❌ Character **"${name}"** not found. Try providing the wiki page URL with the \`url\` option.`);
+      if (!char) return interaction.editReply(`❌ Couldn't find **"${name}"** with confidence. Paste the wiki page URL using the \`url\` option for an exact match.`);
 
       const row = stmts.upsertChar.get(char);
       stmts.addWish.run(userId, guildId, row.id, char.name);
-      return interaction.editReply(`⭐ Added **${char.name}** to your wishlist!`);
+      return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
     }
 
     // ── Remove character ──────────────────────────────────────────────────

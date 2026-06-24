@@ -96,7 +96,7 @@ export const BUILTIN_FANDOMS = [
   // Disney / Pixar
   'https://disney.fandom.com',
   'https://pixar.fandom.com',
-  'https://cars.fandom.com',
+  'https://pixarcars.fandom.com',
   'https://toystory.fandom.com',
   'https://incredibles.fandom.com',
   'https://monsters-inc.fandom.com',
@@ -334,6 +334,38 @@ export async function searchWikipedia(query) {
     return (data.query?.search ?? []).map(r => r.title);
   } catch {
     return [];
+  }
+}
+
+// Search a specific Fandom wiki for a character by name
+export async function searchFandomWiki(query, fandomBase) {
+  const api = `${fandomBase}/api.php`;
+  const source = new URL(fandomBase).hostname;
+  try {
+    const data = await queryWiki({
+      action: 'query',
+      list: 'search',
+      srsearch: query,
+      srlimit: 5,
+      srnamespace: 0,
+    }, api);
+    const results = data.query?.search ?? [];
+    if (!results.length) return null;
+    await sleep(100);
+    const detail = await queryWiki({
+      action: 'query',
+      titles: results[0].title,
+      prop: 'extracts|pageimages|info',
+      exintro: 1,
+      explaintext: 1,
+      pithumbsize: 500,
+      inprop: 'url',
+      redirects: 1,
+    }, api);
+    const page = Object.values(detail.query?.pages ?? {})[0];
+    return formatPage(page, source, fandomBase);
+  } catch {
+    return null;
   }
 }
 

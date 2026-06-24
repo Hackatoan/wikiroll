@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { stmts } from '../database.js';
-import { searchWikipedia, fetchWikiPage } from '../wiki.js';
+import { searchWikipedia, fetchWikiPage, searchFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
 import { buildWishlistEmbed } from '../embeds.js';
 
 export default {
@@ -9,8 +9,9 @@ export default {
     .setDescription('Manage your wishlist — boosted characters and sources appear more in rolls')
     .addSubcommand(s => s
       .setName('add')
-      .setDescription('Add a character to your wishlist (they\'ll appear in rolls more often)')
+      .setDescription('Add a character to your wishlist')
       .addStringOption(o => o.setName('name').setDescription('Character name').setRequired(true))
+      .addStringOption(o => o.setName('url').setDescription('Wiki page URL (e.g. https://pixarcars.fandom.com/wiki/Finn_McMissile)').setRequired(false))
     )
     .addSubcommand(s => s
       .setName('remove')
@@ -55,24 +56,54 @@ export default {
     if (sub === 'add') {
       await interaction.deferReply({ ephemeral: true });
       const name = interaction.options.getString('name');
+      const url  = interaction.options.getString('url');
 
-      let charId = null, charName = name;
-      const local = stmts.searchChars.all(guildId, `%${name}%`);
-      if (local.length) {
-        charId = local[0].id; charName = local[0].name;
-      } else {
-        const titles = await searchWikipedia(name);
-        if (titles.length) {
-          const char = await fetchWikiPage(titles[0]);
-          if (char) {
-            const row = stmts.upsertChar.get(char);
-            charId = row.id; charName = char.name;
+      let char = null;
+
+      // 1. Direct URL provided — fetch the exact page
+      if (url) {
+        try {
+          const parsed = new URL(url);
+          const isFandom = parsed.hostname.endsWith('.fandom.com');
+          if (isFandom) {
+            const base  = `${parsed.protocol}//${parsed.hostname}`;
+            const title = decodeURIComponent(parsed.pathname.replace(/^\/wiki\//, '').replace(/_/g, ' '));
+            char = await fetchWikiPage(title, base);
+          } else {
+            const title = decodeURIComponent(parsed.pathname.split('/').pop().replace(/_/g, ' '));
+            char = await fetchWikiPage(title);
           }
+        } catch {}
+      }
+
+      // 2. Check local DB
+      if (!char) {
+        const local = stmts.searchChars.all(guildId, `%${name}%`);
+        if (local.length) {
+          stmts.addWish.run(userId, guildId, local[0].id, local[0].name);
+          return interaction.editReply(`⭐ Added **${local[0].name}** to your wishlist!`);
         }
       }
-      if (!charId) return interaction.editReply(`Character **"${name}"** not found.`);
-      stmts.addWish.run(userId, guildId, charId, charName);
-      return interaction.editReply(`⭐ Added **${charName}** to your wishlist! They'll appear in rolls more often and you'll be DM'd when claimed.`);
+
+      // 3. Wikipedia search
+      if (!char) {
+        const titles = await searchWikipedia(name);
+        if (titles.length) char = await fetchWikiPage(titles[0]);
+      }
+
+      // 4. Fandom search fallback — try each built-in wiki until we get a hit
+      if (!char) {
+        for (const base of BUILTIN_FANDOMS) {
+          char = await searchFandomWiki(name, base);
+          if (char) break;
+        }
+      }
+
+      if (!char) return interaction.editReply(`❌ Character **"${name}"** not found. Try providing the wiki page URL with the \`url\` option.`);
+
+      const row = stmts.upsertChar.get(char);
+      stmts.addWish.run(userId, guildId, row.id, char.name);
+      return interaction.editReply(`⭐ Added **${char.name}** to your wishlist!`);
     }
 
     // ── Remove character ──────────────────────────────────────────────────
@@ -92,13 +123,13 @@ export default {
         .setTitle(`🎯 ${interaction.user.username}'s Boosted Sources`);
 
       if (!sources.length) {
-        embed.setDescription('*No boosted sources yet.*\n\nUse `/wishlist addsource` with a Fandom wiki URL or keyword to get more of those characters in your rolls!');
+        embed.setDescription('*No boosted sources yet.*\n\nUse `/wishlist addsource` with a Fandom wiki URL to add it to the roll pool.');
       } else {
         const fandoms  = sources.filter(s => s.source_type === 'fandom');
         const keywords = sources.filter(s => s.source_type === 'search');
         const lines = [];
-        if (fandoms.length)  lines.push('**Fandom Wikis** (3× roll weight):', ...fandoms.map(s  => `• ${s.display_name ?? s.source_value}`));
-        if (keywords.length) lines.push('', '**Keywords** (Wikipedia search boost):', ...keywords.map(s => `• ${s.source_value}`));
+        if (fandoms.length)  lines.push('**Fandom Wikis**:', ...fandoms.map(s  => `• ${s.display_name ?? s.source_value}`));
+        if (keywords.length) lines.push('', '**Keywords**:', ...keywords.map(s => `• ${s.source_value}`));
         embed.setDescription(lines.join('\n'));
       }
       return interaction.reply({ embeds: [embed], ephemeral: true });
@@ -129,7 +160,7 @@ export default {
       stmts.addWishSource.run(userId, guildId, sourceType, sourceValue, displayName);
       const typeLabel = sourceType === 'fandom' ? '🌐 Fandom wiki' : '🔍 Keyword';
       return interaction.reply({
-        content: `✅ **${typeLabel}** \`${displayName}\` added to your boosted sources! Characters from this source are **3× more likely** to appear in your server's rolls.`,
+        content: `✅ **${typeLabel}** \`${displayName}\` added to your sources!`,
         ephemeral: true,
       });
     }

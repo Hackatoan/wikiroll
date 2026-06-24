@@ -260,16 +260,13 @@ export async function fetchTenCharacters({ guildSources = [], wishedChars = [], 
   const seen  = new Set();
   const chars = [];
 
-  // ── Step 1: slot in wishlisted characters (up to 3 guaranteed spots) ──
+  // ── Step 1: ~2% chance to slot in ONE wishlisted character (~1 per 50 rolls) ──
   const shuffledWished = [...wishedChars].sort(() => Math.random() - 0.5);
-  for (const c of shuffledWished) {
-    if (chars.length >= 3) break;
+  if (shuffledWished.length > 0 && Math.random() < 0.02) {
+    const c = shuffledWished[0];
     const key = `${c.source}:${c.page_id}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      // DB row matches the shape expected by embeds and the roll upsert
-      chars.push(c);
-    }
+    seen.add(key);
+    chars.push(c);
   }
 
   // ── Step 2: build weighted Fandom pool ────────────────────────────────

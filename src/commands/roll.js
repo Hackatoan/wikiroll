@@ -100,6 +100,23 @@ export default {
 
     stmts.setRollMessageId.run(msg.id, rollId);
 
+    // DM wishlist watchers immediately when their char appears in a roll
+    const jumpUrl = `https://discord.com/channels/${guildId}/${interaction.channelId}/${msg.id}`;
+    for (const char of chars) {
+      if (!char.id) continue;
+      const watchers = stmts.getWishWatchers.all(guildId, char.id);
+      for (const { user_id } of watchers) {
+        if (user_id === userId) continue;
+        try {
+          const u = await interaction.client.users.fetch(user_id);
+          await u.send(
+            `🔔 **${char.name}** (on your wishlist) just appeared in a roll in **${interaction.guild.name}**!\n` +
+            `[Jump to roll](${jumpUrl}) — claim window: **${mins} minute${mins !== 1 ? 's' : ''}**`
+          );
+        } catch {}
+      }
+    }
+
     // Disable buttons after window expires
     setTimeout(async () => {
       try {

@@ -95,19 +95,6 @@ async function handleClaim(interaction, rollIdInt, idx) {
     await channel.send(`🎉 <@${userId}> just claimed **${claimed?.name ?? 'a character'}**!`);
   } catch {}
 
-  // Wishlist DM notifications
-  if (claimed) {
-    const watchers = stmts.getWishWatchers.all(guildId, charId);
-    for (const { user_id } of watchers) {
-      if (user_id === interaction.user.id) continue;
-      try {
-        const u = await interaction.client.users.fetch(user_id);
-        await u.send(
-          `🔔 **${claimed.name}** (on your wishlist) was just claimed by <@${userId}> in **${interaction.guild?.name}**!`
-        );
-      } catch {}
-    }
-  }
 }
 
 async function handleTrade(interaction, [action, tradeIdStr]) {

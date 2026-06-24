@@ -142,15 +142,33 @@ export function buildSettingsEmbed(settings) {
     );
 }
 
-export function buildWishlistEmbed(user, items) {
-  const embed = new EmbedBuilder()
-    .setColor(0xFFA500)
-    .setTitle(`⭐ ${user.username}'s Wishlist`);
-
+export function buildWishlistEmbeds(user, items) {
   if (!items.length) {
-    embed.setDescription('*Empty wishlist. Use `/wishlist add <name>` to add characters!*');
-  } else {
-    embed.setDescription(items.map(w => `• **${w.display_name}**`).join('\n'));
+    return [new EmbedBuilder()
+      .setColor(0xFFA500)
+      .setAuthor({ name: `⭐ ${user.username}'s Wishlist`, iconURL: user.displayAvatarURL() })
+      .setDescription('*Empty. Use `/wishlist add <name>` to add characters!*')
+    ];
   }
-  return embed;
+  return items.slice(0, 10).map((w, i) => {
+    const e = new EmbedBuilder()
+      .setColor(0xFFA500)
+      .setTitle(w.display_name)
+      .setFooter({ text: w.source ? `${sourceIcon(w.source)} ${w.source}` : '' });
+    if (i === 0) e.setAuthor({ name: `⭐ ${user.username}'s Wishlist (${items.length} total)`, iconURL: user.displayAvatarURL() });
+    if (w.wiki_url) e.setURL(w.wiki_url);
+    if (w.image_url) e.setThumbnail(w.image_url);
+    return e;
+  });
+}
+
+export function buildWishCharEmbed(char, footerNote = 'Added to wishlist') {
+  const e = new EmbedBuilder()
+    .setColor(0xFFA500)
+    .setTitle(char.name ?? char.display_name)
+    .setFooter({ text: `⭐ ${footerNote} · ${sourceIcon(char.source)} ${char.source}` });
+  if (char.wiki_url) e.setURL(char.wiki_url);
+  if (char.image_url) e.setThumbnail(char.image_url);
+  if (char.description) e.setDescription(char.description.slice(0, 220) + (char.description.length > 220 ? '…' : ''));
+  return e;
 }

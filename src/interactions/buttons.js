@@ -2,6 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 import { pendingWishCandidates } from '../commands/wishlist.js';
+import { buildWishCharEmbed } from '../embeds.js';
 
 function fmtTimeLeft(secs) {
   const m = Math.floor(secs / 60), s = secs % 60;
@@ -44,16 +45,21 @@ async function handleWishPick(interaction) {
   pendingWishCandidates.delete(storeKey);
 
   const added = [];
+  const addedChars = [];
   for (const char of toAdd) {
     try {
       const charId = char._fromDb && char.id ? char.id : stmts.upsertChar.get(char).id;
       stmts.addWish.run(userId, guildId, charId, char.name);
-      added.push(`**${char.name}** *(${char.source})*`);
+      added.push(char.name);
+      addedChars.push(char);
     } catch {}
   }
 
   if (!added.length) return interaction.editReply('❌ Nothing could be added.');
-  return interaction.editReply(`⭐ Added to your wishlist:\n${added.join('\n')}`);
+  return interaction.editReply({
+    content: added.length > 1 ? `⭐ Added **${added.length}** characters to your wishlist!` : null,
+    embeds: addedChars.map(c => buildWishCharEmbed(c)),
+  });
 }
 
 async function handleClaim(interaction, rollIdInt, idx) {

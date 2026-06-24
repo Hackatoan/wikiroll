@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from 'discord.js';
 import { stmts } from '../database.js';
 import { searchWikipedia, fetchWikiPage, searchFandomWiki, validateFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
-import { buildWishlistEmbed } from '../embeds.js';
+import { buildWishlistEmbeds, buildWishCharEmbed } from '../embeds.js';
 
 // Temporary storage for multi-version wishlist selections (5-min TTL)
 export const pendingWishCandidates = new Map();
@@ -62,7 +62,7 @@ export default {
     // ── View characters ───────────────────────────────────────────────────
     if (sub === 'view') {
       const items = stmts.getUserWishlist.all(userId, guildId);
-      return interaction.reply({ embeds: [buildWishlistEmbed(interaction.user, items)], ephemeral: true });
+      return interaction.reply({ embeds: buildWishlistEmbeds(interaction.user, items), ephemeral: true });
     }
 
     // ── Add character ─────────────────────────────────────────────────────
@@ -89,7 +89,7 @@ export default {
         if (!char) return interaction.editReply(`❌ Couldn't fetch that page. Double-check the URL and try again.`);
         const row = stmts.upsertChar.get(char);
         stmts.addWish.run(userId, guildId, row.id, char.name);
-        return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
+        return interaction.editReply({ embeds: [buildWishCharEmbed(char)] });
       }
 
       // 2. Collect ALL matching candidates across every source
@@ -129,7 +129,7 @@ export default {
         const char = candidates[0];
         const charId = char._fromDb ? char.id : stmts.upsertChar.get(char).id;
         stmts.addWish.run(userId, guildId, charId, char.name);
-        return interaction.editReply(`⭐ Added **${char.name}** to your wishlist! *(from ${char.source})*`);
+        return interaction.editReply({ embeds: [buildWishCharEmbed(char)] });
       }
 
       // Multiple results: let user pick
@@ -158,7 +158,8 @@ export default {
         .addOptions(options);
 
       return interaction.editReply({
-        content: `Found **${candidates.length} versions** of **"${name}"** across different wikis — pick which to add:`,
+        content: `Found **${candidates.length} versions** of **"${name}"** — pick which to add:`,
+        embeds: candidates.slice(0, 10).map((c, i) => buildWishCharEmbed(c, `Option ${i + 1}`)),
         components: [new ActionRowBuilder().addComponents(select)],
       });
     }

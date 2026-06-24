@@ -247,7 +247,8 @@ export const stmts = {
   `),
   removeWish: db.prepare(`DELETE FROM wishlists WHERE user_id = ? AND guild_id = ? AND character_id = ?`),
   getUserWishlist: db.prepare(`
-    SELECT w.*, COALESCE(c.name, w.character_name) AS display_name
+    SELECT w.*, COALESCE(c.name, w.character_name) AS display_name,
+      c.image_url, c.source, c.wiki_url
     FROM wishlists w LEFT JOIN characters c ON c.id = w.character_id
     WHERE w.user_id = ? AND w.guild_id = ?
   `),

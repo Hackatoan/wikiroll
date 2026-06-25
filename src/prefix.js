@@ -6,7 +6,7 @@ import { db, stmts, getCharsByIds, getSettings } from './database.js';
 import { fetchTenCharacters, searchWikipedia, fetchWikiPage } from './wiki.js';
 import {
   buildRollEmbeds, buildClaimSelect, buildCollectionEmbed,
-  buildSearchEmbed, buildCharInfoEmbed, buildWishlistEmbed,
+  buildSearchEmbed, buildCharInfoEmbed, buildWishlistEmbeds,
   buildSettingsEmbed,
 } from './embeds.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
@@ -374,7 +374,7 @@ async function prefixWishlist(message, args, guildId, userId) {
 
   if (sub === 'view' || !args.length) {
     const items = stmts.getUserWishlist.all(userId, guildId);
-    return message.reply({ embeds: [buildWishlistEmbed(message.author, items)] });
+    return message.reply({ embeds: buildWishlistEmbeds(message.author, items) });
   }
 
   if (sub === 'add') {

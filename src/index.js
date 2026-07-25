@@ -7,6 +7,7 @@ import { handleButtonInteraction, handleSelectInteraction } from './interactions
 import { handlePrefix, isPrefix } from './prefix.js';
 import { buildCollectionEmbed } from './embeds.js';
 import { startWebhookServer } from './webhooks.js';
+import { refreshWikiWeights } from './wiki.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
@@ -31,6 +32,10 @@ client.once(Events.ClientReady, () => {
   initDatabase();
   startWebhookServer(client, 3015);
   console.log(`[WikiRoll] Ready as ${client.user.tag}`);
+  // Background: cache each wiki's size so the roll pool can be size-weighted.
+  // Fire-and-forget; throttled internally, refreshes ~monthly.
+  refreshWikiWeights(stmts.getAllSourceUrls.all().map(r => r.wiki_url))
+    .catch(e => console.error('[wiki] weight refresh failed:', e.message));
   client.user.setPresence({
     status: 'online',
     activities: [{

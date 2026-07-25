@@ -99,6 +99,13 @@ function initDatabase() {
       UNIQUE(guild_a, guild_b)
     );
 
+    -- Cached article-count weights used to size-weight the roll pool
+    CREATE TABLE IF NOT EXISTS wiki_stats (
+      wiki_url TEXT PRIMARY KEY,
+      weight INTEGER NOT NULL,
+      fetched_at INTEGER DEFAULT (unixepoch())
+    );
+
     CREATE TABLE IF NOT EXISTS link_requests (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       initiator_guild TEXT NOT NULL,
@@ -269,6 +276,16 @@ export const stmts = {
   addSource: db.prepare(`INSERT OR IGNORE INTO wiki_sources (guild_id, wiki_url, wiki_name, added_by) VALUES (?, ?, ?, ?)`),
   removeSource: db.prepare(`DELETE FROM wiki_sources WHERE guild_id = ? AND wiki_url = ?`),
   getSources: db.prepare(`SELECT * FROM wiki_sources WHERE guild_id = ?`),
+  getAllSourceUrls: db.prepare(`SELECT DISTINCT wiki_url FROM wiki_sources`),
+
+  // ── Wiki size weights (roll pool weighting) ────────────────────────────────
+
+  getWikiWeights: db.prepare(`SELECT wiki_url, weight, fetched_at FROM wiki_stats`),
+  upsertWikiWeight: db.prepare(`
+    INSERT INTO wiki_stats (wiki_url, weight, fetched_at)
+    VALUES (?, ?, unixepoch())
+    ON CONFLICT(wiki_url) DO UPDATE SET weight = excluded.weight, fetched_at = excluded.fetched_at
+  `),
 
   // ── Wishlist sources ──────────────────────────────────────────────────────
 
@@ -347,6 +364,19 @@ export function getSettings(guildId) {
 export function getLinkedGuildIds(guildId) {
   const rows = stmts.getGuildLinks.all(guildId, guildId);
   return [guildId, ...rows.map(r => r.other_guild)];
+}
+
+// Roll-pool size weights: Map<wiki_url, { weight, fetched_at }>.
+export function getWikiWeightMap() {
+  const map = new Map();
+  for (const row of stmts.getWikiWeights.all()) {
+    map.set(row.wiki_url, { weight: row.weight, fetched_at: row.fetched_at });
+  }
+  return map;
+}
+
+export function setWikiWeight(url, weight) {
+  stmts.upsertWikiWeight.run(url, weight);
 }
 
 export function getOwnerCrossGuild(guildIds, charId) {

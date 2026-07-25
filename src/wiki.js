@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getWikiWeightMap, setWikiWeight } from './database.js';
 
 const UA = 'WikiRoll Discord Bot/1.0 (contact@hackatoa.com)';
 
@@ -251,21 +252,96 @@ async function queryWiki(params, base = 'https://en.wikipedia.org/w/api.php') {
 
 function isListLike(title) {
   if (!title) return true;
-  const t = title.toLowerCase();
+  const raw = title.trim();
+  const t = raw.toLowerCase();
   return (
+    // bare years / numeric-only titles (e.g. "1987", "2020")
+    /^\d{3,4}$/.test(raw) ||
+    // wiki namespaces that aren't real content pages
+    /^(category|template|file|user|forum|board|help|module|mediawiki|portal|project|thread|talk|blog):/i.test(raw) ||
+    // list / index / glossary style pages
     t.startsWith('list of ') ||
     t.startsWith('lists of ') ||
     t.startsWith('index of ') ||
+    /^(list|lists|index|timeline|glossary|gallery|outline) (of|in) /i.test(raw) ||
+    /^characters (of|in) /i.test(raw) ||
     t.includes('(disambiguation)') ||
-    t.includes('/gallery') ||
-    t.includes('/relationships') ||
-    t.includes('/history') ||
-    t.includes('/trivia') ||
-    t.includes('/navigation') ||
-    t.includes('/techniques') ||
-    t.includes('/abilities') ||
-    /^characters (of|in) /i.test(title)
+    // non-character subpages
+    /\/(gallery|image[_ ]gallery|relationships|history|trivia|navigation|techniques|abilities|quotes|synopsis|appearances|merchandise|plot|transcript|credits)/.test(t) ||
+    // episode / chapter / media entries, not characters
+    /\((episode|chapter|volume|season|arc|album|song|single|soundtrack|film|movie|novel|manga|anime|series|game|video game|location|place|weapon|item|band)\b[^)]*\)/i.test(raw) ||
+    /^(episode|chapter|volume|season|book|part) \d+/i.test(raw)
   );
+}
+
+// ── Size-weighted wiki pool ────────────────────────────────────────────────
+// A roll picks 10 DISTINCT wikis, but each wiki's odds of being picked are
+// weighted by its article count so bigger / more popular franchises show up
+// proportionally more often — approximating "one uniform pool of all pages"
+// without materialising millions of pages. Weights are clamped so mega-wikis
+// don't dominate every roll and tiny wikis stay reachable. Wikipedia is pinned
+// to a modest fixed weight so its full-random (often non-character) articles
+// stay about as rare as before. Tune the constants below to taste.
+const WIKI_WEIGHT_MIN     = 500;
+const WIKI_WEIGHT_CAP     = 40000;
+const WIKI_WEIGHT_DEFAULT = 6000;               // used until a wiki's size is cached
+const WIKIPEDIA_WEIGHT    = 6000;               // pinned; ignores WP's true ~7M articles
+const WIKI_STATS_TTL      = 30 * 24 * 60 * 60;  // refresh cached sizes ~monthly
+
+function clampWeight(articles) {
+  if (!articles || articles < 0) return WIKI_WEIGHT_DEFAULT;
+  return Math.min(Math.max(Math.round(articles), WIKI_WEIGHT_MIN), WIKI_WEIGHT_CAP);
+}
+
+// Weighted sampling WITHOUT replacement → k distinct wiki URLs.
+function weightedSampleDistinct(entries, k) {
+  const pool = entries.map(e => ({ url: e.url, w: Math.max(e.weight || WIKI_WEIGHT_DEFAULT, 1) }));
+  const chosen = [];
+  while (chosen.length < k && pool.length) {
+    const total = pool.reduce((s, p) => s + p.w, 0);
+    let r = Math.random() * total;
+    let idx = 0;
+    for (; idx < pool.length - 1; idx++) {
+      r -= pool[idx].w;
+      if (r <= 0) break;
+    }
+    chosen.push(pool[idx].url);
+    pool.splice(idx, 1);
+  }
+  return chosen;
+}
+
+// Fetch a wiki's article count via the MediaWiki siteinfo API.
+async function fetchWikiSize(base) {
+  const api = base.includes('wikipedia.org')
+    ? 'https://en.wikipedia.org/w/api.php'
+    : `${base}/api.php`;
+  try {
+    const data = await queryWiki({ action: 'query', meta: 'siteinfo', siprop: 'statistics' }, api);
+    return data.query?.statistics?.articles ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Background: refresh cached article-count weights for built-in + guild wikis.
+// Fire-and-forget on startup; throttled so we stay a good API citizen.
+export async function refreshWikiWeights(extraSources = []) {
+  const now    = Math.floor(Date.now() / 1000);
+  const cached = getWikiWeightMap();
+  const targets = [...new Set([...BUILTIN_FANDOMS, ...extraSources])];
+  let refreshed = 0;
+  for (const url of targets) {
+    const entry = cached.get(url);
+    if (entry && (now - entry.fetched_at) < WIKI_STATS_TTL) continue;
+    const size = await fetchWikiSize(url);
+    if (size != null) {
+      setWikiWeight(url, clampWeight(size));
+      refreshed++;
+    }
+    await sleep(300);
+  }
+  if (refreshed) console.log(`[wiki] refreshed size weights for ${refreshed} wikis`);
 }
 
 function formatPage(page, source, baseUrl) {
@@ -317,26 +393,32 @@ async function fetchOneFandomChar(wikiBase) {
   try {
     let title = null;
 
-    // Prefer pages from Category:Characters for actual character bias
+    // Prefer pages from Category:Characters for actual character bias.
+    // Sample a large slice, drop obvious non-character (list/gallery/etc.)
+    // titles, then pick randomly from what remains.
     try {
       const catData = await queryWiki({
         action: 'query',
         list: 'categorymembers',
         cmtitle: 'Category:Characters',
-        cmlimit: 50,
+        cmlimit: 500,
         cmtype: 'page',
         cmnamespace: 0,
       }, api);
-      const members = catData.query?.categorymembers ?? [];
+      const members = (catData.query?.categorymembers ?? [])
+        .map(m => m.title)
+        .filter(tt => !isListLike(tt));
       if (members.length > 0) {
-        title = members[Math.floor(Math.random() * members.length)].title;
+        title = members[Math.floor(Math.random() * members.length)];
       }
     } catch {}
 
-    // Fallback: truly random page
+    // Fallback: sample a few truly-random pages and take the first that
+    // isn't an obvious non-character page.
     if (!title) {
-      const rand = await queryWiki({ action: 'query', list: 'random', rnnamespace: 0, rnlimit: 1 }, api);
-      title = rand.query?.random?.[0]?.title;
+      const rand = await queryWiki({ action: 'query', list: 'random', rnnamespace: 0, rnlimit: 6 }, api);
+      const cands = (rand.query?.random ?? []).map(p => p.title).filter(tt => !isListLike(tt));
+      title = cands[0] ?? rand.query?.random?.[0]?.title ?? null;
     }
 
     if (!title) return null;
@@ -415,10 +497,18 @@ export async function fetchTenCharacters({ guildSources = [], wishedChars = [] }
     chars.push(c);
   }
 
-  // ── Step 2: flat pool — Wikipedia is just another source ──────────────
-  const pool = [WIKIPEDIA, ...BUILTIN_FANDOMS, ...guildSources];
-  const slots = 10 - chars.length;
-  const picked = pool.sort(() => Math.random() - 0.5).slice(0, slots);
+  // ── Step 2: weighted flat pool — 10 DISTINCT wikis, weighted by size ──
+  // Bigger franchises get proportionally higher odds (see weighting notes
+  // above). Wikipedia is pinned to a modest fixed weight. We pick a few extra
+  // wikis as a buffer so filtered-out junk pages can be backfilled to 10.
+  const weightMap  = getWikiWeightMap();
+  const weightFor  = url => (url === WIKIPEDIA
+    ? WIKIPEDIA_WEIGHT
+    : (weightMap.get(url)?.weight ?? WIKI_WEIGHT_DEFAULT));
+  const poolEntries = [WIKIPEDIA, ...BUILTIN_FANDOMS, ...guildSources]
+    .map(url => ({ url, weight: weightFor(url) }));
+  const slots  = 10 - chars.length;
+  const picked = weightedSampleDistinct(poolEntries, slots + 5);
 
   // ── Step 3: parallel fetch ────────────────────────────────────────────
   const tasks = picked.map(base =>

@@ -2,7 +2,7 @@
  * Prefix command handler for `w.` commands
  * Mirrors slash commands but via chat messages.
  */
-import { db, stmts, getCharsByIds, getSettings } from './database.js';
+import { db, stmts, getCharsByIds, getSettings, getLinkedGuildIds, getUserCollectionCrossGuild, getOwnerCrossGuild } from './database.js';
 import { fetchTenCharacters, searchWikipedia, fetchWikiPage } from './wiki.js';
 import {
   buildRollEmbeds, buildClaimSelect, buildCollectionEmbed,
@@ -251,7 +251,7 @@ async function prefixCollection(message, args, guildId) {
   const target  = mention ?? message.author;
   const page    = parseInt(args.find(a => /^\d+$/.test(a))) || 1;
 
-  const chars      = stmts.getUserCollection.all(guildId, target.id);
+  const chars      = getUserCollectionCrossGuild(getLinkedGuildIds(guildId), target.id);
   const totalPages = Math.max(1, Math.ceil(chars.length / 12));
   const safePage   = Math.min(page, totalPages);
   const embed      = buildCollectionEmbed(target, chars, safePage);
@@ -282,7 +282,7 @@ async function prefixSearch(message, query, guildId) {
       if (!char) continue;
       try {
         const row = stmts.upsertChar.get(char);
-        const owner = stmts.getOwner.get(guildId, row.id);
+        const owner = getOwnerCrossGuild(getLinkedGuildIds(guildId), row.id);
         results.push({ ...char, id: row.id, owner_id: owner?.user_id ?? null });
       } catch {}
     }
@@ -297,7 +297,7 @@ async function prefixInfo(message, name, guildId) {
   const results = stmts.searchChars.all(guildId, `%${name}%`);
   if (!results.length) return message.reply(`No character matching **"${name}"** found.`);
   const char  = results[0];
-  const owner = stmts.getOwner.get(guildId, char.id);
+  const owner = getOwnerCrossGuild(getLinkedGuildIds(guildId), char.id);
   await message.reply({ embeds: [buildCharInfoEmbed(char, owner?.user_id ?? null)] });
 }
 

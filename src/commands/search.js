@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { stmts } from '../database.js';
+import { stmts, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
 import { searchWikipedia, fetchWikiPage } from '../wiki.js';
 import { buildSearchEmbed } from '../embeds.js';
 
@@ -29,7 +29,7 @@ export default {
         if (!char) continue;
         try {
           const row = stmts.upsertChar.get(char);
-          const owner = stmts.getOwner.get(guildId, row.id);
+          const owner = getOwnerCrossGuild(getLinkedGuildIds(guildId), row.id);
           results.push({ ...char, id: row.id, owner_id: owner?.user_id ?? null });
         } catch {}
       }

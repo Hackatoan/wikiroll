@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { stmts } from '../database.js';
+import { stmts, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
 import { buildCharInfoEmbed } from '../embeds.js';
 
 export default {
@@ -20,7 +20,7 @@ export default {
     }
 
     const char  = results[0];
-    const owner = stmts.getOwner.get(guildId, char.id);
+    const owner = getOwnerCrossGuild(getLinkedGuildIds(guildId), char.id);
     await interaction.reply({ embeds: [buildCharInfoEmbed(char, owner?.user_id ?? null)] });
   },
 };

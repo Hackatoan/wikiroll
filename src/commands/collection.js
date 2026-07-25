@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { stmts } from '../database.js';
+import { getLinkedGuildIds, getUserCollectionCrossGuild } from '../database.js';
 import { buildCollectionEmbed } from '../embeds.js';
 
 export default {
@@ -12,7 +12,7 @@ export default {
   async execute(interaction) {
     const target = interaction.options.getUser('user') ?? interaction.user;
     const page   = interaction.options.getInteger('page') ?? 1;
-    const chars  = stmts.getUserCollection.all(interaction.guildId, target.id);
+    const chars  = getUserCollectionCrossGuild(getLinkedGuildIds(interaction.guildId), target.id);
 
     const perPage = 12;
     const totalPages = Math.max(1, Math.ceil(chars.length / perPage));

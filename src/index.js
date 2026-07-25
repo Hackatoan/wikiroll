@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits, Collection, Events, ActivityType } from 'dis
 import { readdirSync } from 'fs';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
-import { initDatabase, stmts } from './database.js';
+import { initDatabase, stmts, getLinkedGuildIds, getUserCollectionCrossGuild } from './database.js';
 import { handleButtonInteraction, handleSelectInteraction } from './interactions/buttons.js';
 import { handlePrefix, isPrefix } from './prefix.js';
 import { buildCollectionEmbed } from './embeds.js';
@@ -76,7 +76,7 @@ async function handleCollectionPage(interaction) {
   const target = await interaction.client.users.fetch(targetId).catch(() => null);
   if (!target) return interaction.deferUpdate();
 
-  const chars      = stmts.getUserCollection.all(interaction.guildId, targetId);
+  const chars      = getUserCollectionCrossGuild(getLinkedGuildIds(interaction.guildId), targetId);
   const perPage    = 12;
   const totalPages = Math.max(1, Math.ceil(chars.length / perPage));
   const safePage   = Math.min(page, totalPages);

@@ -355,3 +355,40 @@ export function getOwnerCrossGuild(guildIds, charId) {
   return db.prepare(`SELECT * FROM ownership WHERE character_id = ? AND guild_id IN (${ph})`).get(charId, ...guildIds);
 }
 
+// Collection for a user across the current guild + all linked guilds.
+// GROUP BY c.id collapses any duplicate ownership rows for the same character.
+export function getUserCollectionCrossGuild(guildIds, userId) {
+  const ph = guildIds.map(() => '?').join(',');
+  return db.prepare(`
+    SELECT c.*, MAX(o.claimed_at) AS claimed_at
+    FROM characters c
+    JOIN ownership o ON o.character_id = c.id
+    WHERE o.user_id = ? AND o.guild_id IN (${ph})
+    GROUP BY c.id
+    ORDER BY claimed_at DESC
+  `).all(userId, ...guildIds);
+}
+
+// Leaderboard totals across the current guild + all linked guilds.
+// COUNT(DISTINCT character_id) so a character owned in two linked guilds counts once.
+export function getLeaderboardCrossGuild(guildIds, limit = 10) {
+  const ph = guildIds.map(() => '?').join(',');
+  return db.prepare(`
+    SELECT user_id, COUNT(DISTINCT character_id) AS total
+    FROM ownership
+    WHERE guild_id IN (${ph})
+    GROUP BY user_id
+    ORDER BY total DESC
+    LIMIT ?
+  `).all(...guildIds, limit);
+}
+
+export function getUserTotalCrossGuild(guildIds, userId) {
+  const ph = guildIds.map(() => '?').join(',');
+  return db.prepare(`
+    SELECT COUNT(DISTINCT character_id) AS total
+    FROM ownership
+    WHERE user_id = ? AND guild_id IN (${ph})
+  `).get(userId, ...guildIds)?.total ?? 0;
+}
+

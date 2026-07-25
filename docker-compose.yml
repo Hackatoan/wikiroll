@@ -1,11 +1,15 @@
 services:
   wikiroll:
-    build: .
+    image: ghcr.io/hackatoan/wikiroll:latest
     container_name: wikiroll
     restart: unless-stopped
     env_file: .env
+    ports:
+      - "3015:3015"
     volumes:
       - wikiroll-data:/data
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
 volumes:
   wikiroll-data:

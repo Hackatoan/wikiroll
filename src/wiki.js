@@ -265,6 +265,12 @@ function isListLike(title) {
     t.startsWith('index of ') ||
     /^(list|lists|index|timeline|glossary|gallery|outline) (of|in) /i.test(raw) ||
     /^characters (of|in) /i.test(raw) ||
+    // roster / list pages whose title ends in "... characters"
+    /\b(minor|recurring|background|supporting|secondary|unnamed|generic|nameless|miscellaneous|list of|non-?player|non-?playable) characters?\b/i.test(raw) ||
+    /^characters$/i.test(raw) ||
+    // NPC / generic non-player entries
+    /\bnpcs?\b/i.test(raw) ||
+    /non-?play(er|able) character/i.test(t) ||
     t.includes('(disambiguation)') ||
     // non-character subpages
     /\/(gallery|image[_ ]gallery|relationships|history|trivia|navigation|techniques|abilities|quotes|synopsis|appearances|merchandise|plot|transcript|credits)/.test(t) ||
@@ -352,6 +358,14 @@ function formatPage(page, source, baseUrl) {
     : null;
   // Skip disambiguation pages (extract will say "may refer to")
   if (desc && /^\S+ may refer to:/i.test(desc)) return null;
+  // Skip generic NPC / non-character entries by how they describe themselves
+  // (catches NPCs whose title doesn't literally say "NPC"). Deliberately does
+  // NOT filter plain "minor character" to avoid dropping real named characters.
+  if (desc && (
+    /\bis an? npc\b/i.test(desc) ||
+    /\bis an? (non-?player|non-?playable|generic|unnamed|nameless|background|one-?off|one-?time|filler|placeholder) character/i.test(desc) ||
+    /\bis an? (unnamed|generic|nameless|background) (enemy|character|npc)/i.test(desc)
+  )) return null;
   return {
     name: page.title,
     page_id: String(page.pageid),

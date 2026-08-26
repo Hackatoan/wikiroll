@@ -1,0 +1,10 @@
+{
+  "language.set": "🌍 O WikiRoll responderá em **{label}** neste servidor.",
+  "roll.restricted": "🎲 Os sorteios estão restritos a {channel}.",
+  "roll.cooldown": "⏳ Você poderá sortear novamente em **{mins}** minutos.\n> 🗳️ [Vote no top.gg](https://top.gg/bot/1343100226537259018/vote) para ganhar um sorteio bônus gratuito!",
+  "roll.fetchFail": "❌ Falha ao buscar personagens. Tente novamente em alguns instantes.",
+  "roll.saveFail": "❌ Falha ao salvar personagens. Tente novamente.",
+  "roll.rolled": "🎲 **{user}** sorteou! Resgate em até **{mins}** minutos!",
+  "roll.wishlistPing": "🔔 **{char}** (da sua lista de desejos) acabou de aparecer em um sorteio em **{guild}**!\n[Ir para o sorteio]({url}) — tempo para resgate: **{mins}** minutos",
+  "roll.expired": "🎲 ~~Sorteio de {user}~~ *(expirado)*"
+}

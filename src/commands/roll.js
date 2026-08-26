@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getSettings, db } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -18,7 +19,7 @@ export default {
     const cooldownSecs = settings.roll_cooldown_minutes * 60;
 
     if (settings.roll_channel && interaction.channelId !== settings.roll_channel) {
-      return interaction.editReply({ content: `🎲 Rolls are restricted to <#${settings.roll_channel}>.`, flags: 64 });
+      return interaction.editReply({ content: t(guildId, 'roll.restricted', { channel: `<#${settings.roll_channel}>` }), flags: 64 });
     }
 
     // Check vote credits — spend one to bypass cooldown
@@ -31,10 +32,7 @@ export default {
         const remaining = cooldownSecs - (now - cd.last_roll);
         if (remaining > 0) {
           const mins = Math.ceil(remaining / 60);
-          return interaction.editReply(
-            `⏳ You can roll again in **${mins} minute${mins !== 1 ? 's' : ''}**.\n` +
-            `> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) to earn a free bonus roll!`
-          );
+          return interaction.editReply(t(guildId, 'roll.cooldown', { mins }));
         }
       }
     }
@@ -49,7 +47,7 @@ export default {
     const rawChars = await fetchTenCharacters({ guildSources, wishedChars });
 
     if (!rawChars.length) {
-      return interaction.editReply('❌ Failed to fetch characters. Please try again in a moment.');
+      return interaction.editReply(t(guildId, 'roll.fetchFail'));
     }
 
     // Persist characters and collect IDs
@@ -69,7 +67,7 @@ export default {
     }
 
     if (!chars.length) {
-      return interaction.editReply('❌ Failed to save characters. Please try again.');
+      return interaction.editReply(t(guildId, 'roll.saveFail'));
     }
 
     const claimWindowSecs = settings.claim_window_minutes * 60;
@@ -92,7 +90,7 @@ export default {
     const mins = settings.claim_window_minutes;
 
     const msg = await interaction.editReply({
-      content: `🎲 **${interaction.user.username}** rolled! Claim within **${mins} minute${mins !== 1 ? 's' : ''}**!`,
+      content: t(guildId, 'roll.rolled', { user: interaction.user.username, mins }),
       embeds,
       components,
     });
@@ -108,10 +106,7 @@ export default {
         if (user_id === userId) continue;
         try {
           const u = await interaction.client.users.fetch(user_id);
-          await u.send(
-            `🔔 **${char.name}** (on your wishlist) just appeared in a roll in **${interaction.guild.name}**!\n` +
-            `[Jump to roll](${jumpUrl}) — claim window: **${mins} minute${mins !== 1 ? 's' : ''}**`
-          );
+          await u.send(t(guildId, 'roll.wishlistPing', { char: char.name, guild: interaction.guild.name, url: jumpUrl, mins }));
         } catch {}
       }
     }
@@ -120,7 +115,7 @@ export default {
     setTimeout(async () => {
       try {
         await msg.edit({
-          content: `🎲 ~~${interaction.user.username}'s roll~~ *(expired)*`,
+          content: t(guildId, 'roll.expired', { user: interaction.user.username }),
           embeds,
           components: [],
         });

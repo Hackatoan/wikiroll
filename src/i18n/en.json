@@ -1,0 +1,10 @@
+{
+  "language.set": "🌍 WikiRoll will reply in **{label}** for this server.",
+  "roll.restricted": "🎲 Rolls are restricted to {channel}.",
+  "roll.cooldown": "⏳ You can roll again in **{mins}** minutes.\n> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) to earn a free bonus roll!",
+  "roll.fetchFail": "❌ Failed to fetch characters. Please try again in a moment.",
+  "roll.saveFail": "❌ Failed to save characters. Please try again.",
+  "roll.rolled": "🎲 **{user}** rolled! Claim within **{mins}** minutes!",
+  "roll.wishlistPing": "🔔 **{char}** (on your wishlist) just appeared in a roll in **{guild}**!\n[Jump to roll]({url}) — claim window: **{mins}** minutes",
+  "roll.expired": "🎲 ~~{user}'s roll~~ *(expired)*"
+}

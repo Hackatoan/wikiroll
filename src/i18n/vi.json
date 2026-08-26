@@ -1,0 +1,10 @@
+{
+  "language.set": "🌍 WikiRoll sẽ trả lời bằng **{label}** cho máy chủ này.",
+  "roll.restricted": "🎲 Lượt quay bị giới hạn trong {channel}.",
+  "roll.cooldown": "⏳ Bạn có thể quay lại sau **{mins}** phút.\n> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) để nhận một lượt quay thưởng miễn phí!",
+  "roll.fetchFail": "❌ Không thể tải nhân vật. Vui lòng thử lại sau.",
+  "roll.saveFail": "❌ Không thể lưu nhân vật. Vui lòng thử lại.",
+  "roll.rolled": "🎲 **{user}** đã quay! Hãy nhận nhân vật trong vòng **{mins}** phút!",
+  "roll.wishlistPing": "🔔 **{char}** (trong danh sách ước của bạn) vừa xuất hiện trong một lượt quay tại **{guild}**!\n[Đi tới lượt quay]({url}) — thời hạn nhận: **{mins}** phút",
+  "roll.expired": "🎲 ~~Lượt quay của {user}~~ *(đã hết hạn)*"
+}

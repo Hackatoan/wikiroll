@@ -1,0 +1,10 @@
+{
+  "language.set": "🌍 WikiRoll responderá en **{label}** para este servidor.",
+  "roll.restricted": "🎲 Las tiradas están restringidas a {channel}.",
+  "roll.cooldown": "⏳ Puedes volver a tirar en **{mins}** minutos.\n> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) para ganar una tirada extra gratis!",
+  "roll.fetchFail": "❌ No se pudieron obtener los personajes. Inténtalo de nuevo en un momento.",
+  "roll.saveFail": "❌ No se pudieron guardar los personajes. Inténtalo de nuevo.",
+  "roll.rolled": "🎲 ¡**{user}** ha tirado! ¡Reclámalo en un plazo de **{mins}** minutos!",
+  "roll.wishlistPing": "🔔 ¡**{char}** (en tu lista de deseos) acaba de aparecer en una tirada en **{guild}**!\n[Ir a la tirada]({url}) — tiempo para reclamar: **{mins}** minutos",
+  "roll.expired": "🎲 ~~Tirada de {user}~~ *(expirada)*"
+}

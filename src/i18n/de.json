@@ -1,0 +1,10 @@
+{
+  "language.set": "🌍 WikiRoll antwortet auf **{label}** für diesen Server.",
+  "roll.restricted": "🎲 Würfe sind auf {channel} beschränkt.",
+  "roll.cooldown": "⏳ Du kannst in **{mins}** Minuten wieder würfeln.\n> 🗳️ [Auf top.gg abstimmen](https://top.gg/bot/1343100226537259018/vote), um einen kostenlosen Bonuswurf zu erhalten!",
+  "roll.fetchFail": "❌ Charaktere konnten nicht abgerufen werden. Bitte versuche es gleich noch einmal.",
+  "roll.saveFail": "❌ Charaktere konnten nicht gespeichert werden. Bitte versuche es erneut.",
+  "roll.rolled": "🎲 **{user}** hat gewürfelt! Innerhalb von **{mins}** Minuten beanspruchen!",
+  "roll.wishlistPing": "🔔 **{char}** (auf deiner Wunschliste) ist gerade in einem Wurf in **{guild}** aufgetaucht!\n[Zum Wurf springen]({url}) — Zeitfenster: **{mins}** Minuten",
+  "roll.expired": "🎲 ~~Der Wurf von {user}~~ *(abgelaufen)*"
+}

@@ -10,6 +10,7 @@ function initDatabase() {
   db.pragma('foreign_keys = ON');
   try { db.exec(`ALTER TABLE cooldowns ADD COLUMN last_claim INTEGER`); } catch {}
   try { db.exec(`ALTER TABLE guild_settings ADD COLUMN roll_channel TEXT`); } catch {}
+  try { db.exec(`ALTER TABLE guild_settings ADD COLUMN language TEXT`); } catch {}
   try { db.exec(`ALTER TABLE rolls ADD COLUMN daily_claims INTEGER DEFAULT 0`); } catch {}
   db.exec(`
     CREATE TABLE IF NOT EXISTS characters (
@@ -358,7 +359,20 @@ export function getSettings(guildId) {
     claim_window_minutes: 5,
     notify_channel: null,
     roll_channel: null,
+    language: 'en',
   };
+}
+
+// Per-guild reply language for i18n (defaults to English).
+export function getGuildLanguage(guildId) {
+  const row = db.prepare(`SELECT language FROM guild_settings WHERE guild_id = ?`).get(guildId);
+  return (row && row.language) || 'en';
+}
+export function setGuildLanguage(guildId, code) {
+  db.prepare(
+    `INSERT INTO guild_settings (guild_id, language) VALUES (?, ?)
+     ON CONFLICT(guild_id) DO UPDATE SET language = excluded.language`
+  ).run(guildId, code);
 }
 
 export function getLinkedGuildIds(guildId) {

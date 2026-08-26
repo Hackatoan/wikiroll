@@ -44,5 +44,26 @@
   "daily.rolled": "🗓️ **{user}'s daily roll!**\n{streak}Claim within **{mins}** minutes!",
   "daily.expired": "🗓️ ~~{user}'s daily roll~~ *(expired)*",
 
-  "info.notFound": "No character matching **\"{name}\"** found. Try `/search` first."
+  "info.notFound": "No character matching **\"{name}\"** found. Try `/search` first.",
+
+  "btn.accept": "Accept",
+  "btn.decline": "Decline",
+
+  "trade.selfTrade": "You cannot trade with yourself.",
+  "trade.botTrade": "You cannot trade with a bot.",
+  "trade.noOffer": "You don't own a character matching **\"{q}\"**.",
+  "trade.noTheir": "{target} doesn't own a character matching **\"{q}\"**.",
+  "trade.typeTrade": "Trade",
+  "trade.typeGift": "Gift",
+  "trade.dmTrade": "🔄 **{user}** wants to trade with you in **{guild}**!",
+  "trade.dmGift": "🎁 **{user}** is gifting you a character in **{guild}**!",
+  "trade.sent": "📨 {type} offer sent to {target} via DM!",
+  "trade.offerExpired": "⏰ Trade offer expired.",
+
+  "lb.empty": "📭 No one has claimed anything yet — use `/roll` to get started!",
+  "lb.you": " ← you",
+  "lb.entry": "{medal} **{name}** — {total} characters{you}",
+  "lb.footerTotal": "{total} characters claimed total",
+  "lb.footerRank": " · You're #{rank} with {n}",
+  "lb.title": "🏆 {guild} — Top Collectors"
 }

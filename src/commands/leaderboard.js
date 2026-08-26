@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { getLinkedGuildIds, getLeaderboardCrossGuild, getUserTotalCrossGuild } from '../database.js';
+import { t } from '../i18n.js';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -16,7 +17,7 @@ export default {
 
     if (!rows.length) {
       return interaction.reply({
-        content: '📭 No one has claimed anything yet — use `/roll` to get started!',
+        content: t(interaction.guildId, 'lb.empty'),
         ephemeral: true,
       });
     }
@@ -40,25 +41,25 @@ export default {
           name = `<@${user_id}>`;
         }
       }
-      const highlight = user_id === interaction.user.id ? ' ← you' : '';
-      lines.push(`${medal} **${name}** — ${total} character${total !== 1 ? 's' : ''}${highlight}`);
+      const highlight = user_id === interaction.user.id ? t(interaction.guildId, 'lb.you') : '';
+      lines.push(t(interaction.guildId, 'lb.entry', { medal, name, total, you: highlight }));
     }
 
     // Find the caller's rank if they're not in top 10
-    let footerText = `${rows.reduce((sum, r) => sum + r.total, 0)} characters claimed total`;
+    let footerText = t(interaction.guildId, 'lb.footerTotal', { total: rows.reduce((sum, r) => sum + r.total, 0) });
     const callerInTop = rows.some(r => r.user_id === interaction.user.id);
     if (!callerInTop) {
       const callerTotal = getUserTotalCrossGuild(linkedGuilds, interaction.user.id);
       if (callerTotal > 0) {
         const everyone = getLeaderboardCrossGuild(linkedGuilds, 1_000_000);
         const rank = everyone.filter(r => r.total >= callerTotal).length;
-        footerText += ` · You're #${rank} with ${callerTotal}`;
+        footerText += t(interaction.guildId, 'lb.footerRank', { rank, n: callerTotal });
       }
     }
 
     const embed = new EmbedBuilder()
       .setColor(0xFEE75C)
-      .setTitle(`🏆 ${interaction.guild.name} — Top Collectors`)
+      .setTitle(t(interaction.guildId, 'lb.title', { guild: interaction.guild.name }))
       .setDescription(lines.join('\n'))
       .setFooter({ text: footerText })
       .setTimestamp();

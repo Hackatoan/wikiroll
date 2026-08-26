@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { stmts } from '../database.js';
 import { buildTradeEmbed } from '../embeds.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -17,17 +18,17 @@ export default {
     const guildId = interaction.guildId;
     const userId  = interaction.user.id;
 
-    if (target.id === userId) return interaction.reply({ content: 'You cannot trade with yourself.', flags: 64 });
-    if (target.bot)           return interaction.reply({ content: 'You cannot trade with a bot.', flags: 64 });
+    if (target.id === userId) return interaction.reply({ content: t(guildId, 'trade.selfTrade'), flags: 64 });
+    if (target.bot)           return interaction.reply({ content: t(guildId, 'trade.botTrade'), flags: 64 });
 
     const myChars = stmts.searchChars.all(guildId, `%${offerQ}%`).filter(c => c.owner_id === userId);
-    if (!myChars.length) return interaction.reply({ content: `You don't own a character matching **"${offerQ}"**.`, flags: 64 });
+    if (!myChars.length) return interaction.reply({ content: t(guildId, 'trade.noOffer', { q: offerQ }), flags: 64 });
     const offerChar = myChars[0];
 
     let requestChar = null;
     if (wantQ) {
       const theirChars = stmts.searchChars.all(guildId, `%${wantQ}%`).filter(c => c.owner_id === target.id);
-      if (!theirChars.length) return interaction.reply({ content: `<@${target.id}> doesn't own a character matching **"${wantQ}"**.`, flags: 64 });
+      if (!theirChars.length) return interaction.reply({ content: t(guildId, 'trade.noTheir', { target: `<@${target.id}>`, q: wantQ }), flags: 64 });
       requestChar = theirChars[0];
     }
 
@@ -45,13 +46,13 @@ export default {
     });
     const tradeId = trade.lastInsertRowid;
 
-    const embed = buildTradeEmbed(interaction.user.username, target.username, offerChar, requestChar);
+    const embed = buildTradeEmbed(interaction.user.username, target.username, offerChar, requestChar, guildId);
     const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`trade_accept_${tradeId}`).setLabel('Accept').setStyle(ButtonStyle.Success).setEmoji('✅'),
-      new ButtonBuilder().setCustomId(`trade_decline_${tradeId}`).setLabel('Decline').setStyle(ButtonStyle.Danger).setEmoji('❌')
+      new ButtonBuilder().setCustomId(`trade_accept_${tradeId}`).setLabel(t(guildId, 'btn.accept')).setStyle(ButtonStyle.Success).setEmoji('✅'),
+      new ButtonBuilder().setCustomId(`trade_decline_${tradeId}`).setLabel(t(guildId, 'btn.decline')).setStyle(ButtonStyle.Danger).setEmoji('❌')
     );
 
-    const offerType = requestChar ? 'Trade' : 'Gift';
+    const offerType = requestChar ? t(guildId, 'trade.typeTrade') : t(guildId, 'trade.typeGift');
 
     // Try to DM the target first
     let sentViaDM = false;
@@ -59,8 +60,8 @@ export default {
       const dm = await target.createDM();
       const dmMsg = await dm.send({
         content: requestChar
-          ? `🔄 **${interaction.user.username}** wants to trade with you in **${interaction.guild?.name}**!`
-          : `🎁 **${interaction.user.username}** is gifting you a character in **${interaction.guild?.name}**!`,
+          ? t(guildId, 'trade.dmTrade', { user: interaction.user.username, guild: interaction.guild?.name })
+          : t(guildId, 'trade.dmGift', { user: interaction.user.username, guild: interaction.guild?.name }),
         embeds: [embed],
         components: [row],
       });
@@ -69,7 +70,7 @@ export default {
     } catch {}
 
     if (sentViaDM) {
-      return interaction.reply({ content: `📨 ${offerType} offer sent to <@${target.id}> via DM!`, flags: 64 });
+      return interaction.reply({ content: t(guildId, 'trade.sent', { type: offerType, target: `<@${target.id}>` }), flags: 64 });
     }
 
     // Fallback: post in channel with ping
@@ -82,7 +83,7 @@ export default {
     stmts.setTradeMessageId.run(msg.id, tradeId);
 
     setTimeout(async () => {
-      try { await msg.edit({ content: '⏰ Trade offer expired.', embeds: [], components: [] }); } catch {}
+      try { await msg.edit({ content: t(guildId, 'trade.offerExpired'), embeds: [], components: [] }); } catch {}
     }, 600_000);
   },
 };

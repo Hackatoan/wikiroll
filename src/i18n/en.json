@@ -65,5 +65,31 @@
   "lb.entry": "{medal} **{name}** — {total} characters{you}",
   "lb.footerTotal": "{total} characters claimed total",
   "lb.footerRank": " · You're #{rank} with {n}",
-  "lb.title": "🏆 {guild} — Top Collectors"
+  "lb.title": "🏆 {guild} — Top Collectors",
+
+  "btn.notForYou": "This selection is not for you.",
+  "wish.selectExpired": "⏰ This selection has expired. Run `/wishlist add` again.",
+  "wish.nothingAdded": "❌ Nothing could be added.",
+  "wish.addedMany": "⭐ Added **{n}** characters to your wishlist!",
+
+  "claim.rollGone": "This roll no longer exists.",
+  "claim.rollExpired": "⏰ This roll has expired.",
+  "claim.invalid": "Invalid selection.",
+  "claim.cooldown": "⏳ You already claimed a character recently. Try again in **{time}**.",
+  "claim.alreadyClaimed": "Already claimed by {owner}!",
+  "claim.tooSlow": "Too slow! {owner} just grabbed that one.",
+  "claim.dailyRemaining": "\n📋 You have **{n}** daily claims remaining on this roll!",
+  "claim.success": "✅ **{char}** is now in your collection!{extra}",
+  "claim.announce": "🎉 {user} just claimed **{char}**!",
+
+  "trade.inactive": "This trade is no longer active.",
+  "trade.notForYou": "This trade offer is not for you.",
+  "trade.cancelInit": "Trade cancelled — the other user no longer owns that character.",
+  "trade.cancelTarget": "Trade cancelled — you no longer own the requested character.",
+  "trade.giftAccepted": "✅ Gift accepted!",
+  "trade.completed": "✅ Trade completed!",
+  "trade.giftAcceptedPublic": "✅ {target} accepted a gift from {initiator}!",
+  "trade.completedPublic": "✅ Trade completed between {initiator} and {target}!",
+  "trade.declined": "Trade declined.",
+  "trade.declinedPublic": "❌ Trade declined by {target}."
 }

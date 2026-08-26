@@ -3,6 +3,7 @@ import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuil
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 import { pendingWishCandidates } from '../commands/wishlist.js';
 import { buildWishCharEmbed } from '../embeds.js';
+import { t } from '../i18n.js';
 
 function fmtTimeLeft(secs) {
   const m = Math.floor(secs / 60), s = secs % 60;
@@ -30,13 +31,13 @@ async function handleWishPick(interaction) {
   const [, userId, guildId] = interaction.customId.split('_');
 
   if (interaction.user.id !== userId) {
-    return interaction.editReply('This selection is not for you.');
+    return interaction.editReply(t(interaction.guildId, 'btn.notForYou'));
   }
 
   const storeKey = `${userId}:${guildId}`;
   const candidates = pendingWishCandidates.get(storeKey);
   if (!candidates) {
-    return interaction.editReply('⏰ This selection has expired. Run `/wishlist add` again.');
+    return interaction.editReply(t(interaction.guildId, 'wish.selectExpired'));
   }
 
   const values = interaction.values;
@@ -55,9 +56,9 @@ async function handleWishPick(interaction) {
     } catch {}
   }
 
-  if (!added.length) return interaction.editReply('❌ Nothing could be added.');
+  if (!added.length) return interaction.editReply(t(interaction.guildId, 'wish.nothingAdded'));
   return interaction.editReply({
-    content: added.length > 1 ? `⭐ Added **${added.length}** characters to your wishlist!` : null,
+    content: added.length > 1 ? t(interaction.guildId, 'wish.addedMany', { n: added.length }) : null,
     embeds: addedChars.map(c => buildWishCharEmbed(c)),
   });
 }
@@ -66,14 +67,14 @@ async function handleClaim(interaction, rollIdInt, idx) {
   await interaction.deferReply({ ephemeral: true });
 
   const roll = stmts.getRoll.get(rollIdInt);
-  if (!roll) return interaction.editReply('This roll no longer exists.');
+  if (!roll) return interaction.editReply(t(interaction.guildId, 'claim.rollGone'));
 
   const now = Math.floor(Date.now() / 1000);
-  if (now > roll.expires_at) return interaction.editReply('⏰ This roll has expired.');
+  if (now > roll.expires_at) return interaction.editReply(t(interaction.guildId, 'claim.rollExpired'));
 
   const charIds = JSON.parse(roll.character_ids);
   const charId = charIds[idx];
-  if (charId === undefined) return interaction.editReply('Invalid selection.');
+  if (charId === undefined) return interaction.editReply(t(interaction.guildId, 'claim.invalid'));
 
   const guildId   = interaction.guildId;
   const userId    = interaction.user.id;
@@ -89,7 +90,7 @@ async function handleClaim(interaction, rollIdInt, idx) {
       const elapsed = now - cd.last_claim;
       if (elapsed < cooldownSecs) {
         const left = cooldownSecs - elapsed;
-        return interaction.editReply(`⏳ You already claimed a character recently. Try again in **${fmtTimeLeft(left)}**.`);
+        return interaction.editReply(t(interaction.guildId, 'claim.cooldown', { time: fmtTimeLeft(left) }));
       }
     }
   }
@@ -97,13 +98,13 @@ async function handleClaim(interaction, rollIdInt, idx) {
   const linkedGuilds = getLinkedGuildIds(guildId);
   const existing = getOwnerCrossGuild(linkedGuilds, charId);
   if (existing) {
-    return interaction.editReply(`Already claimed by <@${existing.user_id}>!`);
+    return interaction.editReply(t(interaction.guildId, 'claim.alreadyClaimed', { owner: `<@${existing.user_id}>` }));
   }
 
   const result = stmts.claim.run(guildId, userId, charId);
   if (result.changes === 0) {
     const owner = getOwnerCrossGuild(linkedGuilds, charId);
-    return interaction.editReply(`Too slow! <@${owner?.user_id}> just grabbed that one.`);
+    return interaction.editReply(t(interaction.guildId, 'claim.tooSlow', { owner: `<@${owner?.user_id}>` }));
   }
 
   const chars = getCharsByIds(charIds);
@@ -116,11 +117,11 @@ async function handleClaim(interaction, rollIdInt, idx) {
 
   const remaining = isDailyBonus ? roll.daily_claims - 1 : 0;
   const claimsLine = remaining > 0
-    ? `\n📋 You have **${remaining}** daily claim${remaining > 1 ? 's' : ''} remaining on this roll!`
+    ? t(interaction.guildId, 'claim.dailyRemaining', { n: remaining })
     : '';
 
   await interaction.editReply(
-    `✅ **${claimed?.name ?? 'Character'}** is now in your collection!${claimsLine}`
+    t(interaction.guildId, 'claim.success', { char: claimed?.name ?? 'Character', extra: claimsLine })
   );
 
   // Rebuild message: remove claimed button, update embed, post public announcement
@@ -132,9 +133,9 @@ async function handleClaim(interaction, rollIdInt, idx) {
       if (getOwnerCrossGuild(linkedGuilds, charIds[i])) claimedSet.add(i);
     }
     const embeds = buildRollEmbeds(chars, claimedSet);
-    const components = buildClaimSelect(rollIdInt, chars, claimedSet);
+    const components = buildClaimSelect(rollIdInt, chars, claimedSet, interaction.guildId);
     await msg.edit({ embeds, components });
-    await channel.send(`🎉 <@${userId}> just claimed **${claimed?.name ?? 'a character'}**!`);
+    await channel.send(t(interaction.guildId, 'claim.announce', { user: `<@${userId}>`, char: claimed?.name ?? 'a character' }));
   } catch {}
 
 }
@@ -144,50 +145,50 @@ async function handleTrade(interaction, [action, tradeIdStr]) {
   const tradeId = parseInt(tradeIdStr);
   const trade = stmts.getTrade.get(tradeId);
 
-  if (!trade) return interaction.editReply('This trade is no longer active.');
+  if (!trade) return interaction.editReply(t(interaction.guildId, 'trade.inactive'));
   if (Math.floor(Date.now() / 1000) > trade.expires_at) {
     stmts.setTradeStatus.run('expired', tradeId);
-    return interaction.editReply('⏰ Trade offer expired.');
+    return interaction.editReply(t(interaction.guildId, 'trade.offerExpired'));
   }
   if (interaction.user.id !== trade.target_id) {
-    return interaction.editReply('This trade offer is not for you.');
+    return interaction.editReply(t(interaction.guildId, 'trade.notForYou'));
   }
 
   if (action === 'accept') {
     const initOwn = stmts.getOwner.get(trade.guild_id, trade.initiator_char_id);
     if (!initOwn || initOwn.user_id !== trade.initiator_id) {
       stmts.setTradeStatus.run('cancelled', tradeId);
-      return interaction.editReply('Trade cancelled — the other user no longer owns that character.');
+      return interaction.editReply(t(interaction.guildId, 'trade.cancelInit'));
     }
     if (trade.target_char_id !== null) {
       const tgtOwn = stmts.getOwner.get(trade.guild_id, trade.target_char_id);
       if (!tgtOwn || tgtOwn.user_id !== trade.target_id) {
         stmts.setTradeStatus.run('cancelled', tradeId);
-        return interaction.editReply('Trade cancelled — you no longer own the requested character.');
+        return interaction.editReply(t(interaction.guildId, 'trade.cancelTarget'));
       }
       stmts.transferChar.run(trade.initiator_id, trade.guild_id, trade.target_char_id, trade.target_id);
     }
     stmts.transferChar.run(trade.target_id, trade.guild_id, trade.initiator_char_id, trade.initiator_id);
     stmts.setTradeStatus.run('completed', tradeId);
     const isGift = trade.target_char_id === null;
-    await interaction.editReply(isGift ? '✅ Gift accepted!' : '✅ Trade completed!');
+    await interaction.editReply(isGift ? t(interaction.guildId, 'trade.giftAccepted') : t(interaction.guildId, 'trade.completed'));
     try {
       const ch = interaction.channel ?? await interaction.client.channels.fetch(trade.channel_id ?? interaction.channelId);
       const msg = await ch.messages.fetch(trade.message_id);
       await msg.edit({
         content: isGift
-          ? `✅ <@${trade.target_id}> accepted a gift from <@${trade.initiator_id}>!`
-          : `✅ Trade completed between <@${trade.initiator_id}> and <@${trade.target_id}>!`,
+          ? t(interaction.guildId, 'trade.giftAcceptedPublic', { target: `<@${trade.target_id}>`, initiator: `<@${trade.initiator_id}>` })
+          : t(interaction.guildId, 'trade.completedPublic', { initiator: `<@${trade.initiator_id}>`, target: `<@${trade.target_id}>` }),
         components: [],
       });
     } catch {}
   } else {
     stmts.setTradeStatus.run('declined', tradeId);
-    await interaction.editReply('Trade declined.');
+    await interaction.editReply(t(interaction.guildId, 'trade.declined'));
     try {
       const ch = interaction.channel ?? await interaction.client.channels.fetch(trade.channel_id ?? interaction.channelId);
       const msg = await ch.messages.fetch(trade.message_id);
-      await msg.edit({ content: `❌ Trade declined by <@${trade.target_id}>.`, components: [] });
+      await msg.edit({ content: t(interaction.guildId, 'trade.declinedPublic', { target: `<@${trade.target_id}>` }), components: [] });
     } catch {}
   }
 }

@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -6,53 +7,16 @@ export default {
     .setDescription('List all WikiRoll commands'),
 
   async execute(interaction) {
+    const g = interaction.guildId;
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
-      .setTitle('WikiRoll — Commands')
+      .setTitle(t(g, 'help.title'))
       .addFields(
-        {
-          name: '🎲 Rolling & Claiming',
-          value: [
-            '`/roll` — Roll 10 characters to claim (1hr cooldown)',
-            '`/daily` — Free daily roll; 2+ day streak = 2 claims',
-            '`/ghostroll` — Test roll without cooldown (bot owner only)',
-          ].join('\n'),
-        },
-        {
-          name: '📦 Collection',
-          value: [
-            '`/collection [user]` — View your (or someone\'s) collection',
-            '`/info <name>` — Detailed info on a character',
-            '`/search <query>` — See if a character is claimed and by whom',
-            '`/remove <name>` — Remove a character from your collection',
-            '`/submitimage <name> <url>` — Set a custom image for a character',
-          ].join('\n'),
-        },
-        {
-          name: '🤝 Social',
-          value: [
-            '`/trade <user> <your char> [want]` — Offer a trade or gift a character',
-            '`/wishlist` — Manage your wishlist (boosts roll odds)',
-            '`/leaderboard` — Top collectors in this server',
-          ].join('\n'),
-        },
-        {
-          name: '⚙️ Server Setup',
-          value: [
-            '`/settings` — View or change server settings',
-            '`/source` — Add Fandom wiki sources to roll from',
-            '`/setrollchannel` — Restrict /roll to a specific channel (admin only)',
-            '`/linkserver` — Share character ownership with another server',
-          ].join('\n'),
-        },
-        {
-          name: '🔗 Other',
-          value: [
-            '`/about` — Stats and links for WikiRoll',
-            '`/vote` — Vote on top.gg',
-            '`/server` — Join the official community Discord',
-          ].join('\n'),
-        },
+        { name: t(g, 'help.rolling'), value: t(g, 'help.rollingV') },
+        { name: t(g, 'help.collection'), value: t(g, 'help.collectionV') },
+        { name: t(g, 'help.social'), value: t(g, 'help.socialV') },
+        { name: t(g, 'help.setup'), value: t(g, 'help.setupV') },
+        { name: t(g, 'help.other'), value: t(g, 'help.otherV') },
       )
       .setFooter({ text: 'wikiroll.hackatoa.com' });
 

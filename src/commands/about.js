@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { db } from '../database.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -8,6 +9,7 @@ export default {
 
   async execute(interaction) {
     const guildId = interaction.guildId;
+    const g = guildId;
 
     const totalChars   = db.prepare('SELECT COUNT(*) AS n FROM characters').get().n;
     const guildOwned   = db.prepare('SELECT COUNT(*) AS n FROM ownership WHERE guild_id = ?').get(guildId).n;
@@ -16,41 +18,22 @@ export default {
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
       .setTitle('WikiRoll')
-      .setDescription('Collect characters and articles from **Wikipedia + 150+ Fandom wikis**.\nRoll, claim, trade, and build your collection — one wiki page at a time.')
+      .setDescription(t(g, 'about.desc'))
       .addFields(
         {
-          name: '📊 Stats',
-          value: [
-            `**${totalChars.toLocaleString()}** characters in the global pool`,
-            `**${guildOwned.toLocaleString()}** claimed in this server`,
-            `**${guildRollers.toLocaleString()}** collectors here`,
-          ].join('\n'),
+          name: t(g, 'about.stats'),
+          value: t(g, 'about.statsV', {
+            total: totalChars.toLocaleString(),
+            owned: guildOwned.toLocaleString(),
+            rollers: guildRollers.toLocaleString(),
+          }),
           inline: false,
         },
-        {
-          name: '🔗 Links',
-          value: [
-            '🌐 [Website](https://wikiroll.hackatoa.com)',
-            '➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands)',
-            '🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)',
-            '🚀 [Join Orbital Outpost](https://discord.gg/7eh3q2u8V) — the community server',
-            '💻 [GitHub](https://github.com/Hackatoan/wikiroll)',
-            '☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)',
-          ].join('\n'),
-          inline: false,
-        },
-        {
-          name: '⚡ Quick Start',
-          value: '`/roll` to roll 10 characters · click a button to claim · `/collection` to view yours\n`/wishlist` · `/trade` · `/info` · `/search` · `/vote` · `/server`',
-          inline: false,
-        },
-        {
-          name: '🛠️ Admin Commands',
-          value: '`/setrollchannel set` — restrict rolls to one channel\n`/linkserver start` — share claimed ownership with another server',
-          inline: false,
-        },
+        { name: t(g, 'about.links'), value: t(g, 'about.linksV'), inline: false },
+        { name: t(g, 'about.quickStart'), value: t(g, 'about.quickStartV'), inline: false },
+        { name: t(g, 'about.admin'), value: t(g, 'about.adminV'), inline: false },
       )
-      .setFooter({ text: 'Built by Hackatoa · hackatoa.com' })
+      .setFooter({ text: t(g, 'about.footer') })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });

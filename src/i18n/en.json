@@ -1,10 +1,48 @@
 {
   "language.set": "🌍 WikiRoll will reply in **{label}** for this server.",
+
   "roll.restricted": "🎲 Rolls are restricted to {channel}.",
   "roll.cooldown": "⏳ You can roll again in **{mins}** minutes.\n> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) to earn a free bonus roll!",
   "roll.fetchFail": "❌ Failed to fetch characters. Please try again in a moment.",
   "roll.saveFail": "❌ Failed to save characters. Please try again.",
   "roll.rolled": "🎲 **{user}** rolled! Claim within **{mins}** minutes!",
   "roll.wishlistPing": "🔔 **{char}** (on your wishlist) just appeared in a roll in **{guild}**!\n[Jump to roll]({url}) — claim window: **{mins}** minutes",
-  "roll.expired": "🎲 ~~{user}'s roll~~ *(expired)*"
+  "roll.expired": "🎲 ~~{user}'s roll~~ *(expired)*",
+
+  "embed.claimPlaceholder": "Claim a character…",
+  "embed.collectionTitle": "{user}'s Collection",
+  "embed.pageFooter": "Page {page}/{total} · {count} total",
+  "embed.collectionEmpty": "*No characters yet — use `/roll` to get started!*",
+  "embed.searchTitle": "🔍 Search: \"{query}\"",
+  "embed.resultCount": "{count} results",
+  "embed.searchNone": "No characters found. Try a different name.",
+  "embed.unclaimed": "Unclaimed",
+  "embed.owner": "Owner",
+  "embed.source": "Source",
+  "embed.tradeGiftDesc": "**{initiator}** is gifting a character to **{target}**!\n\n**Gift →** {offer}\n\n*Accept or decline within 10 minutes.*",
+  "embed.tradeDesc": "**{initiator}** wants to trade with **{target}**\n\n**Offering →** {offer}\n**Requesting ←** {request}\n\n*Accept or decline within 10 minutes.*",
+  "embed.giftTitle": "🎁 Gift Offer",
+  "embed.tradeTitle": "🔄 Trade Offer",
+  "embed.settingsTitle": "⚙️ WikiRoll Server Settings",
+  "embed.rollCooldown": "⏱ Roll Cooldown",
+  "embed.claimWindow": "⌛ Claim Window",
+  "embed.minutes": "{n} minutes",
+  "embed.notifyChannel": "📢 Notify Channel",
+  "embed.none": "None",
+  "embed.timezone": "🕐 Timezone",
+  "embed.wishlistTitle": "⭐ {user}'s Wishlist",
+  "embed.wishlistEmpty": "*Empty. Use `/wishlist add <name>` to add characters!*",
+  "embed.wishlistTitleCount": "⭐ {user}'s Wishlist ({count} total)",
+  "embed.addedToWishlist": "Added to wishlist",
+
+  "btn.prev": "◀ Prev",
+  "btn.next": "Next ▶",
+
+  "daily.restricted": "🗓️ Daily rolls are restricted to {channel}.",
+  "daily.alreadyRolled": "⏳ Already rolled today. Next daily in **{time}**.",
+  "daily.streakLine": "🔥 **{streak}-day streak** — you get **{claims} claims** from this roll!\n",
+  "daily.rolled": "🗓️ **{user}'s daily roll!**\n{streak}Claim within **{mins}** minutes!",
+  "daily.expired": "🗓️ ~~{user}'s daily roll~~ *(expired)*",
+
+  "info.notFound": "No character matching **\"{name}\"** found. Try `/search` first."
 }

@@ -35,6 +35,6 @@ export default {
       }
     }
 
-    await interaction.editReply({ embeds: [buildSearchEmbed(results, query)] });
+    await interaction.editReply({ embeds: [buildSearchEmbed(results, query, guildId)] });
   },
 };

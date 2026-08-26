@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
 import { buildCharInfoEmbed } from '../embeds.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -16,11 +17,11 @@ export default {
 
     const results = stmts.searchChars.all(guildId, `%${name}%`);
     if (!results.length) {
-      return interaction.reply({ content: `No character matching **"${name}"** found. Try \`/search\` first.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'info.notFound', { name }), ephemeral: true });
     }
 
     const char  = results[0];
     const owner = getOwnerCrossGuild(getLinkedGuildIds(guildId), char.id);
-    await interaction.reply({ embeds: [buildCharInfoEmbed(char, owner?.user_id ?? null)] });
+    await interaction.reply({ embeds: [buildCharInfoEmbed(char, owner?.user_id ?? null, guildId)] });
   },
 };

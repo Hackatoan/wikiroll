@@ -86,7 +86,7 @@ export default {
     stmts.setCooldown.run(userId, guildId);
 
     const embeds     = buildRollEmbeds(chars);
-    const components = buildClaimSelect(rollId, chars);
+    const components = buildClaimSelect(rollId, chars, undefined, guildId);
     const mins = settings.claim_window_minutes;
 
     const msg = await interaction.editReply({

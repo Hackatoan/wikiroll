@@ -1,4 +1,5 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } from 'discord.js';
+import { t } from './i18n.js';
 
 const PALETTE = [
   0x5865F2, 0xEB459E, 0xFEE75C, 0x57F287, 0xED4245,
@@ -33,7 +34,7 @@ export function buildRollEmbeds(characters, ownedIndices = new Set()) {
   });
 }
 
-export function buildClaimSelect(rollId, characters, claimedIndices = new Set()) {
+export function buildClaimSelect(rollId, characters, claimedIndices = new Set(), gid) {
   const options = characters
     .map((c, i) => ({ c, i }))
     .filter(({ i }) => !claimedIndices.has(i))
@@ -48,13 +49,13 @@ export function buildClaimSelect(rollId, characters, claimedIndices = new Set())
 
   const select = new StringSelectMenuBuilder()
     .setCustomId(`claimselect_${rollId}`)
-    .setPlaceholder('Claim a character…')
+    .setPlaceholder(t(gid, 'embed.claimPlaceholder'))
     .addOptions(options);
 
   return [new ActionRowBuilder().addComponents(select)];
 }
 
-export function buildCollectionEmbed(user, chars, page = 1) {
+export function buildCollectionEmbed(user, chars, page = 1, gid) {
   const perPage = 12;
   const start = (page - 1) * perPage;
   const slice = chars.slice(start, start + perPage);
@@ -62,11 +63,11 @@ export function buildCollectionEmbed(user, chars, page = 1) {
 
   const embed = new EmbedBuilder()
     .setColor(0x5865F2)
-    .setAuthor({ name: `${user.username}'s Collection`, iconURL: user.displayAvatarURL() })
-    .setFooter({ text: `Page ${page}/${totalPages} · ${chars.length} total` });
+    .setAuthor({ name: t(gid, 'embed.collectionTitle', { user: user.username }), iconURL: user.displayAvatarURL() })
+    .setFooter({ text: t(gid, 'embed.pageFooter', { page, total: totalPages, count: chars.length }) });
 
   if (!slice.length) {
-    embed.setDescription('*No characters yet — use `/roll` to get started!*');
+    embed.setDescription(t(gid, 'embed.collectionEmpty'));
   } else {
     const lines = slice.map((c, i) => {
       const idx = start + i + 1;
@@ -80,34 +81,34 @@ export function buildCollectionEmbed(user, chars, page = 1) {
   return embed;
 }
 
-export function buildSearchEmbed(chars, query) {
+export function buildSearchEmbed(chars, query, gid) {
   const embed = new EmbedBuilder()
     .setColor(0x00BCD4)
-    .setTitle(`🔍 Search: "${query}"`)
-    .setFooter({ text: `${chars.length} result${chars.length !== 1 ? 's' : ''}` });
+    .setTitle(t(gid, 'embed.searchTitle', { query }))
+    .setFooter({ text: t(gid, 'embed.resultCount', { count: chars.length }) });
 
   if (!chars.length) {
-    embed.setDescription('No characters found. Try a different name.');
+    embed.setDescription(t(gid, 'embed.searchNone'));
     return embed;
   }
 
   const lines = chars.map(c => {
-    const owner = c.owner_id ? `<@${c.owner_id}>` : '*(unclaimed)*';
+    const owner = c.owner_id ? `<@${c.owner_id}>` : `*${t(gid, 'embed.unclaimed')}*`;
     return `[**${c.name}**](${c.wiki_url || '#'}) — ${owner} ${sourceIcon(c.source)}`;
   });
   embed.setDescription(lines.join('\n'));
   return embed;
 }
 
-export function buildCharInfoEmbed(char, ownerId = null) {
+export function buildCharInfoEmbed(char, ownerId = null, gid) {
   const img = char.user_image || char.image_url;
   const embed = new EmbedBuilder()
     .setColor(ownerId ? 0x57F287 : 0x607D8B)
     .setTitle(char.name)
     .setURL(char.wiki_url || null)
     .addFields(
-      { name: 'Owner', value: ownerId ? `<@${ownerId}>` : 'Unclaimed', inline: true },
-      { name: 'Source', value: `${sourceIcon(char.source)} ${char.source}`, inline: true }
+      { name: t(gid, 'embed.owner'), value: ownerId ? `<@${ownerId}>` : t(gid, 'embed.unclaimed'), inline: true },
+      { name: t(gid, 'embed.source'), value: `${sourceIcon(char.source)} ${char.source}`, inline: true }
     )
     .setFooter({ text: char.wiki_url || '' });
 
@@ -116,40 +117,42 @@ export function buildCharInfoEmbed(char, ownerId = null) {
   return embed;
 }
 
-export function buildTradeEmbed(initiatorTag, targetTag, offerChar, requestChar = null) {
+export function buildTradeEmbed(initiatorTag, targetTag, offerChar, requestChar = null, gid) {
   const isGift = !requestChar;
   const desc = isGift
-    ? `**${initiatorTag}** is gifting a character to **${targetTag}**!\n\n` +
-      `**Gift →** [${offerChar.name}](${offerChar.wiki_url || '#'})\n\n` +
-      `*Accept or decline within 10 minutes.*`
-    : `**${initiatorTag}** wants to trade with **${targetTag}**\n\n` +
-      `**Offering →** [${offerChar.name}](${offerChar.wiki_url || '#'})\n` +
-      `**Requesting ←** [${requestChar.name}](${requestChar.wiki_url || '#'})\n\n` +
-      `*Accept or decline within 10 minutes.*`;
+    ? t(gid, 'embed.tradeGiftDesc', {
+        initiator: initiatorTag, target: targetTag,
+        offer: `[${offerChar.name}](${offerChar.wiki_url || '#'})`,
+      })
+    : t(gid, 'embed.tradeDesc', {
+        initiator: initiatorTag, target: targetTag,
+        offer: `[${offerChar.name}](${offerChar.wiki_url || '#'})`,
+        request: `[${requestChar.name}](${requestChar.wiki_url || '#'})`,
+      });
   return new EmbedBuilder()
     .setColor(isGift ? 0x57F287 : 0xFEE75C)
-    .setTitle(isGift ? '🎁 Gift Offer' : '🔄 Trade Offer')
+    .setTitle(isGift ? t(gid, 'embed.giftTitle') : t(gid, 'embed.tradeTitle'))
     .setDescription(desc);
 }
 
-export function buildSettingsEmbed(settings) {
+export function buildSettingsEmbed(settings, gid) {
   return new EmbedBuilder()
     .setColor(0x9C27B0)
-    .setTitle('⚙️ WikiRoll Server Settings')
+    .setTitle(t(gid, 'embed.settingsTitle'))
     .addFields(
-      { name: '⏱ Roll Cooldown', value: `${settings.roll_cooldown_minutes} minutes`, inline: true },
-      { name: '⌛ Claim Window', value: `${settings.claim_window_minutes} minutes`, inline: true },
-      { name: '📢 Notify Channel', value: settings.notify_channel ? `<#${settings.notify_channel}>` : 'None', inline: true },
-      { name: '🕐 Timezone', value: settings.timezone || 'America/Los_Angeles', inline: true }
+      { name: t(gid, 'embed.rollCooldown'), value: t(gid, 'embed.minutes', { n: settings.roll_cooldown_minutes }), inline: true },
+      { name: t(gid, 'embed.claimWindow'), value: t(gid, 'embed.minutes', { n: settings.claim_window_minutes }), inline: true },
+      { name: t(gid, 'embed.notifyChannel'), value: settings.notify_channel ? `<#${settings.notify_channel}>` : t(gid, 'embed.none'), inline: true },
+      { name: t(gid, 'embed.timezone'), value: settings.timezone || 'America/Los_Angeles', inline: true }
     );
 }
 
-export function buildWishlistEmbeds(user, items) {
+export function buildWishlistEmbeds(user, items, gid) {
   if (!items.length) {
     return [new EmbedBuilder()
       .setColor(0xFFA500)
-      .setAuthor({ name: `⭐ ${user.username}'s Wishlist`, iconURL: user.displayAvatarURL() })
-      .setDescription('*Empty. Use `/wishlist add <name>` to add characters!*')
+      .setAuthor({ name: t(gid, 'embed.wishlistTitle', { user: user.username }), iconURL: user.displayAvatarURL() })
+      .setDescription(t(gid, 'embed.wishlistEmpty'))
     ];
   }
   return items.slice(0, 10).map((w, i) => {
@@ -157,18 +160,19 @@ export function buildWishlistEmbeds(user, items) {
       .setColor(0xFFA500)
       .setTitle(w.display_name)
       .setFooter({ text: w.source ? `${sourceIcon(w.source)} ${w.source}` : '' });
-    if (i === 0) e.setAuthor({ name: `⭐ ${user.username}'s Wishlist (${items.length} total)`, iconURL: user.displayAvatarURL() });
+    if (i === 0) e.setAuthor({ name: t(gid, 'embed.wishlistTitleCount', { user: user.username, count: items.length }), iconURL: user.displayAvatarURL() });
     if (w.wiki_url) e.setURL(w.wiki_url);
     if (w.image_url) e.setThumbnail(w.image_url);
     return e;
   });
 }
 
-export function buildWishCharEmbed(char, footerNote = 'Added to wishlist') {
+export function buildWishCharEmbed(char, footerNote, gid) {
+  const note = footerNote || t(gid, 'embed.addedToWishlist');
   const e = new EmbedBuilder()
     .setColor(0xFFA500)
     .setTitle(char.name ?? char.display_name)
-    .setFooter({ text: `⭐ ${footerNote} · ${sourceIcon(char.source)} ${char.source}` });
+    .setFooter({ text: `⭐ ${note} · ${sourceIcon(char.source)} ${char.source}` });
   if (char.wiki_url) e.setURL(char.wiki_url);
   if (char.image_url) e.setThumbnail(char.image_url);
   if (char.description) e.setDescription(char.description.slice(0, 220) + (char.description.length > 220 ? '…' : ''));

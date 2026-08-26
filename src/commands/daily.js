@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
+import { t } from '../i18n.js';
 
 function todayInTz(tz) {
   return new Date().toLocaleDateString('en-CA', { timeZone: tz });
@@ -39,7 +40,7 @@ export default {
 
     if (settings.roll_channel && interaction.channelId !== settings.roll_channel) {
       return interaction.editReply({
-        content: `🗓️ Daily rolls are restricted to <#${settings.roll_channel}>.`,
+        content: t(guildId, 'daily.restricted', { channel: `<#${settings.roll_channel}>` }),
         flags: 64,
       });
     }
@@ -51,7 +52,7 @@ export default {
       const h = Math.floor(secsLeft / 3600);
       const m = Math.ceil((secsLeft % 3600) / 60);
       const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-      return interaction.editReply(`⏳ Already rolled today. Next daily in **${timeStr}**.`);
+      return interaction.editReply(t(guildId, 'daily.alreadyRolled', { time: timeStr }));
     }
 
     // Consecutive day streak (cap stored value at 100 to prevent overflow)
@@ -94,15 +95,15 @@ export default {
     const rollId = roll.lastInsertRowid;
 
     const embeds     = buildRollEmbeds(chars);
-    const components = buildClaimSelect(rollId, chars);
+    const components = buildClaimSelect(rollId, chars, undefined, guildId);
     const mins       = settings.claim_window_minutes;
 
     const streakLine = streak >= 2
-      ? `🔥 **${streak}-day streak** — you get **${claims} claims** from this roll!\n`
+      ? t(guildId, 'daily.streakLine', { streak, claims })
       : '';
 
     const msg = await interaction.editReply({
-      content: `🗓️ **${interaction.user.username}'s daily roll!**\n${streakLine}Claim within **${mins} minute${mins !== 1 ? 's' : ''}**!`,
+      content: t(guildId, 'daily.rolled', { user: interaction.user.username, streak: streakLine, mins }),
       embeds,
       components,
     });
@@ -112,7 +113,7 @@ export default {
     setTimeout(async () => {
       try {
         await msg.edit({
-          content: `🗓️ ~~${interaction.user.username}'s daily roll~~ *(expired)*`,
+          content: t(guildId, 'daily.expired', { user: interaction.user.username }),
           embeds,
           components: [],
         });

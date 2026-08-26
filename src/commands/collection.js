@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getLinkedGuildIds, getUserCollectionCrossGuild } from '../database.js';
 import { buildCollectionEmbed } from '../embeds.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -18,19 +19,19 @@ export default {
     const totalPages = Math.max(1, Math.ceil(chars.length / perPage));
     const safePage = Math.min(page, totalPages);
 
-    const embed = buildCollectionEmbed(target, chars, safePage);
+    const embed = buildCollectionEmbed(target, chars, safePage, interaction.guildId);
 
     const rows = [];
     if (totalPages > 1) {
       const ar = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId(`col_${target.id}_${safePage - 1}`)
-          .setLabel('◀ Prev')
+          .setLabel(t(interaction.guildId, 'btn.prev'))
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(safePage <= 1),
         new ButtonBuilder()
           .setCustomId(`col_${target.id}_${safePage + 1}`)
-          .setLabel('Next ▶')
+          .setLabel(t(interaction.guildId, 'btn.next'))
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(safePage >= totalPages)
       );

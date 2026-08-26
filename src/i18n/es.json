@@ -44,7 +44,7 @@
   "btn.decline": "Rechazar",
   "trade.selfTrade": "No puedes comerciar contigo mismo.",
   "trade.botTrade": "No puedes comerciar con un bot.",
-  "trade.noOwner": "No posees ningún personaje que coincida con **\"{q}\"**.",
+  "trade.noOffer": "No posees ningún personaje que coincida con **\"{q}\"**.",
   "trade.noTheir": "{target} no posee ningún personaje que coincida con **\"{q}\"**.",
   "trade.typeTrade": "Intercambio",
   "trade.typeGift": "Regalo",

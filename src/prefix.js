@@ -10,6 +10,7 @@ import {
   buildSettingsEmbed,
 } from './embeds.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { t } from './i18n.js';
 
 const PREFIX = 'w.';
 
@@ -79,7 +80,7 @@ export async function handlePrefix(message) {
     }
   } catch (e) {
     console.error('[prefix] error:', e.message);
-    message.reply('❌ Something went wrong.').catch(() => {});
+    message.reply(t(message.guild?.id, 'px.genericError')).catch(() => {});
   }
 }
 
@@ -95,11 +96,11 @@ async function prefixRoll(message, guildId, userId) {
     const remaining = cooldownSecs - (now - cd.last_roll);
     if (remaining > 0) {
       const mins = Math.ceil(remaining / 60);
-      return message.reply(`⏳ You can roll again in **${mins} minute${mins !== 1 ? 's' : ''}**.`);
+      return message.reply(t(message.guild?.id, 'px.rollCd', { mins }));
     }
   }
 
-  const rolling = await message.reply('🎲 Rolling...');
+  const rolling = await message.reply(t(message.guild?.id, 'px.rolling'));
 
   const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
   const wishedChars   = stmts.getGuildWishChars.all(guildId);
@@ -107,7 +108,7 @@ async function prefixRoll(message, guildId, userId) {
 
   const rawChars = await fetchTenCharacters({ guildSources, wishedChars, wishedSources });
   if (!rawChars.length) {
-    return rolling.edit('❌ Failed to fetch characters. Try again in a moment.');
+    return rolling.edit(t(message.guild?.id, 'px.fetchFail'));
   }
 
   const chars = [];
@@ -142,7 +143,7 @@ async function prefixRoll(message, guildId, userId) {
   const mins = settings.claim_window_minutes;
 
   const msg = await rolling.edit({
-    content: `🎲 **${message.author.username}** rolled! Claim within **${mins} minute${mins !== 1 ? 's' : ''}**!`,
+    content: t(message.guild?.id, 'px.rolled', { user: message.author.username, mins }),
     embeds,
     components,
   });
@@ -150,7 +151,7 @@ async function prefixRoll(message, guildId, userId) {
   stmts.setRollMessageId.run(msg.id, rollId);
 
   setTimeout(async () => {
-    try { await msg.edit({ content: `🎲 ~~${message.author.username}'s roll~~ *(expired)*`, embeds, components: [] }); } catch {}
+    try { await msg.edit({ content: t(message.guild?.id, 'px.rollExp', { user: message.author.username }), embeds, components: [] }); } catch {}
   }, claimWindowSecs * 1000);
 }
 
@@ -164,7 +165,7 @@ async function prefixDaily(message, guildId, userId) {
   const yesterday = yesterdayInTz(tz);
 
   if (settings.roll_channel && message.channel.id !== settings.roll_channel) {
-    return message.reply(`🗓️ Daily rolls are restricted to <#${settings.roll_channel}>.`);
+    return message.reply(t(message.guild?.id, 'px.dailyRestrict', { channel: `<#${settings.roll_channel}>` }));
   }
 
   const dailyRec = stmts.getDaily.get(userId, guildId);
@@ -174,7 +175,7 @@ async function prefixDaily(message, guildId, userId) {
     const h = Math.floor(secsLeft / 3600);
     const m = Math.ceil((secsLeft % 3600) / 60);
     const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`;
-    return message.reply(`⏳ Already rolled today. Next daily in **${timeStr}**.`);
+    return message.reply(t(message.guild?.id, 'px.dailyAlready', { time: timeStr }));
   }
 
   const streak = dailyRec?.last_daily === yesterday
@@ -185,7 +186,7 @@ async function prefixDaily(message, guildId, userId) {
 
   stmts.setDaily.run(userId, guildId, today, streak);
 
-  const rolling = await message.reply('🗓️ Rolling your daily...');
+  const rolling = await message.reply(t(message.guild?.id, 'px.dailyRolling'));
 
   const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
   const wishedChars   = stmts.getGuildWishChars.all(guildId);
@@ -221,11 +222,11 @@ async function prefixDaily(message, guildId, userId) {
   const mins       = settings.claim_window_minutes;
 
   const streakLine = streak >= 2
-    ? `🔥 **${streak}-day streak** — you get **${claims} claims** from this roll!\n`
+    ? t(message.guild?.id, 'px.dailyStreak', { streak, claims })
     : '';
 
   const msg = await rolling.edit({
-    content: `🗓️ **${message.author.username}'s daily roll!**\n${streakLine}Claim within **${mins} minute${mins !== 1 ? 's' : ''}**!`,
+    content: t(message.guild?.id, 'px.dailyRolled', { user: message.author.username, streak: streakLine, mins }),
     embeds,
     components,
   });
@@ -235,7 +236,7 @@ async function prefixDaily(message, guildId, userId) {
   setTimeout(async () => {
     try {
       await msg.edit({
-        content: `🗓️ ~~${message.author.username}'s daily roll~~ *(expired)*`,
+        content: t(message.guild?.id, 'px.dailyExp', { user: message.author.username }),
         embeds,
         components: [],
       });
@@ -254,13 +255,13 @@ async function prefixCollection(message, args, guildId) {
   const chars      = getUserCollectionCrossGuild(getLinkedGuildIds(guildId), target.id);
   const totalPages = Math.max(1, Math.ceil(chars.length / 12));
   const safePage   = Math.min(page, totalPages);
-  const embed      = buildCollectionEmbed(target, chars, safePage);
+  const embed      = buildCollectionEmbed(target, chars, safePage, message.guild?.id);
 
   const rows = [];
   if (totalPages > 1) {
     const ar = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`col_${target.id}_${safePage - 1}`).setLabel('◀ Prev').setStyle(ButtonStyle.Secondary).setDisabled(safePage <= 1),
-      new ButtonBuilder().setCustomId(`col_${target.id}_${safePage + 1}`).setLabel('Next ▶').setStyle(ButtonStyle.Secondary).setDisabled(safePage >= totalPages)
+      new ButtonBuilder().setCustomId(`col_${target.id}_${safePage - 1}`).setLabel(t(message.guild?.id, 'btn.prev')).setStyle(ButtonStyle.Secondary).setDisabled(safePage <= 1),
+      new ButtonBuilder().setCustomId(`col_${target.id}_${safePage + 1}`).setLabel(t(message.guild?.id, 'btn.next')).setStyle(ButtonStyle.Secondary).setDisabled(safePage >= totalPages)
     );
     rows.push(ar);
   }
@@ -270,8 +271,8 @@ async function prefixCollection(message, args, guildId) {
 // ── Search ────────────────────────────────────────────────────────────────
 
 async function prefixSearch(message, query, guildId) {
-  if (!query) return message.reply('Usage: `w.search <name>`');
-  const placeholder = await message.reply('🔍 Searching...');
+  if (!query) return message.reply(t(message.guild?.id, 'px.uSearch'));
+  const placeholder = await message.reply(t(message.guild?.id, 'px.searching'));
 
   let results = stmts.searchChars.all(guildId, `%${query}%`);
   if (results.length < 3) {
@@ -287,18 +288,18 @@ async function prefixSearch(message, query, guildId) {
       } catch {}
     }
   }
-  await placeholder.edit({ content: '', embeds: [buildSearchEmbed(results, query)] });
+  await placeholder.edit({ content: '', embeds: [buildSearchEmbed(results, query, message.guild?.id)] });
 }
 
 // ── Info ──────────────────────────────────────────────────────────────────
 
 async function prefixInfo(message, name, guildId) {
-  if (!name) return message.reply('Usage: `w.info <name>`');
+  if (!name) return message.reply(t(message.guild?.id, 'px.uInfo'));
   const results = stmts.searchChars.all(guildId, `%${name}%`);
-  if (!results.length) return message.reply(`No character matching **"${name}"** found.`);
+  if (!results.length) return message.reply(t(message.guild?.id, 'px.infoNF', { name }));
   const char  = results[0];
   const owner = getOwnerCrossGuild(getLinkedGuildIds(guildId), char.id);
-  await message.reply({ embeds: [buildCharInfoEmbed(char, owner?.user_id ?? null)] });
+  await message.reply({ embeds: [buildCharInfoEmbed(char, owner?.user_id ?? null, message.guild?.id)] });
 }
 
 // ── Trade ─────────────────────────────────────────────────────────────────
@@ -306,22 +307,22 @@ async function prefixInfo(message, name, guildId) {
 async function prefixTrade(message, args, guildId, userId) {
   // w.trade @user <offer> <want>
   const target = message.mentions.users.first();
-  if (!target) return message.reply('Usage: `w.trade @user <your char> <their char>`');
+  if (!target) return message.reply(t(message.guild?.id, 'px.uTrade'));
 
   const nonMentionArgs = args.filter(a => !a.startsWith('<@'));
-  if (nonMentionArgs.length < 2) return message.reply('Usage: `w.trade @user <your char> <their char>`');
+  if (nonMentionArgs.length < 2) return message.reply(t(message.guild?.id, 'px.uTrade'));
 
   const offerQ   = nonMentionArgs[0];
   const requestQ = nonMentionArgs.slice(1).join(' ');
 
-  if (target.id === userId)  return message.reply('You cannot trade with yourself.');
-  if (target.bot)            return message.reply('You cannot trade with a bot.');
+  if (target.id === userId)  return message.reply(t(message.guild?.id, 'px.tSelf'));
+  if (target.bot)            return message.reply(t(message.guild?.id, 'px.tBot'));
 
   const myChars    = stmts.searchChars.all(guildId, `%${offerQ}%`).filter(c => c.owner_id === userId);
-  if (!myChars.length) return message.reply(`You don't own a character matching **"${offerQ}"**.`);
+  if (!myChars.length) return message.reply(t(message.guild?.id, 'px.tNoOffer', { q: offerQ }));
 
   const theirChars = stmts.searchChars.all(guildId, `%${requestQ}%`).filter(c => c.owner_id === target.id);
-  if (!theirChars.length) return message.reply(`<@${target.id}> doesn't own a character matching **"${requestQ}"**.`);
+  if (!theirChars.length) return message.reply(t(message.guild?.id, 'px.tNoTheir', { target: `<@${target.id}>`, q: requestQ }));
 
   const offerChar   = myChars[0];
   const requestChar = theirChars[0];
@@ -337,33 +338,33 @@ async function prefixTrade(message, args, guildId, userId) {
   const tradeId = trade.lastInsertRowid;
 
   const { buildTradeEmbed } = await import('./embeds.js');
-  const embed = buildTradeEmbed(message.author.username, target.username, offerChar, requestChar);
+  const embed = buildTradeEmbed(message.author.username, target.username, offerChar, requestChar, message.guild?.id);
 
   const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId(`trade_accept_${tradeId}`).setLabel('Accept').setStyle(ButtonStyle.Success).setEmoji('✅'),
-    new ButtonBuilder().setCustomId(`trade_decline_${tradeId}`).setLabel('Decline').setStyle(ButtonStyle.Danger).setEmoji('❌')
+    new ButtonBuilder().setCustomId(`trade_accept_${tradeId}`).setLabel(t(message.guild?.id, 'btn.accept')).setStyle(ButtonStyle.Success).setEmoji('✅'),
+    new ButtonBuilder().setCustomId(`trade_decline_${tradeId}`).setLabel(t(message.guild?.id, 'btn.decline')).setStyle(ButtonStyle.Danger).setEmoji('❌')
   );
 
   const msg = await message.reply({ content: `<@${target.id}>`, embeds: [embed], components: [row] });
   stmts.setTradeMessageId.run(msg.id, tradeId);
 
   setTimeout(async () => {
-    try { await msg.edit({ content: '⏰ Trade offer expired.', embeds: [], components: [] }); } catch {}
+    try { await msg.edit({ content: t(message.guild?.id, 'px.tExp'), embeds: [], components: [] }); } catch {}
   }, 600_000);
 }
 
 // ── Remove ────────────────────────────────────────────────────────────────
 
 async function prefixRemove(message, name, guildId, userId) {
-  if (!name) return message.reply('Usage: `w.remove <name>`');
+  if (!name) return message.reply(t(message.guild?.id, 'px.uRemove'));
   const results = stmts.searchChars.all(guildId, `%${name}%`);
   const owned   = results.filter(c => c.owner_id === userId);
-  if (!owned.length) return message.reply(`You don't own any character matching **"${name}"**.`);
+  if (!owned.length) return message.reply(t(message.guild?.id, 'px.rmNoOwn', { name }));
   if (owned.length > 1) {
-    return message.reply(`Multiple matches:\n${owned.slice(0,5).map((c,i)=>`${i+1}. ${c.name}`).join('\n')}\nBe more specific.`);
+    return message.reply(t(message.guild?.id, 'px.rmMulti', { list: owned.slice(0,5).map((c,i)=>`${i+1}. ${c.name}`).join('\n') }));
   }
   stmts.removeChar.run(guildId, userId, owned[0].id);
-  await message.reply(`💔 **${owned[0].name}** removed from your collection.`);
+  await message.reply(t(message.guild?.id, 'px.rmDone', { char: owned[0].name }));
 }
 
 // ── Wishlist ──────────────────────────────────────────────────────────────
@@ -374,11 +375,11 @@ async function prefixWishlist(message, args, guildId, userId) {
 
   if (sub === 'view' || !args.length) {
     const items = stmts.getUserWishlist.all(userId, guildId);
-    return message.reply({ embeds: buildWishlistEmbeds(message.author, items) });
+    return message.reply({ embeds: buildWishlistEmbeds(message.author, items, message.guild?.id) });
   }
 
   if (sub === 'add') {
-    if (!rest) return message.reply('Usage: `w.wl add <name>`');
+    if (!rest) return message.reply(t(message.guild?.id, 'px.uWlAdd'));
     const local = stmts.searchChars.all(guildId, `%${rest}%`);
     let charId = null, charName = rest;
     if (local.length) { charId = local[0].id; charName = local[0].name; }
@@ -389,39 +390,39 @@ async function prefixWishlist(message, args, guildId, userId) {
         if (char) { const row = stmts.upsertChar.get(char); charId = row.id; charName = char.name; }
       }
     }
-    if (!charId) return message.reply(`Character **"${rest}"** not found.`);
+    if (!charId) return message.reply(t(message.guild?.id, 'px.wlCharNF', { name: rest }));
     stmts.addWish.run(userId, guildId, charId, charName);
-    return message.reply(`⭐ Added **${charName}** to your wishlist!`);
+    return message.reply(t(message.guild?.id, 'px.wlAdded', { char: charName }));
   }
 
   if (sub === 'remove' || sub === 'rm') {
     const local = stmts.searchChars.all(guildId, `%${rest}%`);
-    if (!local.length) return message.reply(`**"${rest}"** not found.`);
+    if (!local.length) return message.reply(t(message.guild?.id, 'px.wlRmNF', { name: rest }));
     stmts.removeWish.run(userId, guildId, local[0].id);
-    return message.reply(`Removed **${local[0].name}** from your wishlist.`);
+    return message.reply(t(message.guild?.id, 'px.wlRemoved', { char: local[0].name }));
   }
 
   if (sub === 'addsource' || sub === 'as') {
-    if (!rest) return message.reply('Usage: `w.wl addsource <fandom_url_or_keyword>`');
+    if (!rest) return message.reply(t(message.guild?.id, 'px.uWlAddsrc'));
     const isUrl = rest.includes('.fandom.com') || rest.startsWith('http');
     let sourceType, sourceValue, displayName;
     if (isUrl) {
       try {
         const parsed = new URL(rest.startsWith('http') ? rest : `https://${rest}`);
         sourceType = 'fandom'; sourceValue = `${parsed.protocol}//${parsed.hostname}`; displayName = parsed.hostname;
-      } catch { return message.reply('Invalid URL.'); }
+      } catch { return message.reply(t(message.guild?.id, 'px.invalidUrl2')); }
     } else {
       sourceType = 'search'; sourceValue = rest; displayName = rest;
     }
     stmts.addWishSource.run(userId, guildId, sourceType, sourceValue, displayName);
-    return message.reply(`✅ \`${displayName}\` added as a boosted source (3× roll weight)!`);
+    return message.reply(t(message.guild?.id, 'px.wlSrcAdded', { name: displayName }));
   }
 
   if (sub === 'sources' || sub === 'src') {
     const sources = stmts.getUserWishSources.all(userId, guildId);
-    if (!sources.length) return message.reply('No boosted sources yet. Use `w.wl addsource <url_or_keyword>`');
+    if (!sources.length) return message.reply(t(message.guild?.id, 'px.wlNoSrc'));
     const lines = sources.map(s => `• **${s.display_name ?? s.source_value}** *(${s.source_type})*`);
-    return message.reply(`**Your boosted sources:**\n${lines.join('\n')}`);
+    return message.reply(t(message.guild?.id, 'px.wlSources', { list: lines.join('\n') }));
   }
 }
 
@@ -436,31 +437,22 @@ async function prefixAbout(message) {
   const embed = new EmbedBuilder()
     .setColor(0x7c3aed)
     .setTitle('WikiRoll')
-    .setDescription('Collect characters and articles from **Wikipedia + 70+ Fandom wikis**.\nRoll, claim, trade, and build your collection — one wiki page at a time.')
+    .setDescription(t(message.guild?.id, 'px.aboutDesc'))
     .addFields(
       {
-        name: '📊 Stats',
-        value: [
-          `**${totalChars.toLocaleString()}** characters in the global pool`,
-          `**${guildOwned.toLocaleString()}** claimed in this server`,
-          `**${guildRollers.toLocaleString()}** collectors here`,
-        ].join('\n'),
+        name: t(message.guild?.id, 'about.stats'),
+        value: t(message.guild?.id, 'about.statsV', { total: totalChars.toLocaleString(), owned: guildOwned.toLocaleString(), rollers: guildRollers.toLocaleString() }),
       },
       {
-        name: '🔗 Links',
-        value: [
-          '🌐 [Website](https://wikiroll.hackatoa.com)',
-          '➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=126016&scope=bot%20applications.commands)',
-          '💻 [GitHub](https://github.com/Hackatoan/wikiroll)',
-          '☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)',
-        ].join('\n'),
+        name: t(message.guild?.id, 'about.links'),
+        value: t(message.guild?.id, 'px.aboutLinksV'),
       },
       {
-        name: '⚡ Quick Start',
-        value: '`w.roll` to roll 10 characters · click a button to claim · `w.c` to view collection',
+        name: t(message.guild?.id, 'about.quickStart'),
+        value: t(message.guild?.id, 'px.aboutQuickV'),
       },
     )
-    .setFooter({ text: 'Built by Hackatoa · hackatoa.com' })
+    .setFooter({ text: t(message.guild?.id, 'about.footer') })
     .setTimestamp();
   await message.reply({ embeds: [embed] });
 }
@@ -468,51 +460,31 @@ async function prefixAbout(message) {
 async function prefixHelp(message) {
   const embed = new EmbedBuilder()
     .setColor(0x7c3aed)
-    .setTitle('WikiRoll — Commands')
-    .setDescription('Also available as slash commands (`/roll`, `/daily`, etc.)')
+    .setTitle(t(message.guild?.id, 'help.title'))
+    .setDescription(t(message.guild?.id, 'px.helpDesc'))
     .addFields(
       {
-        name: '🎲 Rolling & Claiming',
-        value: [
-          '`w.roll` — Roll 10 characters (1hr cooldown)',
-          '`w.daily` — Free daily roll; 2+ day streak = 2 claims',
-        ].join('\n'),
+        name: t(message.guild?.id, 'help.rolling'),
+        value: t(message.guild?.id, 'px.pxHelpRollV'),
       },
       {
-        name: '📦 Collection',
-        value: [
-          '`w.collection [@user] [page]` — View a collection',
-          '`w.info <name>` — Detailed info on a character',
-          '`w.search <query>` — See if a character is claimed',
-          '`w.remove <name>` — Remove a character from your collection',
-          '`w.si <name> <url>` — Set a custom image for a character',
-        ].join('\n'),
+        name: t(message.guild?.id, 'help.collection'),
+        value: t(message.guild?.id, 'px.pxHelpColV'),
       },
       {
-        name: '🤝 Social',
-        value: [
-          '`w.trade @user <your char> [their char]` — Trade or gift',
-          '`w.wl view` · `w.wl add <name>` · `w.wl rm <name>`',
-          '`w.wl addsource <url_or_keyword>` · `w.wl sources`',
-          '`w.lb` — Top collectors in this server',
-        ].join('\n'),
+        name: t(message.guild?.id, 'help.social'),
+        value: t(message.guild?.id, 'px.pxHelpSocialV'),
       },
       {
-        name: '⚙️ Server Setup (admin)',
-        value: [
-          '`w.settings view` · `w.settings cooldown <min>` · `w.settings claimwindow <min>`',
-          '`w.settings timezone <tz>` · `w.settings notifychannel [#ch]`',
-          '`w.source add <url>` · `w.source remove <url>` · `w.source list`',
-          '`w.setrc set [#ch]` · `w.setrc clear`',
-          '`w.linkserver start <id>` · `w.linkserver confirm <code>` · `w.linkserver status`',
-        ].join('\n'),
+        name: t(message.guild?.id, 'px.pxHelpSetup'),
+        value: t(message.guild?.id, 'px.pxHelpSetupV'),
       },
       {
-        name: '🔗 Other',
-        value: '`w.about` · `w.vote` · `w.server`',
+        name: t(message.guild?.id, 'help.other'),
+        value: t(message.guild?.id, 'px.pxHelpOtherV'),
       },
     )
-    .setFooter({ text: 'Wishlisted characters & sources appear more often in rolls! · wikiroll.hackatoa.com' });
+    .setFooter({ text: t(message.guild?.id, 'px.pxHelpFooter') });
   await message.reply({ embeds: [embed] });
 }
 
@@ -527,7 +499,7 @@ async function prefixLeaderboard(message, guildId) {
     GROUP BY user_id ORDER BY total DESC LIMIT 10
   `).all(guildId);
 
-  if (!rows.length) return message.reply('📭 No one has claimed anything yet — use `w.roll` to get started!');
+  if (!rows.length) return message.reply(t(message.guild?.id, 'px.lbEmpty'));
 
   const lines = [];
   for (let i = 0; i < rows.length; i++) {
@@ -536,22 +508,22 @@ async function prefixLeaderboard(message, guildId) {
     let name;
     try { name = (await message.guild.members.fetch(user_id)).displayName; }
     catch { try { name = (await message.client.users.fetch(user_id)).username; } catch { name = `<@${user_id}>`; } }
-    const highlight = user_id === message.author.id ? ' ← you' : '';
-    lines.push(`${medal} **${name}** — ${total} character${total !== 1 ? 's' : ''}${highlight}`);
+    const highlight = user_id === message.author.id ? t(message.guild?.id, 'lb.you') : '';
+    lines.push(t(message.guild?.id, 'lb.entry', { medal, name, total, you: highlight }));
   }
 
-  let footerText = `${rows.reduce((s, r) => s + r.total, 0)} characters claimed total`;
+  let footerText = t(message.guild?.id, 'lb.footerTotal', { total: rows.reduce((s, r) => s + r.total, 0) });
   if (!rows.some(r => r.user_id === message.author.id)) {
     const me = db.prepare(`SELECT COUNT(*) AS total FROM ownership WHERE guild_id = ? AND user_id = ?`).get(guildId, message.author.id);
     if (me?.total > 0) {
       const rank = db.prepare(`SELECT COUNT(DISTINCT user_id) AS r FROM ownership WHERE guild_id = ? AND user_id IN (SELECT user_id FROM ownership WHERE guild_id = ? GROUP BY user_id HAVING COUNT(*) >= ?)`).get(guildId, guildId, me.total);
-      footerText += ` · You're #${rank?.r ?? '?'} with ${me.total}`;
+      footerText += t(message.guild?.id, 'lb.footerRank', { rank: rank?.r ?? '?', n: me.total });
     }
   }
 
   const embed = new EmbedBuilder()
     .setColor(0xFEE75C)
-    .setTitle(`🏆 ${message.guild.name} — Top Collectors`)
+    .setTitle(t(message.guild?.id, 'lb.title', { guild: message.guild.name }))
     .setDescription(lines.join('\n'))
     .setFooter({ text: footerText })
     .setTimestamp();
@@ -563,10 +535,10 @@ async function prefixLeaderboard(message, guildId) {
 async function prefixServer(message) {
   const embed = new EmbedBuilder()
     .setColor(0x7c3aed)
-    .setTitle('🚀 Orbital Outpost')
-    .setDescription('The official community server for WikiRoll and all things Hackatoa.\n\nHang out, share your collection, report bugs, suggest features, and chat with the dev.')
-    .addFields({ name: '🔗 Invite Link', value: '[discord.gg/7eh3q2u8V](https://discord.gg/7eh3q2u8V)' })
-    .setFooter({ text: 'Homelab talk · dev projects · gaming · vibes' });
+    .setTitle(t(message.guild?.id, 'server.title'))
+    .setDescription(t(message.guild?.id, 'server.desc'))
+    .addFields({ name: t(message.guild?.id, 'server.inviteField'), value: '[discord.gg/7eh3q2u8V](https://discord.gg/7eh3q2u8V)' })
+    .setFooter({ text: t(message.guild?.id, 'server.footer') });
   await message.reply({ embeds: [embed] });
 }
 
@@ -575,10 +547,10 @@ async function prefixServer(message) {
 async function prefixVote(message) {
   const embed = new EmbedBuilder()
     .setColor(0xff3366)
-    .setTitle('🗳️ Vote for WikiRoll')
-    .setDescription('Voting helps WikiRoll grow and reach more servers. It takes 5 seconds and is completely free!')
-    .addFields({ name: '🔗 Vote Link', value: '[Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)' })
-    .setFooter({ text: 'top.gg votes refresh every 12 hours' });
+    .setTitle(t(message.guild?.id, 'vote.title'))
+    .setDescription(t(message.guild?.id, 'px.voteDesc'))
+    .addFields({ name: t(message.guild?.id, 'vote.linkField'), value: '[Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)' })
+    .setFooter({ text: t(message.guild?.id, 'vote.footer') });
   await message.reply({ embeds: [embed] });
 }
 
@@ -586,52 +558,52 @@ async function prefixVote(message) {
 
 async function prefixSettings(message, args, guildId) {
   if (!message.member.permissions.has('ManageGuild')) {
-    return message.reply('❌ You need the **Manage Server** permission to change settings.');
+    return message.reply(t(message.guild?.id, 'px.permSettings'));
   }
 
   const sub = (args[0] ?? 'view').toLowerCase();
 
   if (sub === 'view') {
     const settings = getSettings(guildId);
-    return message.reply({ embeds: [buildSettingsEmbed(settings)] });
+    return message.reply({ embeds: [buildSettingsEmbed(settings, message.guild?.id)] });
   }
 
   if (sub === 'cooldown') {
     const mins = parseInt(args[1]);
-    if (!mins || mins < 1 || mins > 1440) return message.reply('Usage: `w.settings cooldown <1-1440>`');
+    if (!mins || mins < 1 || mins > 1440) return message.reply(t(message.guild?.id, 'px.uSetCd'));
     stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: mins, claim_window_minutes: null, notify_channel: null, timezone: null });
-    return message.reply(`✅ Roll cooldown set to **${mins} minutes**.`);
+    t(message.guild?.id, 'settings.cooldownSet', { mins })
   }
 
   if (sub === 'claimwindow') {
     const mins = parseInt(args[1]);
-    if (!mins || mins < 1 || mins > 60) return message.reply('Usage: `w.settings claimwindow <1-60>`');
+    if (!mins || mins < 1 || mins > 60) return message.reply(t(message.guild?.id, 'px.uSetCw'));
     stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: null, claim_window_minutes: mins, notify_channel: null, timezone: null });
-    return message.reply(`✅ Claim window set to **${mins} minutes**.`);
+    t(message.guild?.id, 'settings.claimSet', { mins })
   }
 
   if (sub === 'notifychannel') {
     const ch = message.mentions.channels.first() ?? null;
     stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: null, claim_window_minutes: null, notify_channel: ch?.id ?? null, timezone: null });
-    return message.reply(ch ? `✅ Notify channel set to <#${ch.id}>.` : '✅ Notify channel cleared.');
+    return message.reply(ch ? t(message.guild?.id, 'settings.notifySet', { channel: `<#${ch.id}>` }) : t(message.guild?.id, 'settings.notifyCleared'));
   }
 
   if (sub === 'timezone') {
     const tz = args[1];
-    if (!tz) return message.reply('Usage: `w.settings timezone <IANA_tz>` e.g. `America/New_York`');
-    try { new Intl.DateTimeFormat('en', { timeZone: tz }); } catch { return message.reply('❌ Invalid timezone. Use an IANA timezone like `America/New_York`.'); }
+    if (!tz) return message.reply(t(message.guild?.id, 'px.uSetTz'));
+    try { new Intl.DateTimeFormat('en', { timeZone: tz }); } catch { return message.reply(t(message.guild?.id, 'px.invalidTz')); }
     stmts.upsertSettings.run({ guild_id: guildId, roll_cooldown_minutes: null, claim_window_minutes: null, notify_channel: null, timezone: tz });
-    return message.reply(`✅ Timezone set to **${tz}**.`);
+    return message.reply(t(message.guild?.id, 'px.tzSetShort', { tz }));
   }
 
-  return message.reply('Usage: `w.settings view|cooldown|claimwindow|notifychannel|timezone`');
+  return message.reply(t(message.guild?.id, 'px.uSetMain'));
 }
 
 // ── Source ────────────────────────────────────────────────────────────────────
 
 async function prefixSource(message, args, guildId) {
   if (!message.member.permissions.has('ManageGuild')) {
-    return message.reply('❌ You need the **Manage Server** permission to manage sources.');
+    return message.reply(t(message.guild?.id, 'px.permSource'));
   }
 
   const sub = (args[0] ?? 'list').toLowerCase();
@@ -640,61 +612,61 @@ async function prefixSource(message, args, guildId) {
     const sources = stmts.getSources.all(guildId);
     const embed = new EmbedBuilder()
       .setColor(0x3498DB)
-      .setTitle('🌐 Wiki Sources')
-      .setDescription(sources.length ? sources.map(s => `• **${s.wiki_name ?? s.wiki_url}** — ${s.wiki_url}`).join('\n') : '*No custom sources. Using Wikipedia only.*');
+      .setTitle(t(message.guild?.id, 'source.title'))
+      .setDescription(sources.length ? sources.map(s => t(message.guild?.id, 'source.line', { name: s.wiki_name ?? s.wiki_url, url: s.wiki_url })).join('\n') : t(message.guild?.id, 'px.sourceNone'));
     return message.reply({ embeds: [embed] });
   }
 
   const rawUrl = args[1];
-  if (!rawUrl) return message.reply(`Usage: \`w.source ${sub} <url>\``);
+  if (!rawUrl) return message.reply(t(message.guild?.id, 'px.uSource', { sub }));
   let parsed;
-  try { parsed = new URL(rawUrl); } catch { return message.reply('❌ Invalid URL.'); }
+  try { parsed = new URL(rawUrl); } catch { return message.reply(t(message.guild?.id, 'source.invalidUrl')); }
   const cleanUrl = `${parsed.protocol}//${parsed.hostname}`;
 
   if (sub === 'add') {
     const name = args[2] ?? parsed.hostname;
     stmts.addSource.run(guildId, cleanUrl, name, message.author.id);
-    return message.reply(`✅ Added **${name}** (${cleanUrl}) as a roll source!`);
+    t(message.guild?.id, 'source.added', { name, url: cleanUrl })
   }
 
   if (sub === 'remove' || sub === 'rm') {
     stmts.removeSource.run(guildId, cleanUrl);
-    return message.reply(`Removed **${cleanUrl}** from sources.`);
+    t(message.guild?.id, 'source.removed', { url: cleanUrl })
   }
 
-  return message.reply('Usage: `w.source list|add|remove`');
+  return message.reply(t(message.guild?.id, 'px.uSourceMain'));
 }
 
 // ── Submit Image ──────────────────────────────────────────────────────────────
 
 async function prefixSubmitimage(message, args, guildId) {
-  if (args.length < 2) return message.reply('Usage: `w.si <name> <url>`');
+  if (args.length < 2) return message.reply(t(message.guild?.id, 'px.uSi'));
   const url = args[args.length - 1];
   const name = args.slice(0, -1).join(' ');
-  try { new URL(url); } catch { return message.reply('❌ Invalid URL.'); }
+  try { new URL(url); } catch { return message.reply(t(message.guild?.id, 'source.invalidUrl')); }
   const results = stmts.searchChars.all(guildId, `%${name}%`);
-  if (!results.length) return message.reply(`Character **"${name}"** not found. Try \`w.search\` first.`);
+  if (!results.length) return message.reply(t(message.guild?.id, 'px.siNF', { name }));
   stmts.setUserImage.run(url, results[0].id);
-  await message.reply(`🖼️ Image updated for **${results[0].name}**!`);
+  t(message.guild?.id, 'submitimage.updated', { char: results[0].name })
 }
 
 // ── Set Roll Channel ──────────────────────────────────────────────────────────
 
 async function prefixSetrollchannel(message, args, guildId) {
   if (!message.member.permissions.has('ManageGuild')) {
-    return message.reply('❌ You need the **Manage Server** permission.');
+    return message.reply(t(message.guild?.id, 'px.permManage'));
   }
 
   const sub = (args[0] ?? 'set').toLowerCase();
 
   if (sub === 'clear') {
     stmts.setRollChannel.run(guildId, null);
-    return message.reply('✅ Roll channel restriction removed — rolls allowed anywhere.');
+    t(message.guild?.id, 'setroll.cleared')
   }
 
   const channel = message.mentions.channels.first() ?? message.channel;
   stmts.setRollChannel.run(guildId, channel.id);
-  return message.reply(`✅ Rolls are now restricted to <#${channel.id}>.`);
+  t(message.guild?.id, 'setroll.set', { channel: `<#${channel.id}>` })
 }
 
 // ── Link Server ───────────────────────────────────────────────────────────────
@@ -705,52 +677,52 @@ function randomCode() {
 
 async function prefixLinkserver(message, args, guildId, userId) {
   if (!message.member.permissions.has('ManageGuild')) {
-    return message.reply('❌ You need the **Manage Server** permission.');
+    return message.reply(t(message.guild?.id, 'px.permManage'));
   }
 
   const sub = (args[0] ?? 'status').toLowerCase();
 
   if (sub === 'start') {
     const targetGuild = args[1];
-    if (!targetGuild) return message.reply('Usage: `w.linkserver start <server_id>`');
-    if (targetGuild === guildId) return message.reply('❌ Cannot link a server to itself.');
+    if (!targetGuild) return message.reply(t(message.guild?.id, 'px.uLinkStart'));
+    t(message.guild?.id, 'link.selfLink')
     const existing = stmts.getGuildLinks.all(guildId, guildId);
-    if (existing.some(r => r.other_guild === targetGuild)) return message.reply('❌ Already linked with that server.');
+    if (existing.some(r => r.other_guild === targetGuild)) return message.reply(t(message.guild?.id, 'link.already'));
     const code = randomCode();
     stmts.createLinkRequest.run(guildId, userId, targetGuild, code, Math.floor(Date.now() / 1000) + 86400);
-    return message.reply(`✅ Link request created!\n\nHave an admin in server **${targetGuild}** run:\n\`\`\`\nw.linkserver confirm ${code}\n\`\`\`\nCode expires in 24 hours.`);
+    return message.reply(t(message.guild?.id, 'px.linkCreated', { target: targetGuild, code }));
   }
 
   if (sub === 'confirm') {
     const code = args[1]?.toUpperCase();
-    if (!code) return message.reply('Usage: `w.linkserver confirm <code>`');
+    if (!code) return message.reply(t(message.guild?.id, 'px.uLinkConfirm'));
     const request = stmts.getLinkRequest.get(code);
-    if (!request) return message.reply('❌ Invalid or expired link code.');
-    if (request.target_guild !== guildId) return message.reply(`❌ This code was created for server \`${request.target_guild}\`, not this server.`);
-    if (request.initiator_guild === guildId) return message.reply('❌ Cannot confirm your own link request.');
+    if (!request) return message.reply(t(message.guild?.id, 'link.invalidCode'));
+    if (request.target_guild !== guildId) return message.reply(t(message.guild?.id, 'link.wrongServer', { server: request.target_guild }));
+    if (request.initiator_guild === guildId) return message.reply(t(message.guild?.id, 'link.ownRequest'));
     stmts.createLink.run(request.initiator_guild, guildId);
     stmts.createLink.run(guildId, request.initiator_guild);
     stmts.deleteLinkRequest.run(code);
-    return message.reply(`✅ Servers linked! This server and **${request.initiator_guild}** now share claimed character ownership.`);
+    return message.reply(t(message.guild?.id, 'px.linkConfirmed', { server: request.initiator_guild }));
   }
 
   if (sub === 'status') {
     const links = stmts.getGuildLinks.all(guildId, guildId);
     const pending = stmts.getPendingLinksByGuild.all(guildId, guildId);
-    let msg = links.length ? `**Linked servers:**\n${links.map(r => `• \`${r.other_guild}\``).join('\n')}\n\n` : '**Linked servers:** None\n\n';
+    let msg = links.length ? t(message.guild?.id, 'link.linkedHeader', { list: links.map(r => `• \`${r.other_guild}\``).join('\n') }) : t(message.guild?.id, 'link.linkedNone');
     const outgoing = pending.filter(r => r.initiator_guild === guildId);
     const incoming = pending.filter(r => r.target_guild === guildId);
-    if (outgoing.length) msg += `**Pending outgoing:**\n${outgoing.map(r => `• Code \`${r.code}\` → \`${r.target_guild}\``).join('\n')}\n\n`;
-    if (incoming.length) msg += `**Pending incoming:**\n${incoming.map(r => `• Code \`${r.code}\` from \`${r.initiator_guild}\``).join('\n')}\n\n`;
-    return message.reply(msg.trim() || 'No links or pending requests.');
+    if (outgoing.length) msg += t(message.guild?.id, 'link.outgoing', { list: outgoing.map(r => `• \`${r.code}\` → \`${r.target_guild}\``).join('\n') });
+    if (incoming.length) msg += t(message.guild?.id, 'link.incoming', { list: incoming.map(r => `• \`${r.code}\` — \`${r.initiator_guild}\``).join('\n') });
+    return message.reply(msg.trim() || t(message.guild?.id, 'link.noneAll'));
   }
 
   if (sub === 'unlink') {
     const targetGuild = args[1];
-    if (!targetGuild) return message.reply('Usage: `w.linkserver unlink <server_id>`');
+    if (!targetGuild) return message.reply(t(message.guild?.id, 'px.uLinkUnlink'));
     stmts.removeLink.run(guildId, targetGuild, targetGuild, guildId);
-    return message.reply(`✅ Unlinked from server \`${targetGuild}\`.`);
+    return message.reply(t(message.guild?.id, 'link.unlinked', { server: targetGuild }));
   }
 
-  return message.reply('Usage: `w.linkserver start|confirm|status|unlink`');
+  return message.reply(t(message.guild?.id, 'px.uLinkMain'));
 }

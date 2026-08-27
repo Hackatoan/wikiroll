@@ -1,0 +1,12 @@
+{
+  "origin": "https://wikiroll.hackatoa.com",
+  "locales": ["en", "es", "pt-br", "fr", "de", "vi", "th"],
+  "rootFile": "index.html",
+  "pages": [
+    { "file": "index.html", "urlPath": "/" },
+    { "file": "privacy.html", "urlPath": "/privacy.html" },
+    { "file": "tos.html", "urlPath": "/tos.html" }
+  ],
+  "internalLinks": { "/": "/", "/privacy": "/privacy.html", "/tos": "/tos.html", "/privacy.html": "/privacy.html", "/tos.html": "/tos.html" },
+  "keepTerms": ["WikiRoll", "Wikipedia", "Fandom", "Discord", "Hackatoa", "top.gg", "Orbital Outpost"]
+}

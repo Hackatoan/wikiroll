@@ -1,21 +1,255 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://wikiroll.hackatoa.com/</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
   </url>
   <url>
-    <loc>https://wikiroll.hackatoa.com/privacy</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://wikiroll.hackatoa.com/es/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
   </url>
   <url>
-    <loc>https://wikiroll.hackatoa.com/tos</loc>
-    <lastmod>2026-08-13</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://wikiroll.hackatoa.com/pt-br/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/fr/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/de/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/vi/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/th/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/es/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/pt-br/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/fr/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/de/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/vi/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/th/privacy.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/es/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/pt-br/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/fr/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/de/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/vi/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
+  </url>
+  <url>
+    <loc>https://wikiroll.hackatoa.com/th/tos.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/tos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/tos.html"/>
   </url>
 </urlset>

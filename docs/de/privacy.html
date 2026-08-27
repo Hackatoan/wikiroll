@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datenschutz — WikiRoll</title>
+  <meta name="description" content="Datenschutzbestimmungen für WikiRoll, den Discord-Bot, mit dem Servermitglieder Charaktere aus Wikipedia und über 150 Fandom-Wikis würfeln und sammeln können." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://wikiroll.hackatoa.com/de/privacy.html" />
+  <meta name="theme-color" content="#0d1117" />
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161d2e; --border: #1f2d4a;
+      --indigo: #8b5cf6; --gold: #f59e0b; --text: #e2e8f0; --muted: #8892a4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; line-height: 1.8; }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 56px;
+      background: rgba(13,17,23,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav a { color: var(--text); text-decoration: none; font-family: monospace; font-size: .85rem; }
+    nav .logo { font-size: 1.1rem; font-weight: 700; color: var(--indigo); font-family: monospace; }
+    nav .links { display: flex; gap: 1.5rem; }
+    nav .links a { color: var(--muted); transition: color .2s; }
+    nav .links a:hover { color: var(--text); }
+    main { max-width: 760px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    h1 { font-size: 2rem; font-weight: 700; color: var(--indigo); font-family: monospace; margin-bottom: .5rem; }
+    .meta { color: var(--muted); font-size: .85rem; margin-bottom: 3rem; font-family: monospace; }
+    h2 { font-size: 1.1rem; font-weight: 700; color: var(--gold); font-family: monospace;
+         margin: 2.5rem 0 .75rem; padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
+    p { color: #b0bcc8; margin-bottom: 1rem; }
+    ul { color: #b0bcc8; padding-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: .4rem; }
+    a { color: var(--indigo); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+            padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+    .card p { margin: 0; }
+    footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .8rem; font-family: monospace;
+             border-top: 1px solid var(--border); }
+  </style>
+
+  <!-- i18n:hreflang:start -->
+  <link rel="alternate" hreflang="en" href="https://wikiroll.hackatoa.com/privacy.html" />
+  <link rel="alternate" hreflang="es" href="https://wikiroll.hackatoa.com/es/privacy.html" />
+  <link rel="alternate" hreflang="pt-BR" href="https://wikiroll.hackatoa.com/pt-br/privacy.html" />
+  <link rel="alternate" hreflang="fr" href="https://wikiroll.hackatoa.com/fr/privacy.html" />
+  <link rel="alternate" hreflang="de" href="https://wikiroll.hackatoa.com/de/privacy.html" />
+  <link rel="alternate" hreflang="vi" href="https://wikiroll.hackatoa.com/vi/privacy.html" />
+  <link rel="alternate" hreflang="th" href="https://wikiroll.hackatoa.com/th/privacy.html" />
+  <link rel="alternate" hreflang="x-default" href="https://wikiroll.hackatoa.com/privacy.html" />
+  <!-- i18n:hreflang:end -->
+</head>
+<body>
+<!-- i18n:switcher:start -->
+<nav aria-label="Language" style="position:fixed;top:8px;right:10px;z-index:99999;font-size:12px;font-family:system-ui,-apple-system,sans-serif;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;padding:5px 12px;display:flex;gap:9px;box-shadow:0 2px 10px rgba(0,0,0,.5);">
+  <a href="/privacy.html" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
+  <a href="/es/privacy.html" hreflang="es" style="color:#8a8;text-decoration:none;">ES</a>
+  <a href="/pt-br/privacy.html" hreflang="pt-BR" style="color:#8a8;text-decoration:none;">PT</a>
+  <a href="/fr/privacy.html" hreflang="fr" style="color:#8a8;text-decoration:none;">FR</a>
+  <a href="/de/privacy.html" hreflang="de" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">DE</a>
+  <a href="/vi/privacy.html" hreflang="vi" style="color:#8a8;text-decoration:none;">VI</a>
+  <a href="/th/privacy.html" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a>
+</nav>
+<!-- i18n:switcher:end -->
+<nav>
+  <a class="logo" href="/de/">WikiRoll</a>
+  <div class="links">
+    <a href="/de/">Startseite</a>
+    <a href="/de/tos.html">Nutzungsbedingungen</a>
+    <a href="https://github.com/Hackatoan/wikiroll">GitHub</a>
+  </div>
+</nav>
+
+<main>
+  <h1>Datenschutz</h1>
+  <p class="meta">Zuletzt aktualisiert: Juni 2026 &nbsp;·&nbsp; WikiRoll Discord Bot</p>
+
+  <div class="card">
+    <p>WikiRoll erfasst nur die minimalen Daten, die zum Betrieb des Bots erforderlich sind. Wir verkaufen, teilen oder monetarisieren deine Daten in keiner Weise.</p>
+  </div>
+
+  <h2>1. Welche Daten wir erfassen</h2>
+  <p>WikiRoll speichert die folgenden Daten in einer lokalen SQLite-Datenbank auf unserem Server:</p>
+  <ul>
+    <li><strong>Discord-Benutzer-ID</strong> — um deinem Konto den Besitz von Charakteren, Wunschlisten und Abklingzeiten zuzuordnen</li>
+    <li><strong>Discord-Server- (Gilde-)ID</strong> — zur Begrenzung von Besitzrechten und Einstellungen pro Server</li>
+    <li><strong>Charakterdatensätze</strong> — Name, Quell-Wiki-URL, Vorschaubild-URL und Wikipedia-/Fandom-Seiten-ID</li>
+    <li><strong>Besitzdatensätze</strong> — welcher Nutzer auf welchem Server welchen Charakter besitzt</li>
+    <li><strong>Wunschlisteneinträge</strong> — Charakternamen oder Quellen, die du auf deine Wunschliste gesetzt hast</li>
+    <li><strong>Roll-Abklingzeiten</strong> — Zeitstempel deines letzten Rolls pro Server</li>
+    <li><strong>Von Nutzern eingereichte Bild-URLs</strong> — Discord-CDN-URLs, die du über <code>/submitimage</code> bereitstellst</li>
+    <li><strong>Handelsaufzeichnungen</strong> — aktive und abgeschlossene Trades zwischen Nutzern</li>
+  </ul>
+  <p>Wir <strong>nicht</strong> sammeln: Benutzernamen, E-Mail-Adressen, Nachrichteninhalt (abgesehen von Befehlsargumenten), IP-Adressen oder andere persönliche Informationen.</p>
+
+  <h2>2. Wie wir sie verwenden</h2>
+  <p>Alle gesammelten Daten werden ausschließlich zur Bereitstellung der Kernfunktionen des Bots verwendet:</p>
+  <ul>
+    <li>Verfolgung des Charakterbesitzes in jedem Server</li>
+    <li>Durchsetzung von Roll-Abklingzeiten</li>
+    <li>Senden von DM-Benachrichtigungen, wenn auf der Wunschliste stehende Charaktere gerollt werden</li>
+    <li>Verarbeitung von Trades zwischen Nutzern</li>
+  </ul>
+
+  <h2>3. Datenspeicherung</h2>
+  <p>Deine Daten werden so lange gespeichert, wie du den Bot nutzt. Du kannst:</p>
+  <ul>
+    <li>Einzelne Charaktere aus deiner Sammlung mit <code>/remove</code> entfernen</li>
+    <li>Deine Wunschliste mit <code>/wishlist remove</code> leeren</li>
+    <li>Die vollständige Löschung deiner Daten beantragen, indem du ein <a href="https://github.com/Hackatoan/wikiroll/issues" target="_blank">GitHub Issue</a></li>
+  </ul>
+  <p>Wenn der Bot von einem Server entfernt wird, können die Daten dieses Servers unbegrenzt in der Datenbank gespeichert bleiben. Server-Administratoren können uns kontaktieren, um die Löschung zu beantragen.</p>
+
+  <h2>4. Datenweitergabe</h2>
+  <p>Wir verkaufen, vermieten oder teilen deine Daten nicht mit Dritten. Der Bot ruft Charakterdaten von öffentlichen Wikipedia- und Fandom-APIs ab — deine Discord-Informationen werden niemals an diese Dienste gesendet.</p>
+
+  <h2>5. Sicherheit</h2>
+  <p>Daten werden in einer SQLite-Datenbank auf einem selbst gehosteten Server gespeichert. Der Zugriff ist auf den Serveradministrator beschränkt. Wir treffen angemessene Vorkehrungen, können jedoch keine absolute Sicherheit garantieren.</p>
+
+  <h2>6. Kinder</h2>
+  <p>WikiRoll sammelt wissentlich keine Daten von Benutzern unter 13 Jahren. Wenn du glaubst, dass ein Kind den Bot genutzt hat, kontaktiere uns bitte zur Datenlöschung.</p>
+
+  <h2>7. Änderungen</h2>
+  <p>Wir können diese Richtlinie von Zeit zu Zeit aktualisieren. Die fortgesetzte Nutzung des Bots nach Änderungen gilt als Annahme der neuen Richtlinie.</p>
+
+  <h2>8. Kontakt</h2>
+  <p>Für Datenschutzanfragen oder Fragen eröffne ein Problem auf <a href="https://github.com/Hackatoan/wikiroll/issues" target="_blank">github.com/Hackatoan/wikiroll/issues</a> oder besuche <a href="https://hackatoa.com" target="_blank">hackatoa.com</a>.</p>
+</main>
+
+<footer>WikiRoll &nbsp;·&nbsp; <a href="https://hackatoa.com">hackatoa.com</a> &nbsp;·&nbsp; <a href="/de/tos.html">Nutzungsbedingungen</a></footer>
+</body>
+</html>

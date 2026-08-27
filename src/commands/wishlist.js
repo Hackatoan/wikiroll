@@ -2,6 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBu
 import { stmts } from '../database.js';
 import { searchWikipedia, fetchWikiPage, searchFandomWiki, validateFandomWiki, BUILTIN_FANDOMS } from '../wiki.js';
 import { buildWishlistEmbeds, buildWishCharEmbed } from '../embeds.js';
+import { t } from '../i18n.js';
 
 // Temporary storage for multi-version wishlist selections (5-min TTL)
 export const pendingWishCandidates = new Map();
@@ -62,7 +63,7 @@ export default {
     // ── View characters ───────────────────────────────────────────────────
     if (sub === 'view') {
       const items = stmts.getUserWishlist.all(userId, guildId);
-      return interaction.reply({ embeds: buildWishlistEmbeds(interaction.user, items), ephemeral: true });
+      return interaction.reply({ embeds: buildWishlistEmbeds(interaction.user, items, guildId), ephemeral: true });
     }
 
     // ── Add character ─────────────────────────────────────────────────────
@@ -87,10 +88,10 @@ export default {
             char = await fetchWikiPage(title);
           }
         } catch {}
-        if (!char) return interaction.editReply(`❌ Couldn't fetch that page. Double-check the URL and try again.`);
+        if (!char) return interaction.editReply(t(guildId, 'wl.fetchFail'));
         const row = stmts.upsertChar.get(char);
         stmts.addWish.run(userId, guildId, row.id, char.name);
-        return interaction.editReply({ embeds: [buildWishCharEmbed(char)] });
+        return interaction.editReply({ embeds: [buildWishCharEmbed(char, undefined, guildId)] });
       }
 
       // 2. Collect ALL matching candidates across every source
@@ -122,7 +123,7 @@ export default {
       for (const r of fandomResults) addCandidate(r);
 
       if (!candidates.length) {
-        return interaction.editReply(`❌ Couldn't find **"${name}"** with confidence. Paste the wiki page URL using the \`url\` option for an exact match.`);
+        return interaction.editReply(t(guildId, 'wl.notFound', { name }));
       }
 
       // Single result: add immediately
@@ -130,7 +131,7 @@ export default {
         const char = candidates[0];
         const charId = char._fromDb ? char.id : stmts.upsertChar.get(char).id;
         stmts.addWish.run(userId, guildId, charId, char.name);
-        return interaction.editReply({ embeds: [buildWishCharEmbed(char)] });
+        return interaction.editReply({ embeds: [buildWishCharEmbed(char, undefined, guildId)] });
       }
 
       // Multiple results: let user pick
@@ -141,26 +142,26 @@ export default {
       const options = candidates.slice(0, 24).map((c, i) =>
         new StringSelectMenuOptionBuilder()
           .setLabel(c.name.slice(0, 100))
-          .setDescription(`from ${c.source}`.slice(0, 100))
+          .setDescription(t(guildId, 'wl.fromSource', { source: c.source }).slice(0, 100))
           .setValue(String(i))
       );
       options.push(
         new StringSelectMenuOptionBuilder()
-          .setLabel('All versions')
-          .setDescription(`Add all ${candidates.length} version${candidates.length !== 1 ? 's' : ''} to your wishlist`)
+          .setLabel(t(guildId, 'wl.allVersions'))
+          .setDescription(t(guildId, 'wl.allVersionsDesc', { n: candidates.length }))
           .setValue('__all__')
       );
 
       const select = new StringSelectMenuBuilder()
         .setCustomId(`wishpick_${userId}_${guildId}`)
-        .setPlaceholder('Choose which version(s) to add…')
+        .setPlaceholder(t(guildId, 'wl.choosePlaceholder'))
         .setMinValues(1)
         .setMaxValues(options.length)
         .addOptions(options);
 
       return interaction.editReply({
-        content: `Found **${candidates.length} versions** of **"${name}"** — pick which to add:`,
-        embeds: candidates.slice(0, 10).map((c, i) => buildWishCharEmbed(c, `Option ${i + 1}`)),
+        content: t(guildId, 'wl.foundMany', { n: candidates.length, name }),
+        embeds: candidates.slice(0, 10).map((c, i) => buildWishCharEmbed(c, t(guildId, 'wl.option', { n: i + 1 }), guildId)),
         components: [new ActionRowBuilder().addComponents(select)],
       });
     }
@@ -169,9 +170,9 @@ export default {
     if (sub === 'remove') {
       const name   = interaction.options.getString('name');
       const local  = stmts.searchChars.all(guildId, `%${name}%`);
-      if (!local.length) return interaction.reply({ content: `**"${name}"** not found.`, ephemeral: true });
+      if (!local.length) return interaction.reply({ content: t(guildId, 'wl.charNotFound', { name }), ephemeral: true });
       stmts.removeWish.run(userId, guildId, local[0].id);
-      return interaction.reply({ content: `Removed **${local[0].name}** from your wishlist.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'wl.removed', { char: local[0].name }), ephemeral: true });
     }
 
     // ── View sources ──────────────────────────────────────────────────────
@@ -179,16 +180,16 @@ export default {
       const sources = stmts.getUserWishSources.all(userId, guildId);
       const embed = new EmbedBuilder()
         .setColor(0xFF9800)
-        .setTitle(`🎯 ${interaction.user.username}'s Boosted Sources`);
+        .setTitle(t(guildId, 'wl.sourcesTitle', { user: interaction.user.username }));
 
       if (!sources.length) {
-        embed.setDescription('*No boosted sources yet.*\n\nUse `/wishlist addsource` with a Fandom wiki URL to add it to the roll pool.');
+        embed.setDescription(t(guildId, 'wl.sourcesNone'));
       } else {
         const fandoms  = sources.filter(s => s.source_type === 'fandom');
         const keywords = sources.filter(s => s.source_type === 'search');
         const lines = [];
-        if (fandoms.length)  lines.push('**Fandom Wikis**:', ...fandoms.map(s  => `• ${s.display_name ?? s.source_value}`));
-        if (keywords.length) lines.push('', '**Keywords**:', ...keywords.map(s => `• ${s.source_value}`));
+        if (fandoms.length)  lines.push(t(guildId, 'wl.fandomWikis'), ...fandoms.map(s  => `• ${s.display_name ?? s.source_value}`));
+        if (keywords.length) lines.push('', t(guildId, 'wl.keywords'), ...keywords.map(s => `• ${s.source_value}`));
         embed.setDescription(lines.join('\n'));
       }
       return interaction.reply({ embeds: [embed], ephemeral: true });
@@ -205,7 +206,7 @@ export default {
         try {
           parsed = new URL(raw.startsWith('http') ? raw : `https://${raw}`);
         } catch {
-          return interaction.reply({ content: '❌ Invalid URL.', ephemeral: true });
+          return interaction.reply({ content: t(guildId, 'wl.invalidUrl'), ephemeral: true });
         }
         sourceType  = 'fandom';
         sourceValue = `${parsed.protocol}//${parsed.hostname}`;
@@ -220,15 +221,15 @@ export default {
         await interaction.deferReply({ ephemeral: true });
         const valid = await validateFandomWiki(sourceValue);
         if (!valid) {
-          return interaction.editReply(`❌ \`${displayName}\` doesn't look like a working wiki — couldn't reach its API. Double-check the URL.`);
+          return interaction.editReply(t(guildId, 'wl.badWiki', { name: displayName }));
         }
         stmts.addWishSource.run(userId, guildId, sourceType, sourceValue, displayName);
-        return interaction.editReply(`✅ **🌐 Fandom wiki** \`${displayName}\` added and verified!`);
+        return interaction.editReply(t(guildId, 'wl.fandomAdded', { name: displayName }));
       }
 
       stmts.addWishSource.run(userId, guildId, sourceType, sourceValue, displayName);
       return interaction.reply({
-        content: `✅ **🔍 Keyword** \`${displayName}\` added to your sources!`,
+        content: t(guildId, 'wl.keywordAdded', { name: displayName }),
         ephemeral: true,
       });
     }
@@ -240,7 +241,7 @@ export default {
         ? (() => { try { const u = new URL(raw.startsWith('http') ? raw : `https://${raw}`); return `${u.protocol}//${u.hostname}`; } catch { return raw; } })()
         : raw;
       stmts.removeWishSource.run(userId, guildId, val);
-      return interaction.reply({ content: `Removed \`${val}\` from your boosted sources.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'wl.sourceRemoved', { val }), ephemeral: true });
     }
   },
 };

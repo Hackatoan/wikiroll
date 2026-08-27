@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -8,17 +9,16 @@ export default {
   async execute(interaction) {
     const embed = new EmbedBuilder()
       .setColor(0x7c3aed)
-      .setTitle('🚀 Orbital Outpost')
+      .setTitle(t(interaction.guildId, 'server.title'))
       .setDescription(
-        'The official community server for WikiRoll and all things Hackatoa.\n\n' +
-        'Hang out, share your collection, report bugs, suggest features, and chat with the dev.'
+        t(interaction.guildId, 'server.desc')
       )
       .addFields({
-        name: '🔗 Invite Link',
+        name: t(interaction.guildId, 'server.inviteField'),
         value: '[discord.gg/7eh3q2u8V](https://discord.gg/7eh3q2u8V)',
         inline: false,
       })
-      .setFooter({ text: 'Homelab talk · dev projects · gaming · vibes' });
+      .setFooter({ text: t(interaction.guildId, 'server.footer') });
 
     await interaction.reply({ embeds: [embed] });
   },

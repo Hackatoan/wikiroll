@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { stmts } from '../database.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -13,13 +14,13 @@ export default {
     const imageUrl = interaction.options.getString('url');
 
     try { new URL(imageUrl); } catch {
-      return interaction.reply({ content: '❌ Invalid URL.', ephemeral: true });
+      return interaction.reply({ content: t(interaction.guildId, 'submitimage.invalidUrl'), ephemeral: true });
     }
 
     const results = stmts.searchChars.all(interaction.guildId, `%${name}%`);
     if (!results.length) {
       return interaction.reply({
-        content: `Character **"${name}"** not found. Try \`/search\` first.`,
+        content: t(interaction.guildId, 'submitimage.notFound', { name }),
         ephemeral: true,
       });
     }
@@ -27,6 +28,6 @@ export default {
     const char = results[0];
     stmts.setUserImage.run(imageUrl, char.id);
 
-    await interaction.reply({ content: `🖼️ Image updated for **${char.name}**!` });
+    await interaction.reply({ content: t(interaction.guildId, 'submitimage.updated', { char: char.name }) });
   },
 };

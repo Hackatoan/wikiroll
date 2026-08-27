@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, ChannelType, PermissionFlagsBits } from 'discord.js';
 import { stmts } from '../database.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -28,12 +29,12 @@ export default {
     if (sub === 'set') {
       const channel = interaction.options.getChannel('channel') ?? interaction.channel;
       stmts.setRollChannel.run(guildId, channel.id);
-      return interaction.reply({ content: `✅ Rolls are now restricted to <#${channel.id}>.`, flags: 64 });
+      return interaction.reply({ content: t(guildId, 'setroll.set', { channel: `<#${channel.id}>` }), flags: 64 });
     }
 
     if (sub === 'clear') {
       stmts.setRollChannel.run(guildId, null);
-      return interaction.reply({ content: '✅ Roll channel restriction removed — rolls allowed anywhere.', flags: 64 });
+      return interaction.reply({ content: t(guildId, 'setroll.cleared'), flags: 64 });
     }
   },
 };

@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
 import { stmts } from '../database.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -30,11 +31,11 @@ export default {
       const sources = stmts.getSources.all(guildId);
       const embed = new EmbedBuilder()
         .setColor(0x3498DB)
-        .setTitle('🌐 Wiki Sources')
+        .setTitle(t(guildId, 'source.title'))
         .setDescription(
           sources.length
-            ? sources.map(s => `• **${s.wiki_name ?? s.wiki_url}** — ${s.wiki_url}`).join('\n')
-            : '*No custom sources added. Using Wikipedia only.*'
+            ? sources.map(s => t(guildId, 'source.line', { name: s.wiki_name ?? s.wiki_url, url: s.wiki_url })).join('\n')
+            : t(guildId, 'source.none')
         );
       return interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -44,19 +45,19 @@ export default {
     try {
       parsed = new URL(rawUrl);
     } catch {
-      return interaction.reply({ content: '❌ Invalid URL.', ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'source.invalidUrl'), ephemeral: true });
     }
     const cleanUrl = `${parsed.protocol}//${parsed.hostname}`;
 
     if (sub === 'add') {
       const name = interaction.options.getString('name') ?? parsed.hostname;
       stmts.addSource.run(guildId, cleanUrl, name, interaction.user.id);
-      return interaction.reply({ content: `✅ Added **${name}** (${cleanUrl}) as a roll source!` });
+      return interaction.reply({ content: t(guildId, 'source.added', { name, url: cleanUrl }) });
     }
 
     if (sub === 'remove') {
       stmts.removeSource.run(guildId, cleanUrl);
-      return interaction.reply({ content: `Removed **${cleanUrl}** from sources.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'source.removed', { url: cleanUrl }), ephemeral: true });
     }
   },
 };

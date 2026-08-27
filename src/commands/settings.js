@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType } from 'discord.js';
 import { stmts, getSettings } from '../database.js';
 import { buildSettingsEmbed } from '../embeds.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -68,7 +69,7 @@ export default {
 
     if (sub === 'view') {
       const settings = getSettings(guildId);
-      return interaction.reply({ embeds: [buildSettingsEmbed(settings)], ephemeral: true });
+      return interaction.reply({ embeds: [buildSettingsEmbed(settings, guildId)], ephemeral: true });
     }
 
     if (sub === 'cooldown') {
@@ -80,7 +81,7 @@ export default {
         notify_channel: null,
         timezone: null,
       });
-      return interaction.reply({ content: `✅ Roll cooldown set to **${mins} minutes**.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'settings.cooldownSet', { mins }), ephemeral: true });
     }
 
     if (sub === 'claimwindow') {
@@ -92,7 +93,7 @@ export default {
         notify_channel: null,
         timezone: null,
       });
-      return interaction.reply({ content: `✅ Claim window set to **${mins} minutes**.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'settings.claimSet', { mins }), ephemeral: true });
     }
 
     if (sub === 'notifychannel') {
@@ -105,7 +106,7 @@ export default {
         timezone: null,
       });
       return interaction.reply({
-        content: ch ? `✅ Notify channel set to <#${ch.id}>.` : '✅ Notify channel cleared.',
+        content: ch ? t(guildId, 'settings.notifySet', { channel: `<#${ch.id}>` }) : t(guildId, 'settings.notifyCleared'),
         ephemeral: true,
       });
     }
@@ -119,7 +120,7 @@ export default {
         notify_channel: null,
         timezone: tz,
       });
-      return interaction.reply({ content: `✅ Timezone set to **${tz}**. Daily resets will now follow this timezone.`, ephemeral: true });
+      return interaction.reply({ content: t(guildId, 'settings.tzSet', { tz }), ephemeral: true });
     }
   },
 };

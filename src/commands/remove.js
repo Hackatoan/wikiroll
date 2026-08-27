@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { stmts } from '../database.js';
+import { t } from '../i18n.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,7 +20,7 @@ export default {
 
     if (!owned.length) {
       return interaction.reply({
-        content: `You don't own any character matching **"${query}"**.`,
+        content: t(guildId, 'remove.noOwn', { q: query }),
         ephemeral: true,
       });
     }
@@ -27,7 +28,7 @@ export default {
     if (owned.length > 1) {
       const list = owned.slice(0, 8).map((c, i) => `${i + 1}. ${c.name}`).join('\n');
       return interaction.reply({
-        content: `Multiple matches found — be more specific:\n${list}`,
+        content: t(guildId, 'remove.multiple', { list }),
         ephemeral: true,
       });
     }
@@ -35,7 +36,7 @@ export default {
     const char = owned[0];
     stmts.removeChar.run(guildId, userId, char.id);
     await interaction.reply({
-      content: `💔 **${char.name}** has been removed from your collection.`,
+      content: t(guildId, 'remove.removed', { char: char.name }),
     });
   },
 };

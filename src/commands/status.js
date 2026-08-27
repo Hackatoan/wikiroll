@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, ActivityType } from 'discord.js';
+import { t } from '../i18n.js';
 
 const TYPES = {
   watching:   ActivityType.Watching,
@@ -37,7 +38,7 @@ export default {
     const ownerId = app.owner?.id ?? app.owner?.ownerId;
 
     if (!ownerId || interaction.user.id !== ownerId) {
-      return interaction.reply({ content: '❌ Owner only.', ephemeral: true });
+      return interaction.reply({ content: t(interaction.guildId, 'common.ownerOnly'), ephemeral: true });
     }
 
     const text     = interaction.options.getString('text');
@@ -50,7 +51,7 @@ export default {
     });
 
     return interaction.reply({
-      content: `✅ **${type} ${text}** · ${presence}`,
+      content: t(interaction.guildId, 'status.set', { type, text, presence }),
       ephemeral: true,
     });
   },

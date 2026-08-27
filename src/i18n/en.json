@@ -1,6 +1,5 @@
 {
   "language.set": "🌍 WikiRoll will reply in **{label}** for this server.",
-
   "roll.restricted": "🎲 Rolls are restricted to {channel}.",
   "roll.cooldown": "⏳ You can roll again in **{mins}** minutes.\n> 🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote) to earn a free bonus roll!",
   "roll.fetchFail": "❌ Failed to fetch characters. Please try again in a moment.",
@@ -8,7 +7,6 @@
   "roll.rolled": "🎲 **{user}** rolled! Claim within **{mins}** minutes!",
   "roll.wishlistPing": "🔔 **{char}** (on your wishlist) just appeared in a roll in **{guild}**!\n[Jump to roll]({url}) — claim window: **{mins}** minutes",
   "roll.expired": "🎲 ~~{user}'s roll~~ *(expired)*",
-
   "embed.claimPlaceholder": "Claim a character…",
   "embed.collectionTitle": "{user}'s Collection",
   "embed.pageFooter": "Page {page}/{total} · {count} total",
@@ -34,21 +32,16 @@
   "embed.wishlistEmpty": "*Empty. Use `/wishlist add <name>` to add characters!*",
   "embed.wishlistTitleCount": "⭐ {user}'s Wishlist ({count} total)",
   "embed.addedToWishlist": "Added to wishlist",
-
   "btn.prev": "◀ Prev",
   "btn.next": "Next ▶",
-
   "daily.restricted": "🗓️ Daily rolls are restricted to {channel}.",
   "daily.alreadyRolled": "⏳ Already rolled today. Next daily in **{time}**.",
   "daily.streakLine": "🔥 **{streak}-day streak** — you get **{claims} claims** from this roll!\n",
   "daily.rolled": "🗓️ **{user}'s daily roll!**\n{streak}Claim within **{mins}** minutes!",
   "daily.expired": "🗓️ ~~{user}'s daily roll~~ *(expired)*",
-
   "info.notFound": "No character matching **\"{name}\"** found. Try `/search` first.",
-
   "btn.accept": "Accept",
   "btn.decline": "Decline",
-
   "trade.selfTrade": "You cannot trade with yourself.",
   "trade.botTrade": "You cannot trade with a bot.",
   "trade.noOffer": "You don't own a character matching **\"{q}\"**.",
@@ -59,19 +52,16 @@
   "trade.dmGift": "🎁 **{user}** is gifting you a character in **{guild}**!",
   "trade.sent": "📨 {type} offer sent to {target} via DM!",
   "trade.offerExpired": "⏰ Trade offer expired.",
-
   "lb.empty": "📭 No one has claimed anything yet — use `/roll` to get started!",
   "lb.you": " ← you",
   "lb.entry": "{medal} **{name}** — {total} characters{you}",
   "lb.footerTotal": "{total} characters claimed total",
   "lb.footerRank": " · You're #{rank} with {n}",
   "lb.title": "🏆 {guild} — Top Collectors",
-
   "btn.notForYou": "This selection is not for you.",
   "wish.selectExpired": "⏰ This selection has expired. Run `/wishlist add` again.",
   "wish.nothingAdded": "❌ Nothing could be added.",
   "wish.addedMany": "⭐ Added **{n}** characters to your wishlist!",
-
   "claim.rollGone": "This roll no longer exists.",
   "claim.rollExpired": "⏰ This roll has expired.",
   "claim.invalid": "Invalid selection.",
@@ -81,7 +71,6 @@
   "claim.dailyRemaining": "\n📋 You have **{n}** daily claims remaining on this roll!",
   "claim.success": "✅ **{char}** is now in your collection!{extra}",
   "claim.announce": "🎉 {user} just claimed **{char}**!",
-
   "trade.inactive": "This trade is no longer active.",
   "trade.notForYou": "This trade offer is not for you.",
   "trade.cancelInit": "Trade cancelled — the other user no longer owns that character.",
@@ -92,7 +81,6 @@
   "trade.completedPublic": "✅ Trade completed between {initiator} and {target}!",
   "trade.declined": "Trade declined.",
   "trade.declinedPublic": "❌ Trade declined by {target}.",
-
   "help.title": "WikiRoll — Commands",
   "help.rolling": "🎲 Rolling & Claiming",
   "help.rollingV": "`/roll` — Roll 10 characters to claim (1hr cooldown)\n`/daily` — Free daily roll; 2+ day streak = 2 claims\n`/ghostroll` — Test roll without cooldown (bot owner only)",
@@ -104,7 +92,6 @@
   "help.setupV": "`/settings` — View or change server settings\n`/source` — Add Fandom wiki sources to roll from\n`/setrollchannel` — Restrict /roll to a specific channel (admin only)\n`/linkserver` — Share character ownership with another server",
   "help.other": "🔗 Other",
   "help.otherV": "`/about` — Stats and links for WikiRoll\n`/vote` — Vote on top.gg\n`/server` — Join the official community Discord",
-
   "about.desc": "Collect characters and articles from **Wikipedia + 150+ Fandom wikis**.\nRoll, claim, trade, and build your collection — one wiki page at a time.",
   "about.stats": "📊 Stats",
   "about.statsV": "**{total}** characters in the global pool\n**{owned}** claimed in this server\n**{rollers}** collectors here",
@@ -115,7 +102,6 @@
   "about.admin": "🛠️ Admin Commands",
   "about.adminV": "`/setrollchannel set` — restrict rolls to one channel\n`/linkserver start` — share claimed ownership with another server",
   "about.footer": "Built by Hackatoa · hackatoa.com",
-
   "vote.title": "🗳️ Vote for WikiRoll",
   "vote.desc": "Voting takes 5 seconds and earns you a **free bonus roll** that bypasses your cooldown.",
   "vote.linkField": "🔗 Vote Link",
@@ -125,5 +111,47 @@
   "vote.creditsNone": "No credits yet. Vote above to earn one!",
   "vote.howField": "ℹ️ How it works",
   "vote.howV": "1. Click the vote link above\n2. Vote on top.gg (free, takes 5 sec)\n3. You'll get a DM confirmation + credit\n4. Your next `/roll` skips the cooldown",
-  "vote.footer": "top.gg votes refresh every 12 hours"
+  "vote.footer": "top.gg votes refresh every 12 hours",
+  "common.ownerOnly": "❌ Owner only.",
+  "remove.noOwn": "You don't own any character matching **\"{q}\"**.",
+  "remove.multiple": "Multiple matches found — be more specific:\n{list}",
+  "remove.removed": "💔 **{char}** has been removed from your collection.",
+  "ghostroll.fetchFail": "❌ Failed to fetch characters.",
+  "ghostroll.saveFail": "❌ Failed to save characters.",
+  "ghostroll.rolled": "👻 **Ghost roll** — visible only to you. Claims work normally. Expires in **{mins}m**.",
+  "ghostroll.expired": "👻 *(ghost roll expired)*",
+  "submitimage.invalidUrl": "❌ Invalid URL.",
+  "submitimage.notFound": "Character **\"{name}\"** not found. Try `/search` first.",
+  "submitimage.updated": "🖼️ Image updated for **{char}**!",
+  "server.title": "🚀 Orbital Outpost",
+  "server.desc": "The official community server for WikiRoll and all things Hackatoa.\n\nHang out, share your collection, report bugs, suggest features, and chat with the dev.",
+  "server.inviteField": "🔗 Invite Link",
+  "server.footer": "Homelab talk · dev projects · gaming · vibes",
+  "setroll.set": "✅ Rolls are now restricted to {channel}.",
+  "setroll.cleared": "✅ Roll channel restriction removed — rolls allowed anywhere.",
+  "source.title": "🌐 Wiki Sources",
+  "source.line": "• **{name}** — {url}",
+  "source.none": "*No custom sources added. Using Wikipedia only.*",
+  "source.invalidUrl": "❌ Invalid URL.",
+  "source.added": "✅ Added **{name}** ({url}) as a roll source!",
+  "source.removed": "Removed **{url}** from sources.",
+  "settings.cooldownSet": "✅ Roll cooldown set to **{mins} minutes**.",
+  "settings.claimSet": "✅ Claim window set to **{mins} minutes**.",
+  "settings.notifySet": "✅ Notify channel set to {channel}.",
+  "settings.notifyCleared": "✅ Notify channel cleared.",
+  "settings.tzSet": "✅ Timezone set to **{tz}**. Daily resets will now follow this timezone.",
+  "status.set": "✅ **{type} {text}** · {presence}",
+  "link.selfLink": "❌ Cannot link a server to itself.",
+  "link.already": "❌ Already linked with that server.",
+  "link.created": "✅ Link request created!\n\nHave an admin in server **{target}** run:\n```\n/linkserver confirm code:{code}\n```\nCode expires in 24 hours. Once confirmed, both servers will share claimed character ownership.",
+  "link.invalidCode": "❌ Invalid or expired link code.",
+  "link.wrongServer": "❌ This code was created for server `{server}`, not this server.",
+  "link.ownRequest": "❌ Cannot confirm your own link request.",
+  "link.confirmed": "✅ Servers linked! This server and **{server}** now share claimed character ownership.\nCharacters claimed in either server will appear as claimed in both.",
+  "link.linkedHeader": "**Linked servers:**\n{list}\n\n",
+  "link.linkedNone": "**Linked servers:** None\n\n",
+  "link.outgoing": "**Pending outgoing requests:**\n{list}\n\n",
+  "link.incoming": "**Pending incoming requests:**\n{list}\n\n",
+  "link.noneAll": "No links or pending requests.",
+  "link.unlinked": "✅ Unlinked from server `{server}`."
 }

@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { stmts } from '../database.js';
+import { t } from '../i18n.js';
 
 function randomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -50,13 +51,13 @@ export default {
       const targetGuild = interaction.options.getString('server_id');
 
       if (targetGuild === guildId) {
-        return interaction.reply({ content: '❌ Cannot link a server to itself.', flags: 64 });
+        return interaction.reply({ content: t(guildId, 'link.selfLink'), flags: 64 });
       }
 
       // Check not already linked
       const existing = stmts.getGuildLinks.all(guildId, guildId);
       if (existing.some(r => r.other_guild === targetGuild)) {
-        return interaction.reply({ content: '❌ Already linked with that server.', flags: 64 });
+        return interaction.reply({ content: t(guildId, 'link.already'), flags: 64 });
       }
 
       const code = randomCode();
@@ -66,10 +67,7 @@ export default {
       return interaction.reply({
         flags: 64,
         content:
-          `✅ Link request created!\n\n` +
-          `Have an admin in server **${targetGuild}** run:\n` +
-          `\`\`\`\n/linkserver confirm code:${code}\n\`\`\`\n` +
-          `Code expires in 24 hours. Once confirmed, both servers will share claimed character ownership.`,
+          t(guildId, 'link.created', { target: targetGuild, code }),
       });
     }
 
@@ -78,18 +76,18 @@ export default {
       const request = stmts.getLinkRequest.get(code);
 
       if (!request) {
-        return interaction.reply({ content: '❌ Invalid or expired link code.', flags: 64 });
+        return interaction.reply({ content: t(guildId, 'link.invalidCode'), flags: 64 });
       }
 
       if (request.target_guild !== guildId) {
         return interaction.reply({
-          content: `❌ This code was created for server \`${request.target_guild}\`, not this server.`,
+          content: t(guildId, 'link.wrongServer', { server: request.target_guild }),
           flags: 64,
         });
       }
 
       if (request.initiator_guild === guildId) {
-        return interaction.reply({ content: '❌ Cannot confirm your own link request.', flags: 64 });
+        return interaction.reply({ content: t(guildId, 'link.ownRequest'), flags: 64 });
       }
 
       // Create bidirectional link
@@ -99,8 +97,7 @@ export default {
 
       return interaction.reply({
         content:
-          `✅ Servers linked! This server and **${request.initiator_guild}** now share claimed character ownership.\n` +
-          `Characters claimed in either server will appear as claimed in both.`,
+          t(guildId, 'link.confirmed', { server: request.initiator_guild }),
       });
     }
 
@@ -111,28 +108,28 @@ export default {
       let msg = '';
 
       if (links.length) {
-        msg += `**Linked servers:**\n${links.map(r => `• \`${r.other_guild}\``).join('\n')}\n\n`;
+        msg += t(guildId, 'link.linkedHeader', { list: links.map(r => `• \`${r.other_guild}\``).join('\n') });
       } else {
-        msg += '**Linked servers:** None\n\n';
+        msg += t(guildId, 'link.linkedNone');
       }
 
       const outgoing = pending.filter(r => r.initiator_guild === guildId);
       const incoming = pending.filter(r => r.target_guild === guildId);
 
       if (outgoing.length) {
-        msg += `**Pending outgoing requests:**\n${outgoing.map(r => `• Code \`${r.code}\` → \`${r.target_guild}\``).join('\n')}\n\n`;
+        msg += t(guildId, 'link.outgoing', { list: outgoing.map(r => `• \`${r.code}\` → \`${r.target_guild}\``).join('\n') });
       }
       if (incoming.length) {
-        msg += `**Pending incoming requests:**\n${incoming.map(r => `• Code \`${r.code}\` from \`${r.initiator_guild}\``).join('\n')}\n\n`;
+        msg += t(guildId, 'link.incoming', { list: incoming.map(r => `• \`${r.code}\` — \`${r.initiator_guild}\``).join('\n') });
       }
 
-      return interaction.reply({ content: msg.trim() || 'No links or pending requests.', flags: 64 });
+      return interaction.reply({ content: msg.trim() || t(guildId, 'link.noneAll'), flags: 64 });
     }
 
     if (sub === 'unlink') {
       const targetGuild = interaction.options.getString('server_id');
       stmts.removeLink.run(guildId, targetGuild, targetGuild, guildId);
-      return interaction.reply({ content: `✅ Unlinked from server \`${targetGuild}\`.`, flags: 64 });
+      return interaction.reply({ content: t(guildId, 'link.unlinked', { server: targetGuild }), flags: 64 });
     }
   },
 };

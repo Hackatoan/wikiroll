@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 import { stmts, getSettings } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
+import { t } from '../i18n.js';
 
 function isOwner(interaction) {
   return interaction.user.id === process.env.OWNER_ID;
@@ -14,7 +15,7 @@ export default {
 
   async execute(interaction) {
     if (!isOwner(interaction)) {
-      return interaction.reply({ content: '❌ Owner only.', flags: 64 });
+      return interaction.reply({ content: t(interaction.guildId, 'common.ownerOnly'), flags: 64 });
     }
 
     await interaction.deferReply({ flags: 64 });
@@ -29,7 +30,7 @@ export default {
     const wishedSources = stmts.getGuildWishSources.all(guildId);
 
     const rawChars = await fetchTenCharacters({ guildSources, wishedChars, wishedSources });
-    if (!rawChars.length) return interaction.editReply('❌ Failed to fetch characters.');
+    if (!rawChars.length) return interaction.editReply(t(guildId, 'ghostroll.fetchFail'));
 
     const chars = [];
     for (const raw of rawChars) {
@@ -42,7 +43,7 @@ export default {
         }
       } catch {}
     }
-    if (!chars.length) return interaction.editReply('❌ Failed to save characters.');
+    if (!chars.length) return interaction.editReply(t(guildId, 'ghostroll.saveFail'));
 
     const claimWindowSecs = settings.claim_window_minutes * 60;
     const expiresAt = now + claimWindowSecs;
@@ -59,11 +60,11 @@ export default {
     // No cooldown set — ghost roll doesn't consume rate limit
 
     const embeds     = buildRollEmbeds(chars);
-    const components = buildClaimSelect(rollId, chars);
+    const components = buildClaimSelect(rollId, chars, undefined, guildId);
     const mins = settings.claim_window_minutes;
 
     const msg = await interaction.editReply({
-      content: `👻 **Ghost roll** — visible only to you. Claims work normally. Expires in **${mins}m**.`,
+      content: t(guildId, 'ghostroll.rolled', { mins }),
       embeds,
       components,
     });
@@ -71,7 +72,7 @@ export default {
     stmts.setRollMessageId.run(msg.id, rollId);
 
     setTimeout(async () => {
-      try { await msg.edit({ content: '👻 *(ghost roll expired)*', embeds, components: [] }); } catch {}
+      try { await msg.edit({ content: t(guildId, 'ghostroll.expired'), embeds, components: [] }); } catch {}
     }, claimWindowSecs * 1000);
   },
 };

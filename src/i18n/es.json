@@ -96,7 +96,7 @@
   "about.stats": "📊 Estadísticas",
   "about.statsV": "**{total}** personajes en la bolsa global\n**{owned}** reclamados en este servidor\n**{rollers}** coleccionistas aquí",
   "about.links": "🔗 Enlaces",
-  "about.linksV": "🌐 [Website](https://wikiroll.hackatoa.com)\n➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands)\n🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)\n🚀 [Join Orbital Outpost](https://discord.gg/7eh3q2u8V) — el servidor de la comunidad\n💻 [GitHub](https://github.com/Hackatoan/wikiroll)\n☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)",
+  "about.linksV": "🌐 [Website](https://wikiroll.hackatoa.com)\n➕ [Add to Discord](https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands)\n🗳️ [Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)\n🚀 [Join Orbital Outpost](https://discord.gg/nrQFdACWbh) — el servidor de la comunidad\n💻 [GitHub](https://github.com/Hackatoan/wikiroll)\n☕ [Buy Me a Coffee](https://buymeacoffee.com/hackatoa)",
   "about.quickStart": "⚡ Inicio rápido",
   "about.quickStartV": "`/roll` para tirar 10 personajes · haz clic en un botón para reclamar · `/collection` para ver los tuyos\n`/wishlist` · `/trade` · `/info` · `/search` · `/vote` · `/server`",
   "about.admin": "🛠️ Comandos de administrador",

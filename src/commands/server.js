@@ -15,7 +15,7 @@ export default {
       )
       .addFields({
         name: t(interaction.guildId, 'server.inviteField'),
-        value: '[discord.gg/7eh3q2u8V](https://discord.gg/7eh3q2u8V)',
+        value: '[discord.gg/nrQFdACWbh](https://discord.gg/nrQFdACWbh)',
         inline: false,
       })
       .setFooter({ text: t(interaction.guildId, 'server.footer') });

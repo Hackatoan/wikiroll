@@ -539,7 +539,7 @@ async function prefixServer(message) {
     .setColor(0x7c3aed)
     .setTitle(t(message.guild?.id, 'server.title'))
     .setDescription(t(message.guild?.id, 'server.desc'))
-    .addFields({ name: t(message.guild?.id, 'server.inviteField'), value: '[discord.gg/7eh3q2u8V](https://discord.gg/7eh3q2u8V)' })
+    .addFields({ name: t(message.guild?.id, 'server.inviteField'), value: '[discord.gg/nrQFdACWbh](https://discord.gg/nrQFdACWbh)' })
     .setFooter({ text: t(message.guild?.id, 'server.footer') });
   await message.reply({ embeds: [embed] });
 }

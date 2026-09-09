@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { createHmac, timingSafeEqual } from 'crypto';
-import { db } from './database.js';
+import { db, addShards } from './database.js';
 
 async function readRawBody(req) {
   return new Promise((resolve, reject) => {
@@ -67,20 +67,23 @@ export function startWebhookServer(client, port = 3015) {
 
       console.log(`[webhook] vote from ${user} type=${type}`);
       if (type === 'upvote' || type === 'test') {
+        // Record the vote (for "haven't voted yet" nudges) and award Shards 💠,
+        // the currency spent in /shop.
+        const VOTE_SHARDS = 12;
         db.prepare(`
           INSERT INTO vote_credits (user_id, credits, last_voted)
-          VALUES (?, 1, unixepoch())
-          ON CONFLICT(user_id) DO UPDATE SET
-            credits = credits + 1,
-            last_voted = unixepoch()
+          VALUES (?, 0, unixepoch())
+          ON CONFLICT(user_id) DO UPDATE SET last_voted = unixepoch()
         `).run(user);
+        const balance = addShards(user, VOTE_SHARDS);
 
         try {
           const discordUser = await client.users.fetch(user);
           await discordUser.send(
             '🗳️ **Thanks for voting for WikiRoll on top.gg!**\n' +
-            'You earned **1 free roll** — your next `/roll` will skip the cooldown.\n\n' +
-            '> You can vote again after 12 hours to stock up!'
+            `You earned **${VOTE_SHARDS} 💠 Shards** — now **${balance} 💠** total.\n` +
+            'Spend them in `/shop` (e.g. an instant extra roll).\n\n' +
+            '> You can vote again in 12 hours to stack up more!'
           );
           console.log(`[webhook] DM sent to ${user}`);
         } catch (e) { console.log(`[webhook] DM failed for ${user}:`, e.code, e.message); }

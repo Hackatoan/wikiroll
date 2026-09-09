@@ -1,7 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuild } from '../database.js';
+import { stmts, getCharsByIds, getSettings, getLinkedGuildIds, getOwnerCrossGuild, getShards, spendShards, clearRollCooldown } from '../database.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 import { pendingWishCandidates } from '../commands/wishlist.js';
+import { SHOP_ITEMS } from '../commands/shop.js';
 import { buildWishCharEmbed } from '../embeds.js';
 import { t } from '../i18n.js';
 
@@ -13,6 +14,41 @@ function fmtTimeLeft(secs) {
 export async function handleButtonInteraction(interaction) {
   const [type, ...parts] = interaction.customId.split('_');
   if (type === 'trade') return handleTrade(interaction, parts);
+  if (type === 'shop')  return handleShop(interaction, parts);
+}
+
+// ── Shop purchases ──────────────────────────────────────────────────────────
+
+async function handleShop(interaction, parts) {
+  const [action, item, userId] = parts;
+  const g = interaction.guildId;
+
+  if (interaction.user.id !== userId) {
+    return interaction.reply({ content: t(g, 'btn.notForYou'), flags: 64 });
+  }
+  if (action !== 'buy') return;
+
+  const def = SHOP_ITEMS[item];
+  if (!def) return interaction.reply({ content: t(g, 'shop.unknownItem'), flags: 64 });
+
+  if (!spendShards(userId, def.cost)) {
+    return interaction.reply({
+      content: t(g, 'shop.cantAfford', { cost: def.cost, bal: getShards(userId) }),
+      flags: 64,
+    });
+  }
+
+  // Apply the item's effect.
+  if (item === 'extraroll') {
+    clearRollCooldown(userId, g);
+    return interaction.reply({
+      content: t(g, 'shop.boughtExtraroll', { bal: getShards(userId) }),
+      flags: 64,
+    });
+  }
+
+  // Fallback: refund if we somehow can't apply it.
+  return interaction.reply({ content: t(g, 'shop.unknownItem'), flags: 64 });
 }
 
 export async function handleSelectInteraction(interaction) {

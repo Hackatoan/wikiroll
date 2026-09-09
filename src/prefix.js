@@ -2,7 +2,7 @@
  * Prefix command handler for `w.` commands
  * Mirrors slash commands but via chat messages.
  */
-import { db, stmts, getCharsByIds, getSettings, getLinkedGuildIds, getUserCollectionCrossGuild, getOwnerCrossGuild } from './database.js';
+import { db, stmts, getCharsByIds, getSettings, getLinkedGuildIds, getUserCollectionCrossGuild, getOwnerCrossGuild, addShards, getShards } from './database.js';
 import { fetchTenCharacters, searchWikipedia, fetchWikiPage } from './wiki.js';
 import {
   buildRollEmbeds, buildClaimSelect, buildCollectionEmbed,
@@ -11,6 +11,7 @@ import {
 } from './embeds.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 import { t } from './i18n.js';
+import { SHOP_ITEMS } from './commands/shop.js';
 
 const PREFIX = 'w.';
 
@@ -78,6 +79,9 @@ export async function handlePrefix(message) {
       case 'linkserver': return await prefixLinkserver(message, args, guildId, userId);
       case 'support':    return await prefixSupport(message);
       case 'donate':     return await prefixDonate(message);
+      case 'shop':       return await prefixShop(message);
+      case 'balance':
+      case 'bal':        return await prefixBalance(message);
       default:           return; // ignore unknown
     }
   } catch (e) {
@@ -188,6 +192,10 @@ async function prefixDaily(message, guildId, userId) {
 
   stmts.setDaily.run(userId, guildId, today, streak);
 
+  // Award Shards 💠 (base 5 + up to 5 for a streak) — spendable in w.shop / /shop.
+  const shardsEarned = 5 + Math.min(streak, 5);
+  const shardBalance = addShards(userId, shardsEarned);
+
   const rolling = await message.reply(t(message.guild?.id, 'px.dailyRolling'));
 
   const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
@@ -227,8 +235,10 @@ async function prefixDaily(message, guildId, userId) {
     ? t(message.guild?.id, 'px.dailyStreak', { streak, claims })
     : '';
 
+  const shardLine = t(message.guild?.id, 'daily.shards', { n: shardsEarned, bal: shardBalance });
+
   const msg = await rolling.edit({
-    content: t(message.guild?.id, 'px.dailyRolled', { user: message.author.username, streak: streakLine, mins }),
+    content: t(message.guild?.id, 'px.dailyRolled', { user: message.author.username, streak: streakLine, mins }) + '\n' + shardLine,
     embeds,
     components,
   });
@@ -570,6 +580,36 @@ async function prefixSupport(message) {
     )
     .setFooter({ text: t(g, 'support.footer') });
   await message.reply({ embeds: [embed] });
+}
+
+// ── Shop / Balance ────────────────────────────────────────────────────────
+
+async function prefixShop(message) {
+  const g = message.guild?.id;
+  const balance = getShards(message.author.id);
+  const embed = new EmbedBuilder()
+    .setColor(0x7c3aed)
+    .setTitle(t(g, 'shop.title'))
+    .setDescription(t(g, 'shop.desc', { bal: balance }))
+    .addFields(
+      { name: t(g, 'shop.extraroll'), value: t(g, 'shop.extrarollV', { cost: SHOP_ITEMS.extraroll.cost }) },
+      { name: t(g, 'shop.soon'),      value: t(g, 'shop.soonV') },
+    )
+    .setFooter({ text: t(g, 'shop.footer') });
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`shop_buy_extraroll_${message.author.id}`)
+      .setLabel(t(g, 'shop.buyExtraroll', { cost: SHOP_ITEMS.extraroll.cost }))
+      .setEmoji('🎲')
+      .setStyle(ButtonStyle.Success)
+      .setDisabled(balance < SHOP_ITEMS.extraroll.cost),
+  );
+  await message.reply({ embeds: [embed], components: [row] });
+}
+
+async function prefixBalance(message) {
+  const g = message.guild?.id;
+  await message.reply(t(g, 'balance.line', { bal: getShards(message.author.id) }));
 }
 
 // ── Donate ──────────────────────────────────────────────────────────────────

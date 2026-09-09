@@ -140,6 +140,12 @@ function initDatabase() {
       credits INTEGER NOT NULL DEFAULT 0,
       last_voted INTEGER
     );
+
+    CREATE TABLE IF NOT EXISTS user_shards (
+      user_id    TEXT PRIMARY KEY,
+      balance    INTEGER NOT NULL DEFAULT 0,
+      updated_at INTEGER
+    );
   `);
 }
 
@@ -434,5 +440,39 @@ export function getUserTotalCrossGuild(guildIds, userId) {
     FROM ownership
     WHERE user_id = ? AND guild_id IN (${ph})
   `).get(userId, ...guildIds)?.total ?? 0;
+}
+
+// ── Shards (soft currency) ──────────────────────────────────────────────────
+
+export function getShards(userId) {
+  return db.prepare(`SELECT balance FROM user_shards WHERE user_id = ?`).get(userId)?.balance ?? 0;
+}
+
+// Add (or, with a negative n, subtract without going below 0) shards. Returns
+// the new balance.
+export function addShards(userId, n) {
+  db.prepare(`
+    INSERT INTO user_shards (user_id, balance, updated_at)
+    VALUES (?, MAX(0, ?), unixepoch())
+    ON CONFLICT(user_id) DO UPDATE SET
+      balance = MAX(0, balance + ?),
+      updated_at = unixepoch()
+  `).run(userId, n, n);
+  return getShards(userId);
+}
+
+// Atomically spend `cost` shards. Returns true if the user could afford it
+// (and the balance was decremented), false otherwise.
+export function spendShards(userId, cost) {
+  const info = db.prepare(`
+    UPDATE user_shards SET balance = balance - ?, updated_at = unixepoch()
+    WHERE user_id = ? AND balance >= ?
+  `).run(cost, userId, cost);
+  return info.changes > 0;
+}
+
+// Clear a user's roll cooldown in a guild so their next /roll fires immediately.
+export function clearRollCooldown(userId, guildId) {
+  db.prepare(`UPDATE cooldowns SET last_roll = 0 WHERE user_id = ? AND guild_id = ?`).run(userId, guildId);
 }
 

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { stmts, getSettings } from '../database.js';
+import { stmts, getSettings, addShards } from '../database.js';
 import { fetchTenCharacters } from '../wiki.js';
 import { buildRollEmbeds, buildClaimSelect } from '../embeds.js';
 import { t } from '../i18n.js';
@@ -65,6 +65,10 @@ export default {
 
     stmts.setDaily.run(userId, guildId, today, streak);
 
+    // Award Shards 💠 — base 5 + up to 5 more for a streak. Spendable in /shop.
+    const shardsEarned = 5 + Math.min(streak, 5);
+    const shardBalance = addShards(userId, shardsEarned);
+
     const guildSources  = stmts.getSources.all(guildId).map(s => s.wiki_url);
     const wishedChars   = stmts.getGuildWishChars.all(guildId);
     const wishedSources = stmts.getGuildWishSources.all(guildId);
@@ -102,8 +106,10 @@ export default {
       ? t(guildId, 'daily.streakLine', { streak, claims })
       : '';
 
+    const shardLine = t(guildId, 'daily.shards', { n: shardsEarned, bal: shardBalance });
+
     const msg = await interaction.editReply({
-      content: t(guildId, 'daily.rolled', { user: interaction.user.username, streak: streakLine, mins }),
+      content: t(guildId, 'daily.rolled', { user: interaction.user.username, streak: streakLine, mins }) + '\n' + shardLine,
       embeds,
       components,
     });

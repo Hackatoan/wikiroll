@@ -76,6 +76,8 @@ export async function handlePrefix(message) {
       case 'setrollchannel':
       case 'setrc':      return await prefixSetrollchannel(message, args, guildId);
       case 'linkserver': return await prefixLinkserver(message, args, guildId, userId);
+      case 'support':    return await prefixSupport(message);
+      case 'donate':     return await prefixDonate(message);
       default:           return; // ignore unknown
     }
   } catch (e) {
@@ -551,6 +553,35 @@ async function prefixVote(message) {
     .setDescription(t(message.guild?.id, 'px.voteDesc'))
     .addFields({ name: t(message.guild?.id, 'vote.linkField'), value: '[Vote on top.gg](https://top.gg/bot/1343100226537259018/vote)' })
     .setFooter({ text: t(message.guild?.id, 'vote.footer') });
+  await message.reply({ embeds: [embed] });
+}
+
+// ── Support ─────────────────────────────────────────────────────────────────
+
+async function prefixSupport(message) {
+  const g = message.guild?.id;
+  const embed = new EmbedBuilder()
+    .setColor(0x7c3aed)
+    .setTitle(t(g, 'support.title'))
+    .setDescription(t(g, 'support.desc'))
+    .addFields(
+      { name: t(g, 'support.helpField'),  value: t(g, 'support.helpV') },
+      { name: t(g, 'support.linksField'), value: t(g, 'support.linksV') },
+    )
+    .setFooter({ text: t(g, 'support.footer') });
+  await message.reply({ embeds: [embed] });
+}
+
+// ── Donate ──────────────────────────────────────────────────────────────────
+
+async function prefixDonate(message) {
+  const g = message.guild?.id;
+  const embed = new EmbedBuilder()
+    .setColor(0x7c3aed)
+    .setTitle(t(g, 'donate.title'))
+    .setDescription(t(g, 'donate.desc'))
+    .addFields({ name: t(g, 'donate.waysField'), value: t(g, 'donate.waysV') })
+    .setFooter({ text: t(g, 'donate.footer') });
   await message.reply({ embeds: [embed] });
 }
 

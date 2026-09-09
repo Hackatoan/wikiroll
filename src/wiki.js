@@ -239,6 +239,70 @@ export const BUILTIN_FANDOMS = [
   'https://moana.fandom.com',
   'https://encanto.fandom.com',
   'https://findingdory.fandom.com',
+  // ── Added 2026-09-09 (API-validated) ──
+  'https://alanwake.fandom.com',
+  'https://amongus.fandom.com',
+  'https://berserk.fandom.com',
+  'https://beyblade.fandom.com',
+  'https://blazblue.fandom.com',
+  'https://bluelock.fandom.com',
+  'https://bungostraydogs.fandom.com',
+  'https://cobrakai.fandom.com',
+  'https://deadcells.fandom.com',
+  'https://deadspace.fandom.com',
+  'https://deusex.fandom.com',
+  'https://digimon.fandom.com',
+  'https://dishonored.fandom.com',
+  'https://dorohedoro.fandom.com',
+  'https://dr-stone.fandom.com',
+  'https://fairlyoddparents.fandom.com',
+  'https://fastandfurious.fandom.com',
+  'https://fireforce.fandom.com',
+  'https://fivenightsatfreddys.fandom.com',
+  'https://frieren.fandom.com',
+  'https://guiltygear.fandom.com',
+  'https://hellsing.fandom.com',
+  'https://injustice.fandom.com',
+  'https://johnwick.fandom.com',
+  'https://kimpossible.fandom.com',
+  'https://kuroshitsuji.fandom.com',
+  'https://looneytunes.fandom.com',
+  'https://madeinabyss.fandom.com',
+  'https://madmax.fandom.com',
+  'https://maplestory.fandom.com',
+  'https://moneyheist.fandom.com',
+  'https://nanatsu-no-taizai.fandom.com',
+  'https://no-game-no-life.fandom.com',
+  'https://noragami.fandom.com',
+  'https://oldschoolrunescape.fandom.com',
+  'https://outerwilds.fandom.com',
+  'https://overlordmaruyama.fandom.com',
+  'https://peaky-blinders.fandom.com',
+  'https://phineasandferb.fandom.com',
+  'https://projectzomboid.fandom.com',
+  'https://regularshow.fandom.com',
+  'https://riskofrain.fandom.com',
+  'https://runescape.fandom.com',
+  'https://samuraijack.fandom.com',
+  'https://sandman.fandom.com',
+  'https://scoobydoo.fandom.com',
+  'https://slay-the-spire.fandom.com',
+  'https://soulcalibur.fandom.com',
+  'https://souleater.fandom.com',
+  'https://spongebob.fandom.com',
+  'https://squidgame.fandom.com',
+  'https://starvstheforcesofevil.fandom.com',
+  'https://subnautica.fandom.com',
+  'https://thehungergames.fandom.com',
+  'https://tmnt.fandom.com',
+  'https://tokyorevengers.fandom.com',
+  'https://trigun.fandom.com',
+  'https://twilightsaga.fandom.com',
+  'https://umbrellaacademy.fandom.com',
+  'https://valheim.fandom.com',
+  'https://vampirethemasquerade.fandom.com',
+  'https://vinlandsaga.fandom.com',
+  'https://yuyuhakusho.fandom.com',
   // Independent MediaWiki instances
   'https://consumerrights.wiki',
 ];
@@ -280,41 +344,18 @@ function isListLike(title) {
   );
 }
 
-// ── Size-weighted wiki pool ────────────────────────────────────────────────
-// A roll picks 10 DISTINCT wikis, but each wiki's odds of being picked are
-// weighted by its article count so bigger / more popular franchises show up
-// proportionally more often — approximating "one uniform pool of all pages"
-// without materialising millions of pages. Weights are clamped so mega-wikis
-// don't dominate every roll and tiny wikis stay reachable. Wikipedia is pinned
-// to a modest fixed weight so its full-random (often non-character) articles
-// stay about as rare as before. Tune the constants below to taste.
+// ── Wiki article-size cache ─────────────────────────────────────────────────
+// Rolls are now UNIFORMLY random across franchises (see fetchTenCharacters), so
+// these article-count weights are no longer used for pick odds. The cache is
+// kept only as lightweight per-wiki size metadata and may be repurposed later.
 const WIKI_WEIGHT_MIN     = 500;
 const WIKI_WEIGHT_CAP     = 40000;
 const WIKI_WEIGHT_DEFAULT = 6000;               // used until a wiki's size is cached
-const WIKIPEDIA_WEIGHT    = 6000;               // pinned; ignores WP's true ~7M articles
 const WIKI_STATS_TTL      = 30 * 24 * 60 * 60;  // refresh cached sizes ~monthly
 
 function clampWeight(articles) {
   if (!articles || articles < 0) return WIKI_WEIGHT_DEFAULT;
   return Math.min(Math.max(Math.round(articles), WIKI_WEIGHT_MIN), WIKI_WEIGHT_CAP);
-}
-
-// Weighted sampling WITHOUT replacement → k distinct wiki URLs.
-function weightedSampleDistinct(entries, k) {
-  const pool = entries.map(e => ({ url: e.url, w: Math.max(e.weight || WIKI_WEIGHT_DEFAULT, 1) }));
-  const chosen = [];
-  while (chosen.length < k && pool.length) {
-    const total = pool.reduce((s, p) => s + p.w, 0);
-    let r = Math.random() * total;
-    let idx = 0;
-    for (; idx < pool.length - 1; idx++) {
-      r -= pool[idx].w;
-      if (r <= 0) break;
-    }
-    chosen.push(pool[idx].url);
-    pool.splice(idx, 1);
-  }
-  return chosen;
 }
 
 // Fetch a wiki's article count via the MediaWiki siteinfo API.
@@ -497,52 +538,67 @@ async function fetchWikipediaSearch(term) {
  * @param {object[]}  opts.wishedChars    - DB character rows from guild wishlists
  * @param {object[]}  opts.wishedSources  - [{source_type, source_value}] from wishlist_sources
  */
-const WIKIPEDIA = 'https://en.wikipedia.org';
+// Uniform random selection of k DISTINCT items from arr (Fisher–Yates-ish).
+function sampleDistinct(arr, k) {
+  const pool = [...arr];
+  const out  = [];
+  while (out.length < k && pool.length) {
+    out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  }
+  return out;
+}
+
+// Guarantee ONE real Wikipedia article. WP's random generator often returns
+// list/stub/disambiguation pages that get filtered out, so pull a batch and
+// take the first survivor; retry once if a whole batch was filtered away.
+async function fetchGuaranteedWikipedia() {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const batch = await fetchRandomWikipedia(10);
+    if (batch.length) return batch[0];
+  }
+  return null;
+}
 
 export async function fetchTenCharacters({ guildSources = [], wishedChars = [] } = {}) {
   const seen  = new Set();
   const chars = [];
+  const add = (c) => {
+    if (!c) return false;
+    const key = `${c.source}:${c.page_id}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    chars.push(c);
+    return true;
+  };
 
   // ── Step 1: ~2% chance to slot in ONE wishlisted character (~1 per 50 rolls) ──
-  const shuffledWished = [...wishedChars].sort(() => Math.random() - 0.5);
-  if (shuffledWished.length > 0 && Math.random() < 0.02) {
-    const c = shuffledWished[0];
-    seen.add(`${c.source}:${c.page_id}`);
-    chars.push(c);
+  if (wishedChars.length > 0 && Math.random() < 0.02) {
+    add(wishedChars[Math.floor(Math.random() * wishedChars.length)]);
   }
 
-  // ── Step 2: weighted flat pool — 10 DISTINCT wikis, weighted by size ──
-  // Bigger franchises get proportionally higher odds (see weighting notes
-  // above). Wikipedia is pinned to a modest fixed weight. We pick a few extra
-  // wikis as a buffer so filtered-out junk pages can be backfilled to 10.
-  const weightMap  = getWikiWeightMap();
-  const weightFor  = url => (url === WIKIPEDIA
-    ? WIKIPEDIA_WEIGHT
-    : (weightMap.get(url)?.weight ?? WIKI_WEIGHT_DEFAULT));
-  const poolEntries = [WIKIPEDIA, ...BUILTIN_FANDOMS, ...guildSources]
-    .map(url => ({ url, weight: weightFor(url) }));
-  const slots  = 10 - chars.length;
-  const picked = weightedSampleDistinct(poolEntries, slots + 5);
+  // ── Step 2: ONE GUARANTEED real-Wikipedia pull ──
+  // Every roll includes exactly one genuine Wikipedia article (any topic — the
+  // wildcard), regardless of the fandom picks below.
+  if (chars.length < 10) add(await fetchGuaranteedWikipedia());
 
-  // ── Step 3: parallel fetch ────────────────────────────────────────────
-  const tasks = picked.map(base =>
-    base === WIKIPEDIA ? fetchRandomWikipedia(1) : fetchOneFandomChar(base)
-  );
+  // ── Step 3: fill the rest with TRULY RANDOM fandom picks ──
+  // Uniform selection — every franchise is equally likely, so rolls stay varied
+  // instead of being dominated by the biggest wikis. Over-sample so pages that
+  // get filtered out (lists/NPCs/etc.) can be backfilled up to 10.
+  const fandomPool = [...new Set([...BUILTIN_FANDOMS, ...guildSources])];
+  const need   = 10 - chars.length;
+  const picked = sampleDistinct(fandomPool, need + 6);
 
-  const results = await Promise.allSettled(tasks);
-
+  const results = await Promise.allSettled(picked.map(base => fetchOneFandomChar(base)));
   for (const r of results) {
     if (chars.length >= 10) break;
-    if (r.status !== 'fulfilled' || !r.value) continue;
-    const items = Array.isArray(r.value) ? r.value : [r.value];
-    for (const c of items) {
-      if (chars.length >= 10) break;
-      const key = `${c.source}:${c.page_id}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        chars.push(c);
-      }
-    }
+    if (r.status === 'fulfilled') add(r.value);
+  }
+
+  // ── Step 4: safety backfill from Wikipedia if fandom fetches under-filled ──
+  if (chars.length < 10) {
+    const wp = await fetchRandomWikipedia((10 - chars.length) + 4);
+    for (const c of wp) { if (chars.length >= 10) break; add(c); }
   }
 
   return chars.slice(0, 10);

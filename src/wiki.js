@@ -336,6 +336,8 @@ function isListLike(title) {
     /\bnpcs?\b/i.test(raw) ||
     /non-?play(er|able) character/i.test(t) ||
     t.includes('(disambiguation)') ||
+    // name / word / number disambig pages are not named entities
+    /\((surname|given name|first name|family name|name|word|number|letter|unit|disambiguation)\)/i.test(t) ||
     // non-character subpages
     /\/(gallery|image[_ ]gallery|relationships|history|trivia|navigation|techniques|abilities|quotes|synopsis|appearances|merchandise|plot|transcript|credits)/.test(t) ||
     // episode / chapter / media entries, not characters
@@ -406,6 +408,14 @@ function formatPage(page, source, baseUrl) {
     /\bis an? npc\b/i.test(desc) ||
     /\bis an? (non-?player|non-?playable|generic|unnamed|nameless|background|one-?off|one-?time|filler|placeholder) character/i.test(desc) ||
     /\bis an? (unnamed|generic|nameless|background) (enemy|character|npc)/i.test(desc)
+  )) return null;
+  // Keep only NAMED things (characters, people, places, items, works, creatures).
+  // Drop generic concepts, processes, verbs/actions, abstract categories, and
+  // name/word disambig pages — mainly to clean up the guaranteed Wikipedia
+  // wildcard, whose fully-random article can be any common-noun topic.
+  if (desc && (
+    /^.{1,80}?\b(is|are|was|were|refers to|is defined as|is any|is the)\b[^.]{0,55}?\b(process|act|action|method|methodology|technique|practice|activity|procedure|concept|notion|idea|term|word|phrase|expression|phenomenon|form|type|kind|class|category|genre|style|branch|field|discipline|study|theory|principle|system|unit|measure|measurement|quantity|ratio|state|condition|property|quality|attribute|ability|skill|feeling|emotion|sensation|colour|color|shape|disease|disorder|syndrome|symptom)s?\b/i.test(desc) ||
+    /\bis (a|an|the|both)\b[^.]{0,35}\b(surname|given name|first name|family name|patronymic|unisex name|masculine name|feminine name)\b/i.test(desc)
   )) return null;
   return {
     name: page.title,
@@ -552,7 +562,9 @@ function sampleDistinct(arr, k) {
 // list/stub/disambiguation pages that get filtered out, so pull a batch and
 // take the first survivor; retry once if a whole batch was filtered away.
 async function fetchGuaranteedWikipedia() {
-  for (let attempt = 0; attempt < 2; attempt++) {
+  // Filtering is strict (named entities only), so pull several batches of random
+  // articles and take the first survivor before giving up.
+  for (let attempt = 0; attempt < 3; attempt++) {
     const batch = await fetchRandomWikipedia(10);
     if (batch.length) return batch[0];
   }

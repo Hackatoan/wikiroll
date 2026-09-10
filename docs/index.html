@@ -425,6 +425,38 @@
       box-shadow: 0 8px 36px rgba(255, 51, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
     }
 
+    .vote-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .btn-vote.dbl {
+      background: linear-gradient(135deg, #5865F2 0%, #4752c4 100%);
+      box-shadow: 0 4px 24px rgba(88,101,242,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .btn-vote.dbl:hover {
+      box-shadow: 0 8px 36px rgba(88,101,242,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-vote { justify-content: center; }
+    .vote-widgets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+      align-items: center;
+    }
+    .vote-widgets img {
+      max-width: 200px;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      opacity: 0.92;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .vote-widgets a:hover img { opacity: 1; transform: translateY(-1px); }
+
     /* ─── COMMUNITY SECTION ──────────────────────────────────────────── */
     .community-section {
       padding: 80px 0;
@@ -1455,7 +1487,7 @@
           GitHub
         </a>
         <a href="https://top.gg/bot/1343100226537259018/vote" class="nav-link nav-link-vote" target="_blank" rel="noopener">🗳️ Vote</a>
-        <a href="https://discord.gg/nrQFdACWbh" class="nav-link nav-link-community" target="_blank" rel="noopener">🚀 Community</a>
+        <a href="https://discord.gg/nrQFdACWbh" class="nav-link nav-link-community" target="_blank" rel="noopener">🌋 Community</a>
         <a href="https://buymeacoffee.com/hackatoa" class="nav-link nav-link-coffee" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
       </div>
     </div>
@@ -1723,7 +1755,7 @@
               <div class="cmd-row">
                 <span class="cmd-name">/server</span>
                 <span class="cmd-prefix">w.server</span>
-                <span class="cmd-desc">Get an invite to the Orbital Outpost community Discord.</span>
+                <span class="cmd-desc">Get an invite to the The Caldera community Discord.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/about</span>
@@ -1822,20 +1854,34 @@
             <div class="vote-banner-tag">💠 Earn Shards</div>
             <h2 class="vote-banner-title">Vote for WikiRoll.</h2>
             <p class="vote-banner-desc">
-              Voting for WikiRoll on top.gg takes 5 seconds and earns you <strong>12 💠 Shards</strong> —
-              spend them in <code>/shop</code> on an instant extra roll (and more perks soon). You can
-              vote every 12 hours; do your <code>/daily</code> for even more Shards.
+              Voting takes 5 seconds and earns you <strong>12 💠 Shards</strong> — spend them in
+              <code>/shop</code> on an instant extra roll (and more perks soon). WikiRoll is on
+              <strong>two vote sites</strong>, and each one lets you vote every 12 hours, so you can
+              stack Shards from both. Do your <code>/daily</code> for even more.
             </p>
             <div class="vote-steps">
-              <div class="vote-step"><div class="vote-step-num">1</div> Click Vote on top.gg</div>
+              <div class="vote-step"><div class="vote-step-num">1</div> Click a Vote button</div>
               <div class="vote-step"><div class="vote-step-num">2</div> Confirm (no account needed)</div>
               <div class="vote-step"><div class="vote-step-num">3</div> Get a DM with your 💠 Shards</div>
               <div class="vote-step"><div class="vote-step-num">4</div> Spend them in /shop</div>
             </div>
           </div>
-          <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
-            🗳️ Vote on top.gg
-          </a>
+          <div class="vote-actions">
+            <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
+              🗳️ Vote on top.gg
+            </a>
+            <a href="https://discordbotlist.com/bots/1343100226537259018/upvote" class="btn-vote dbl" target="_blank" rel="noopener">
+              🗳️ Vote on Discord Bot List
+            </a>
+            <div class="vote-widgets">
+              <a href="https://top.gg/bot/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://top.gg/api/widget/1343100226537259018.svg" alt="WikiRoll on top.gg" loading="lazy" width="200">
+              </a>
+              <a href="https://discordbotlist.com/bots/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://discordbotlist.com/api/v1/bots/1343100226537259018/widget" alt="WikiRoll on Discord Bot List" loading="lazy" width="200">
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1852,8 +1898,8 @@
         </div>
         <div class="community-inner">
           <div class="community-card">
-            <span class="community-card-icon">🚀</span>
-            <div class="community-card-title">Orbital Outpost</div>
+            <span class="community-card-icon">🌋</span>
+            <div class="community-card-title">The Caldera</div>
             <p class="community-card-desc">The official Discord for WikiRoll and all Hackatoa projects. Share your collection, report bugs, suggest wikis, and hang out.</p>
             <div class="community-card-feature-list">
               <div class="community-feature">Collection showcases &amp; trading</div>
@@ -1919,7 +1965,7 @@
       <div class="footer-links">
         <a href="https://top.gg/bot/1343100226537259018/vote" class="footer-link" target="_blank" rel="noopener">🗳️ Vote</a>
         <span class="footer-sep">·</span>
-        <a href="https://discord.gg/nrQFdACWbh" class="footer-link" target="_blank" rel="noopener">🚀 Community</a>
+        <a href="https://discord.gg/nrQFdACWbh" class="footer-link" target="_blank" rel="noopener">🌋 Community</a>
         <span class="footer-sep">·</span>
         <a href="https://buymeacoffee.com/hackatoa" class="footer-link" target="_blank" rel="noopener">☕ Buy Me a Coffee</a>
         <span class="footer-sep">·</span>

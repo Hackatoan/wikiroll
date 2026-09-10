@@ -25,6 +25,29 @@ function verifyTopggSignature(rawBody, signatureHeader, secret) {
   }
 }
 
+const VOTE_SHARDS = 12;
+
+// Shared reward for an upvote from any bot-list site: record the vote (for
+// "haven't voted yet" nudges), grant Shards 💠, and DM the voter.
+async function rewardVote(client, user, site) {
+  db.prepare(`
+    INSERT INTO vote_credits (user_id, credits, last_voted)
+    VALUES (?, 0, unixepoch())
+    ON CONFLICT(user_id) DO UPDATE SET last_voted = unixepoch()
+  `).run(user);
+  const balance = addShards(user, VOTE_SHARDS);
+  console.log(`[webhook] +${VOTE_SHARDS} shards to ${user} via ${site} (now ${balance})`);
+  try {
+    const discordUser = await client.users.fetch(user);
+    await discordUser.send(
+      `🗳️ **Thanks for voting for WikiRoll on ${site}!**\n` +
+      `You earned **${VOTE_SHARDS} 💠 Shards** — now **${balance} 💠** total.\n` +
+      'Spend them in `/shop` (e.g. an instant extra roll).\n\n' +
+      '> You can vote again in 12 hours to stack up more!'
+    );
+  } catch (e) { console.log(`[webhook] DM failed for ${user}:`, e.code, e.message); }
+}
+
 export function startWebhookServer(client, port = 3015) {
   createServer(async (req, res) => {
     const { method, url } = req;
@@ -65,29 +88,38 @@ export function startWebhookServer(client, port = 3015) {
       const { user, type } = body;
       if (!user) { res.writeHead(400); res.end('Bad Request'); return; }
 
-      console.log(`[webhook] vote from ${user} type=${type}`);
+      console.log(`[webhook] top.gg vote from ${user} type=${type}`);
       if (type === 'upvote' || type === 'test') {
-        // Record the vote (for "haven't voted yet" nudges) and award Shards 💠,
-        // the currency spent in /shop.
-        const VOTE_SHARDS = 12;
-        db.prepare(`
-          INSERT INTO vote_credits (user_id, credits, last_voted)
-          VALUES (?, 0, unixepoch())
-          ON CONFLICT(user_id) DO UPDATE SET last_voted = unixepoch()
-        `).run(user);
-        const balance = addShards(user, VOTE_SHARDS);
-
-        try {
-          const discordUser = await client.users.fetch(user);
-          await discordUser.send(
-            '🗳️ **Thanks for voting for WikiRoll on top.gg!**\n' +
-            `You earned **${VOTE_SHARDS} 💠 Shards** — now **${balance} 💠** total.\n` +
-            'Spend them in `/shop` (e.g. an instant extra roll).\n\n' +
-            '> You can vote again in 12 hours to stack up more!'
-          );
-          console.log(`[webhook] DM sent to ${user}`);
-        } catch (e) { console.log(`[webhook] DM failed for ${user}:`, e.code, e.message); }
+        await rewardVote(client, user, 'top.gg');
       }
+
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+
+    // ── Discord Bot List (discordbotlist.com) upvote webhook ──
+    // Sends a plain `Authorization: <secret>` header and a JSON body
+    // { id, username, avatar, admin }. Configure the URL + secret in the DBL
+    // bot dashboard, and set DBL_WEBHOOK_SECRET to match.
+    if (url.startsWith('/dbl/vote') && method === 'POST') {
+      const secret  = process.env.DBL_WEBHOOK_SECRET;
+      const rawBody = await readRawBody(req);
+      const auth    = req.headers['authorization'];
+
+      if (secret && auth !== secret) {
+        res.writeHead(401);
+        res.end('Unauthorized');
+        return;
+      }
+
+      let body;
+      try { body = JSON.parse(rawBody.toString()); } catch { body = {}; }
+      const user = body.id;
+      if (!user) { res.writeHead(400); res.end('Bad Request'); return; }
+
+      console.log(`[webhook] discordbotlist vote from ${user}`);
+      await rewardVote(client, user, 'Discord Bot List');
 
       res.writeHead(200);
       res.end();

@@ -7,6 +7,7 @@ import { handleButtonInteraction, handleSelectInteraction } from './interactions
 import { handlePrefix, isPrefix } from './prefix.js';
 import { buildCollectionEmbed } from './embeds.js';
 import { startWebhookServer } from './webhooks.js';
+import { startStatsPoster } from './stats-poster.js';
 import { refreshWikiWeights } from './wiki.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,6 +32,7 @@ for (const file of readdirSync(join(__dirname, 'commands')).filter(f => f.endsWi
 client.once(Events.ClientReady, () => {
   initDatabase();
   startWebhookServer(client, 3015);
+  startStatsPoster(client);
   console.log(`[WikiRoll] Ready as ${client.user.tag}`);
   // Background: cache each wiki's size so the roll pool can be size-weighted.
   // Fire-and-forget; throttled internally, refreshes ~monthly.

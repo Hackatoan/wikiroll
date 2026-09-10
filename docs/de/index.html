@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WikiRoll — Sammle das Wiki</title>
-  <meta name="description" content="WikiRoll ist ein Discord-Bot, mit dem Servermitglieder Charaktere aus Wikipedia und über 150 Fandom-Wikis ziehen können — Naruto, Marvel, Harry Potter und mehr. Beanspruche sie, tausche sie und baue deine Sammlung auf." />
+  <meta name="description" content="WikiRoll ist ein kostenloser Discord-Gacha-Bot: Ziehe 10 Charaktere — 9 absolut zufällige aus über 280 Fandom-Wikis (Naruto, Marvel, Harry Potter & mehr) sowie 1 garantierten aus der echten Wikipedia. Beanspruche, handele und sammle." />
   <meta property="og:title" content="WikiRoll — Sammle das Wiki" />
-  <meta property="og:description" content="Ziehe Charaktere aus Wikipedia & über 150 Fandom-Wikis. Beanspruche sie. Tausche sie. Baue deine Sammlung auf." />
+  <meta property="og:description" content="Ziehe 10 Charaktere — 9 absolut zufällige aus über 280 Fandom-Wikis + 1 garantierten aus der echten Wikipedia. Beanspruche sie, handele mit ihnen und baue deine Sammlung auf." />
   <meta property="og:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#0d1117" />
@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="Hackatoa" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="WikiRoll — Sammle das Wiki" />
-  <meta name="twitter:description" content="WikiRoll ist ein Discord-Bot, mit dem Servermitglieder Charaktere aus Wikipedia und über 150 Fandom-Wikis ziehen können — Naruto, Marvel, Harry Potter und mehr." />
+  <meta name="twitter:description" content="Ein kostenloser Discord-Gacha-Bot: Ziehe 10 Charaktere — 9 absolut zufällige aus über 280 Fandom-Wikis sowie 1 garantierten aus der echten Wikipedia. Beanspruche, handele und sammle." />
   <meta name="twitter:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta name="twitter:site" content="@jhackatoa" />
   <meta name="robots" content="index, follow" />
@@ -26,7 +26,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "WikiRoll",
-    "description": "A Discord bot that lets server members roll and collect characters from Wikipedia and 280+ Fandom wikis. Claim them, trade them, build your collection.",
+    "description": "A free Discord bot that lets server members roll and collect characters — nine picked truly at random from 280+ Fandom wikis plus one guaranteed pull from real Wikipedia every roll. Claim them, trade them, build your collection.",
     "url": "https://wikiroll.hackatoa.com",
     "applicationCategory": "EntertainmentApplication",
     "operatingSystem": "Discord",
@@ -424,6 +424,38 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 36px rgba(255, 51, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
     }
+
+    .vote-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .btn-vote.dbl {
+      background: linear-gradient(135deg, #5865F2 0%, #4752c4 100%);
+      box-shadow: 0 4px 24px rgba(88,101,242,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .btn-vote.dbl:hover {
+      box-shadow: 0 8px 36px rgba(88,101,242,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-vote { justify-content: center; }
+    .vote-widgets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+      align-items: center;
+    }
+    .vote-widgets img {
+      max-width: 200px;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      opacity: 0.92;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .vote-widgets a:hover img { opacity: 1; transform: translateY(-1px); }
 
     /* ─── COMMUNITY SECTION ──────────────────────────────────────────── */
     .community-section {
@@ -1431,14 +1463,15 @@
 </head>
 <body>
 <!-- i18n:switcher:start -->
-<div id="lang-switch" style="position:fixed;top:8px;right:10px;z-index:99999;font-family:system-ui,-apple-system,sans-serif"><button id="lang-btn" type="button" aria-label="Language" aria-haspopup="true" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;color:#8a8;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg></button><div id="lang-pop" role="menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;flex-direction:column;gap:8px;background:rgba(6,10,6,.95);border:1px solid #1a3d1a;border-radius:10px;padding:9px 12px;box-shadow:0 4px 16px rgba(0,0,0,.6);font-size:12px;white-space:nowrap"><a href="/" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
+<nav aria-label="Language" style="position:fixed;top:8px;right:10px;z-index:99999;font-size:12px;font-family:system-ui,-apple-system,sans-serif;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;padding:5px 12px;display:flex;gap:9px;box-shadow:0 2px 10px rgba(0,0,0,.5);">
+  <a href="/" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
   <a href="/es/" hreflang="es" style="color:#8a8;text-decoration:none;">ES</a>
   <a href="/pt-br/" hreflang="pt-BR" style="color:#8a8;text-decoration:none;">PT</a>
   <a href="/fr/" hreflang="fr" style="color:#8a8;text-decoration:none;">FR</a>
   <a href="/de/" hreflang="de" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">DE</a>
   <a href="/vi/" hreflang="vi" style="color:#8a8;text-decoration:none;">VI</a>
-  <a href="/th/" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a></div></div>
-<script>(function(){var b=document.getElementById('lang-btn'),p=document.getElementById('lang-pop');if(!b||!p)return;var d=p.querySelector('a:not([aria-current])');if(d&&d.style&&d.style.color)b.style.color=d.style.color;b.addEventListener('click',function(e){e.stopPropagation();p.style.display=p.style.display==='flex'?'none':'flex';});p.addEventListener('click',function(e){e.stopPropagation();});document.addEventListener('click',function(){p.style.display='none';});})();</script>
+  <a href="/th/" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a>
+</nav>
 <!-- i18n:switcher:end -->
 
   <!-- ─── NAV ──────────────────────────────────────────────────────────── -->
@@ -1456,7 +1489,7 @@
         </a>
         <a href="https://top.gg/bot/1343100226537259018/vote" class="nav-link nav-link-vote" target="_blank" rel="noopener">🗳️ Abstimmen</a>
         <a href="https://discord.gg/nrQFdACWbh" class="nav-link nav-link-community" target="_blank" rel="noopener">🌋 Community</a>
-        <a href="https://buymeacoffee.com/hackatoa" class="nav-link nav-link-coffee" target="_blank" rel="noopener">☕ Spendier mir einen Kaffee</a>
+        <a href="https://buymeacoffee.com/hackatoa" class="nav-link nav-link-coffee" target="_blank" rel="noopener">☕ Gib mir einen Kaffee aus</a>
       </div>
     </div>
   </nav>
@@ -1477,13 +1510,13 @@
 
       <div class="container hero-grid">
         <div>
-          <div class="hero-eyebrow animate-in">Discord-Bot · Über 150 Wikis</div>
+          <div class="hero-eyebrow animate-in">Discord Bot · 280+ Wikis</div>
           <h1 class="hero-heading animate-in delay-1">
             <span class="hero-heading-line1">Sammle das Wiki.</span>
             <span class="hero-heading-line2">Besitze die Lore.</span>
           </h1>
           <p class="hero-subtext animate-in delay-2">
-            Erschaffe Charaktere aus Wikipedia &amp; über 150 Fandom-Wikis. Beanspruche sie. Tausche sie. Baue deine Sammlung auf.
+            Rolle 10 Charaktere — 9 absolut zufällige aus über 280 Fandom-Wikis sowie 1 garantierte aus der echten Wikipedia. Beanspruche sie. Tausche sie. Baue deine Sammlung auf.
           </p>
           <div class="hero-buttons animate-in delay-3">
             <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands"
@@ -1510,8 +1543,8 @@
             <div class="wiki-card card-back-3"></div>
             <div class="wiki-card card-back-2"></div>
             <div class="wiki-card card-front">
-              <div class="card-timer">noch 4:32</div>
-              <div class="card-wiki-badge">⚡ Naruto-Wiki</div>
+              <div class="card-timer">4:32 übrig</div>
+              <div class="card-wiki-badge">⚡ Naruto Wiki</div>
               <div class="card-character-icon">🦊</div>
               <div class="card-character-name">Kurama</div>
               <div class="card-gold-stars">
@@ -1534,14 +1567,14 @@
         <div class="features-header">
           <div class="section-label">Funktionen</div>
           <h2 class="section-heading">Alles, was du brauchst, um<br/>Baue die ultimative Sammlung auf.</h2>
-          <p class="section-subtext">Vom Rollen bis zur Wunschliste – jeder Aspekt des Bots ist auf den Nervenkitzel des Ziehens ausgelegt.</p>
+          <p class="section-subtext">Vom Rollen bis zur Wunschliste ist jeder Teil des Bots auf den Nervenkitzel des Ziehens ausgelegt.</p>
         </div>
 
         <div class="features-grid">
           <div class="feature-card">
             <span class="feature-icon">🎲</span>
             <div class="feature-title">Rollen &amp; Beanspruchen</div>
-            <p class="feature-desc">Rolle 10 Charaktere in einem Beitrag. Klicke zum Beanspruchen, bevor das 5-Minuten-Fenster abläuft. Wer zuerst kommt, mahlt zuerst.</p>
+            <p class="feature-desc">Rolle 10 Charaktere in einem Beitrag. Klicke, um sie zu beanspruchen, bevor das 5-Minuten-Fenster schließt. Wer zuerst kommt, mahlt zuerst.</p>
             <span class="feature-tag tag-violet">5-Min.-Fenster</span>
           </div>
 
@@ -1555,28 +1588,28 @@
           <div class="feature-card">
             <span class="feature-icon">🔄</span>
             <div class="feature-title">Handelssystem</div>
-            <p class="feature-desc">Biete Tausende Trades mit anderen Mitgliedern an. Nimm sie an oder lehne sie über Buttons ab. Sammlungen wachsen durch Verhandlungen.</p>
+            <p class="feature-desc">Biete Trades mit anderen Mitgliedern an. Nimm sie an oder lehne sie über Buttons ab. Sammlungen wachsen durch Verhandlungen.</p>
             <span class="feature-tag tag-violet">P2P-Trades</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">⭐</span>
             <div class="feature-title">Wunschliste &amp; Benachrichtigungen</div>
-            <p class="feature-desc">Füge Charaktere zu deiner Wunschliste hinzu und erhalte sofort eine DM, sobald sie in einem Roll auftauchen. Verpasse nie wieder einen Charakter, den du haben willst.</p>
-            <span class="feature-tag tag-gold">Direkte DM</span>
+            <p class="feature-desc">Füge Charaktere zu deiner Wunschliste hinzu und erhalte eine DM, sobald sie in einem Roll auftauchen. Verpasse nie wieder einen Charakter, den du haben willst.</p>
+            <span class="feature-tag tag-gold">Sofortige DM</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">🎯</span>
-            <div class="feature-title">Verstärke deinen Roll</div>
-            <p class="feature-desc">Setze ein ganzes Fandom-Wiki oder ein Schlüsselwort auf die Wunschliste, damit diese Charaktere dreimal so oft in deinen Rolls auftauchen.</p>
+            <div class="feature-title">Boost für deine Rolls</div>
+            <p class="feature-desc">Setze ein ganzes Fandom-Wiki oder ein Schlüsselwort auf deine Wunschliste, damit diese Charaktere 3× häufiger in deinen Rolls erscheinen.</p>
             <span class="feature-tag tag-violet">3× Boost</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">⚙️</span>
-            <div class="feature-title">Server-anpassbar</div>
-            <p class="feature-desc">Admins können die Roll-Abklingzeit, das Anspruchsfenster und benutzerdefinierte Fandom-Wiki-Quellen hinzufügen, die für ihren Server einzigartig sind.</p>
+            <div class="feature-title">Serveranpassbar</div>
+            <p class="feature-desc">Admins können den Roll-Cooldown, das Anspruchsfenster und benutzerdefinierte Fandom-Wiki-Quellen hinzufügen, die für ihren Server einzigartig sind.</p>
             <span class="feature-tag tag-gold">Admin-Steuerung</span>
           </div>
         </div>
@@ -1640,7 +1673,7 @@
         <div class="commands-header">
           <div class="section-label">Befehle</div>
           <h2 class="section-heading">Jeder Befehl auf einen Blick.</h2>
-          <p class="section-subtext">Alle Slash-Befehle haben entsprechende Präfix-Äquivalente, die mit <code style="font-family:var(--font-mono);font-size:14px;color:var(--indigo-light);background:rgba(139,92,246,0.1);padding:2px 7px;border-radius:4px">w.</code> beginnen</p>
+          <p class="section-subtext">Alle Slash-Commands haben entsprechende Präfix-Äquivalente, die mit <code style="font-family:var(--font-mono);font-size:14px;color:var(--indigo-light);background:rgba(139,92,246,0.1);padding:2px 7px;border-radius:4px">w.</code> beginnen.</p>
         </div>
 
         <div class="commands-layout">
@@ -1658,12 +1691,12 @@
               <div class="cmd-row">
                 <span class="cmd-name">/roll</span>
                 <span class="cmd-prefix">w.roll</span>
-                <span class="cmd-desc">Würfle 10 zufällige Charaktere aus allen aktivierten Wikis.</span>
+                <span class="cmd-desc">Würfle 10 Charaktere — 9 absolut zufällige aus über 280 Wikis plus 1 garantierte aus der echten Wikipedia.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/collection [@user]</span>
                 <span class="cmd-prefix">w.c [@user]</span>
-                <span class="cmd-desc">Durchsuche deine eigene Sammlung oder die von anderen.</span>
+                <span class="cmd-desc">Durchsuche deine Sammlung oder die von jemand anderem.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/search &lt;name&gt;</span>
@@ -1693,37 +1726,57 @@
               <div class="cmd-row">
                 <span class="cmd-name">/submitimage &lt;name&gt; &lt;url&gt;</span>
                 <span class="cmd-prefix">w.si</span>
-                <span class="cmd-desc">Reiche ein benutzerdefiniertes Bild für eine Charakterkarte ein.</span>
+                <span class="cmd-desc">Reiche ein eigenes Bild für eine Charakterkarte ein.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/daily</span>
                 <span class="cmd-prefix">w.daily</span>
-                <span class="cmd-desc">Kostenloser täglicher Roll! Baue eine Serie für eine Bonusbelohnung auf.</span>
+                <span class="cmd-desc">Kostenloser täglicher Roll + 💠 Shards. Baue eine Serie für Bonus-Beanspruchungen &amp; Shards auf.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/shop</span>
+                <span class="cmd-prefix">w.shop</span>
+                <span class="cmd-desc">Gebe 💠 Shards aus — jetzt einen sofortigen Extrawurf, bald mehr Boni.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/balance</span>
+                <span class="cmd-prefix">w.balance</span>
+                <span class="cmd-desc">Überprüfe dein 💠 Shard-Guthaben.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/leaderboard</span>
                 <span class="cmd-prefix">w.lb</span>
-                <span class="cmd-desc">Die besten Sammler in diesem Server nach Sammlungsgröße sortiert.</span>
+                <span class="cmd-desc">Die Top-Sammler in diesem Server nach Sammlungsgröße sortiert.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/vote</span>
                 <span class="cmd-prefix">w.vote</span>
-                <span class="cmd-desc">Stimme für WikiRoll auf top.gg ab.</span>
+                <span class="cmd-desc">Stimme auf top.gg für WikiRoll ab, um 💠 Shards zu verdienen.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/server</span>
                 <span class="cmd-prefix">w.server</span>
-                <span class="cmd-desc">Erhalte einen Einladungslink für den Discord der The Caldera-Community.</span>
+                <span class="cmd-desc">Hol dir eine Einladung zur Community-Discord-Server von The Caldera.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/about</span>
                 <span class="cmd-prefix">w.about</span>
-                <span class="cmd-desc">Bot-Infos, Statistiken und alle Links.</span>
+                <span class="cmd-desc">Bot-Informationen, Statistiken und alle Links.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/support</span>
+                <span class="cmd-prefix">w.support</span>
+                <span class="cmd-desc">Hole dir Hilfe, melde Bugs und finde nützliche Links.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/donate</span>
+                <span class="cmd-prefix">w.donate</span>
+                <span class="cmd-desc">Unterstütze WikiRoll und hilf mit, ihn online zu halten.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/help</span>
                 <span class="cmd-prefix">w.help</span>
-                <span class="cmd-desc">Listet alle Befehle nach Kategorien gruppiert auf.</span>
+                <span class="cmd-desc">Listet alle Befehle nach Kategorie sortiert auf.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/settings</span>
@@ -1734,19 +1787,19 @@
               <div class="cmd-row">
                 <span class="cmd-name">/source add/remove/list</span>
                 <span class="cmd-prefix">w.source</span>
-                <span class="cmd-desc">Fandom-Wiki-Quellen zum Rollen hinzufügen oder entfernen.</span>
+                <span class="cmd-desc">Füge Fandom-Wiki-Quellen zum Rollen hinzu oder entferne sie.</span>
                 <span class="cmd-admin">Admin</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/setrollchannel set/clear</span>
                 <span class="cmd-prefix">w.setrc</span>
-                <span class="cmd-desc">Beschränke Rolls auf einen bestimmten Kanal.</span>
+                <span class="cmd-desc">Beschränke das Rollen auf einen bestimmten Kanal.</span>
                 <span class="cmd-admin">Admin</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/linkserver start/confirm/status</span>
                 <span class="cmd-prefix">w.linkserver</span>
-                <span class="cmd-desc">Verknüpfe zwei Server, um den Besitz beanspruchter Charaktere zu teilen.</span>
+                <span class="cmd-desc">Verknüpfe zwei Server, um beanspruchte Charakterbesitztümer zu teilen.</span>
                 <span class="cmd-admin">Admin</span>
               </div>
             </div>
@@ -1765,23 +1818,27 @@
             <div class="prefix-list">
               <span class="prefix-chip"><span>w.roll</span> roll</span>
               <span class="prefix-chip"><span>w.daily</span> daily</span>
+              <span class="prefix-chip"><span>w.shop</span> shop</span>
+              <span class="prefix-chip"><span>w.balance</span> balance</span>
               <span class="prefix-chip"><span>w.c</span> collection</span>
               <span class="prefix-chip"><span>w.s</span> search</span>
               <span class="prefix-chip"><span>w.info</span> info</span>
               <span class="prefix-chip"><span>w.remove</span> entfernen</span>
-              <span class="prefix-chip"><span>w.si</span> bild einreichen</span>
+              <span class="prefix-chip"><span>w.si</span> submitimage</span>
               <span class="prefix-chip"><span>w.trade</span> handeln</span>
               <span class="prefix-chip"><span>w.wl add</span> wunschliste hinzufügen</span>
               <span class="prefix-chip"><span>w.wl src</span> wunschliste quelle hinzufügen</span>
               <span class="prefix-chip"><span>w.lb</span> rangliste</span>
-              <span class="prefix-chip"><span>w.vote</span> voten</span>
-              <span class="prefix-chip"><span>w.server</span> server</span>
-              <span class="prefix-chip"><span>w.about</span> über</span>
-              <span class="prefix-chip"><span>w.help</span> hilfe</span>
-              <span class="prefix-chip"><span>w.settings</span> einstellungen</span>
-              <span class="prefix-chip"><span>w.source</span> quelle</span>
+              <span class="prefix-chip"><span>w.vote</span> votieren</span>
+              <span class="prefix-chip"><span>w.server</span> Server</span>
+              <span class="prefix-chip"><span>w.about</span> Über</span>
+              <span class="prefix-chip"><span>w.help</span> Hilfe</span>
+              <span class="prefix-chip"><span>w.settings</span> Einstellungen</span>
+              <span class="prefix-chip"><span>w.source</span> Quellcode</span>
               <span class="prefix-chip"><span>w.setrc</span> setrollchannel</span>
               <span class="prefix-chip"><span>w.linkserver</span> linkserver</span>
+              <span class="prefix-chip"><span>w.support</span> Support</span>
+              <span class="prefix-chip"><span>w.donate</span> Spenden</span>
             </div>
           </div>
         </div>
@@ -1795,22 +1852,37 @@
       <div class="container">
         <div class="vote-banner">
           <div>
-            <div class="vote-banner-tag">🗳️ Kostenloser Bonus-Wurf</div>
-            <h2 class="vote-banner-title">Für WikiRoll abstimmen.</h2>
+            <div class="vote-banner-tag">💠 Scherben verdienen</div>
+            <h2 class="vote-banner-title">Vote für WikiRoll.</h2>
             <p class="vote-banner-desc">
-              Das Abstimmen für WikiRoll auf top.gg dauert 5 Sekunden und bringt dir einen Bonus-Wurf ein,
-              der deine stündliche Abklingzeit umgeht. Du kannst alle 12 Stunden abstimmen — jede Stimme zählt.
+              Das Voten dauert 5 Sekunden und bringt dir <strong>12 💠 Splitter</strong> — gib sie in
+              <code>/shop</code> für einen sofortigen Extra-Wurf aus (und bald noch mehr Vorteile). WikiRoll ist auf
+              <strong>zwei Voting-Seiten</strong> vertreten, und jede davon erlaubt es dir, alle 12 Stunden zu voten, sodass du
+              Splitter von beiden anhäufen kannst. Erledige deine <code>/daily</code> für noch mehr.
             </p>
             <div class="vote-steps">
-              <div class="vote-step"><div class="vote-step-num">1</div> Klicke auf top.gg auf Abstimmen</div>
+              <div class="vote-step"><div class="vote-step-num">1</div> Klicke auf einen Vote-Button</div>
               <div class="vote-step"><div class="vote-step-num">2</div> Bestätigen (kein Konto erforderlich)</div>
-              <div class="vote-step"><div class="vote-step-num">3</div> Erhalte eine DM mit deinem Bonus-Wurf-Guthaben</div>
-              <div class="vote-step"><div class="vote-step-num">4</div> Nutze /roll — Guthaben wird automatisch abgezogen</div>
+              <div class="vote-step"><div class="vote-step-num">3</div> Erhalte eine DM mit deinen 💠 Splittern</div>
+              <div class="vote-step"><div class="vote-step-num">4</div> Gib sie in /shop aus</div>
             </div>
           </div>
-          <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
-            🗳️ Auf top.gg abstimmen
-          </a>
+          <div class="vote-actions">
+            <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
+              🗳️ Auf top.gg voten
+            </a>
+            <a href="https://discordbotlist.com/bots/1343100226537259018/upvote" class="btn-vote dbl" target="_blank" rel="noopener">
+              🗳️ Auf Discord Bot List voten
+            </a>
+            <div class="vote-widgets">
+              <a href="https://top.gg/bot/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://top.gg/api/widget/1343100226537259018.svg" alt="WikiRoll auf top.gg" loading="lazy" width="200">
+              </a>
+              <a href="https://discordbotlist.com/bots/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://discordbotlist.com/api/v1/bots/1343100226537259018/widget" alt="WikiRoll auf Discord Bot List" loading="lazy" width="200">
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1832,7 +1904,7 @@
             <p class="community-card-desc">Der offizielle Discord für WikiRoll und alle Hackatoa-Projekte. Teile deine Sammlung, melde Bugs, schlage Wikis vor und tausche dich aus.</p>
             <div class="community-card-feature-list">
               <div class="community-feature">Sammlungspräsentationen &amp; Tausch</div>
-              <div class="community-feature">Bug-Meldungen &amp; Funktionswünsche</div>
+              <div class="community-feature">Fehlermeldungen &amp; Funktionswünsche</div>
               <div class="community-feature">Homelab- &amp; Entwickler-Chat</div>
               <div class="community-feature">Frühzeitiger Zugriff auf neue Funktionen</div>
             </div>
@@ -1844,9 +1916,9 @@
           <div class="community-card">
             <span class="community-card-icon">☕</span>
             <div class="community-card-title">Entwicklung unterstützen</div>
-            <p class="community-card-desc">WikiRoll ist kostenlos und Open Source. Wenn es dir gefällt, hilft ein Kaffee dabei, das Heimnetzwerk am Laufen zu halten und neue Funktionen zu entwickeln.</p>
+            <p class="community-card-desc">WikiRoll ist kostenlos und Open Source. Wenn es dir gefällt, hilft ein Kaffee dabei, das Homelab am Laufen zu halten und neue Funktionen zu entwickeln.</p>
             <div class="community-card-feature-list">
-              <div class="community-feature">Server online halten</div>
+              <div class="community-feature">Den Server online halten</div>
               <div class="community-feature">Neue Wiki-Integrationen finanzieren</div>
               <div class="community-feature">Solo-Indie-Entwickler unterstützen</div>
               <div class="community-feature">Ewige Dankbarkeit</div>
@@ -1864,7 +1936,7 @@
     <!-- ─── CTA ──────────────────────────────────────────────────────── -->
     <section class="cta-section" id="add-bot">
       <div class="container">
-        <h2 class="cta-heading">Losrollen.<br/>Sammeln beginnen.</h2>
+        <h2 class="cta-heading">Losrollen.<br/>Sammeln starten.</h2>
         <p class="cta-sub">
           <span>Kostenlos nutzbar</span>
           <span class="cta-sub-dot"></span>
@@ -1896,7 +1968,7 @@
         <span class="footer-sep">·</span>
         <a href="https://discord.gg/nrQFdACWbh" class="footer-link" target="_blank" rel="noopener">🌋 Community</a>
         <span class="footer-sep">·</span>
-        <a href="https://buymeacoffee.com/hackatoa" class="footer-link" target="_blank" rel="noopener">☕ Spendier mir einen Kaffee</a>
+        <a href="https://buymeacoffee.com/hackatoa" class="footer-link" target="_blank" rel="noopener">☕ Gib mir einen Kaffee aus</a>
         <span class="footer-sep">·</span>
         <a href="https://github.com/Hackatoan/wikiroll" class="footer-link" target="_blank" rel="noopener">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.6"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>

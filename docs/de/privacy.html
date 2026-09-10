@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Datenschutz — WikiRoll</title>
-  <meta name="description" content="Datenschutzbestimmungen für WikiRoll, den Discord-Bot, mit dem Servermitglieder Charaktere aus Wikipedia und über 150 Fandom-Wikis würfeln und sammeln können." />
+  <title>Datenschutzrichtlinie — WikiRoll</title>
+  <meta name="description" content="Datenschutzbestimmungen für WikiRoll, den Discord-Bot, mit dem Servermitglieder Charaktere von Wikipedia und über 280 Fandom-Wikis würfeln und sammeln können." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://wikiroll.hackatoa.com/de/privacy.html" />
   <meta name="theme-color" content="#0d1117" />
@@ -56,14 +56,15 @@
 </head>
 <body>
 <!-- i18n:switcher:start -->
-<div id="lang-switch" style="position:fixed;top:8px;right:10px;z-index:99999;font-family:system-ui,-apple-system,sans-serif"><button id="lang-btn" type="button" aria-label="Language" aria-haspopup="true" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;color:#8a8;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg></button><div id="lang-pop" role="menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;flex-direction:column;gap:8px;background:rgba(6,10,6,.95);border:1px solid #1a3d1a;border-radius:10px;padding:9px 12px;box-shadow:0 4px 16px rgba(0,0,0,.6);font-size:12px;white-space:nowrap"><a href="/privacy.html" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
+<nav aria-label="Language" style="position:fixed;top:8px;right:10px;z-index:99999;font-size:12px;font-family:system-ui,-apple-system,sans-serif;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;padding:5px 12px;display:flex;gap:9px;box-shadow:0 2px 10px rgba(0,0,0,.5);">
+  <a href="/privacy.html" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
   <a href="/es/privacy.html" hreflang="es" style="color:#8a8;text-decoration:none;">ES</a>
   <a href="/pt-br/privacy.html" hreflang="pt-BR" style="color:#8a8;text-decoration:none;">PT</a>
   <a href="/fr/privacy.html" hreflang="fr" style="color:#8a8;text-decoration:none;">FR</a>
   <a href="/de/privacy.html" hreflang="de" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">DE</a>
   <a href="/vi/privacy.html" hreflang="vi" style="color:#8a8;text-decoration:none;">VI</a>
-  <a href="/th/privacy.html" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a></div></div>
-<script>(function(){var b=document.getElementById('lang-btn'),p=document.getElementById('lang-pop');if(!b||!p)return;var d=p.querySelector('a:not([aria-current])');if(d&&d.style&&d.style.color)b.style.color=d.style.color;b.addEventListener('click',function(e){e.stopPropagation();p.style.display=p.style.display==='flex'?'none':'flex';});p.addEventListener('click',function(e){e.stopPropagation();});document.addEventListener('click',function(){p.style.display='none';});})();</script>
+  <a href="/th/privacy.html" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a>
+</nav>
 <!-- i18n:switcher:end -->
 <nav>
   <a class="logo" href="/de/">WikiRoll</a>
@@ -75,31 +76,31 @@
 </nav>
 
 <main>
-  <h1>Datenschutz</h1>
+  <h1>Datenschutzrichtlinie</h1>
   <p class="meta">Zuletzt aktualisiert: Juni 2026 &nbsp;·&nbsp; WikiRoll Discord Bot</p>
 
   <div class="card">
-    <p>WikiRoll erfasst nur die minimalen Daten, die zum Betrieb des Bots erforderlich sind. Wir verkaufen, teilen oder monetarisieren deine Daten in keiner Weise.</p>
+    <p>WikiRoll erfasst nur die minimal erforderlichen Daten zum Betrieb des Bots. Wir verkaufen, teilen oder monetarisieren deine Daten in keiner Weise.</p>
   </div>
 
   <h2>1. Welche Daten wir erfassen</h2>
   <p>WikiRoll speichert die folgenden Daten in einer lokalen SQLite-Datenbank auf unserem Server:</p>
   <ul>
-    <li><strong>Discord-Benutzer-ID</strong> — um deinem Konto den Besitz von Charakteren, Wunschlisten und Abklingzeiten zuzuordnen</li>
-    <li><strong>Discord-Server- (Gilde-)ID</strong> — zur Begrenzung von Besitzrechten und Einstellungen pro Server</li>
+    <li><strong>Discord-Benutzer-ID</strong> — um deinem Konto Charakterbesitz, Wunschlisten und Abklingzeiten zuzuordnen</li>
+    <li><strong>Discord-Server-ID (Gilde)</strong> — um Besitz und Einstellungen pro Server festzulegen</li>
     <li><strong>Charakterdatensätze</strong> — Name, Quell-Wiki-URL, Vorschaubild-URL und Wikipedia-/Fandom-Seiten-ID</li>
-    <li><strong>Besitzdatensätze</strong> — welcher Nutzer auf welchem Server welchen Charakter besitzt</li>
-    <li><strong>Wunschlisteneinträge</strong> — Charakternamen oder Quellen, die du auf deine Wunschliste gesetzt hast</li>
+    <li><strong>Besitzdatensätze</strong> — welcher Benutzer in welchem Server welchen Charakter besitzt</li>
+    <li><strong>Wunschlisteneinträge</strong> — Charakternamen oder Quellen auf deiner Wunschliste</li>
     <li><strong>Roll-Abklingzeiten</strong> — Zeitstempel deines letzten Rolls pro Server</li>
     <li><strong>Von Nutzern eingereichte Bild-URLs</strong> — Discord-CDN-URLs, die du über <code>/submitimage</code> bereitstellst</li>
     <li><strong>Handelsaufzeichnungen</strong> — aktive und abgeschlossene Trades zwischen Nutzern</li>
   </ul>
-  <p>Wir <strong>nicht</strong> sammeln: Benutzernamen, E-Mail-Adressen, Nachrichteninhalt (abgesehen von Befehlsargumenten), IP-Adressen oder andere persönliche Informationen.</p>
+  <p>Wir <strong>nicht</strong> erheben: Benutzernamen, E-Mail-Adressen, Nachrichteninhalte (außer Befehlsargumenten), IP-Adressen oder andere persönliche Informationen.</p>
 
-  <h2>2. Wie wir sie verwenden</h2>
-  <p>Alle gesammelten Daten werden ausschließlich zur Bereitstellung der Kernfunktionen des Bots verwendet:</p>
+  <h2>2. Wie wir es verwenden</h2>
+  <p>Alle erhobenen Daten werden ausschließlich zum Betrieb der Kernfunktionen des Bots verwendet:</p>
   <ul>
-    <li>Verfolgung des Charakterbesitzes in jedem Server</li>
+    <li>Verfolgung des Charakterbesitzes innerhalb jedes Servers</li>
     <li>Durchsetzung von Roll-Abklingzeiten</li>
     <li>Senden von DM-Benachrichtigungen, wenn auf der Wunschliste stehende Charaktere gerollt werden</li>
     <li>Verarbeitung von Trades zwischen Nutzern</li>
@@ -108,11 +109,11 @@
   <h2>3. Datenspeicherung</h2>
   <p>Deine Daten werden so lange gespeichert, wie du den Bot nutzt. Du kannst:</p>
   <ul>
-    <li>Einzelne Charaktere aus deiner Sammlung mit <code>/remove</code> entfernen</li>
+    <li>Einzelne Charaktere mit <code>/remove</code> aus deiner Sammlung entfernen</li>
     <li>Deine Wunschliste mit <code>/wishlist remove</code> leeren</li>
     <li>Die vollständige Löschung deiner Daten beantragen, indem du ein <a href="https://github.com/Hackatoan/wikiroll/issues" target="_blank">GitHub Issue</a></li>
   </ul>
-  <p>Wenn der Bot von einem Server entfernt wird, können die Daten dieses Servers unbegrenzt in der Datenbank gespeichert bleiben. Server-Administratoren können uns kontaktieren, um die Löschung zu beantragen.</p>
+  <p>W wird der Bot von einem Server entfernt, können die Daten dieses Servers unbegrenzt in der Datenbank gespeichert bleiben. Server-Admins können uns kontaktieren, um die Löschung zu beantragen.</p>
 
   <h2>4. Datenweitergabe</h2>
   <p>Wir verkaufen, vermieten oder teilen deine Daten nicht mit Dritten. Der Bot ruft Charakterdaten von öffentlichen Wikipedia- und Fandom-APIs ab — deine Discord-Informationen werden niemals an diese Dienste gesendet.</p>
@@ -121,7 +122,7 @@
   <p>Daten werden in einer SQLite-Datenbank auf einem selbst gehosteten Server gespeichert. Der Zugriff ist auf den Serveradministrator beschränkt. Wir treffen angemessene Vorkehrungen, können jedoch keine absolute Sicherheit garantieren.</p>
 
   <h2>6. Kinder</h2>
-  <p>WikiRoll sammelt wissentlich keine Daten von Benutzern unter 13 Jahren. Wenn du glaubst, dass ein Kind den Bot genutzt hat, kontaktiere uns bitte zur Datenlöschung.</p>
+  <p>WikiRoll sammelt nicht wissentlich Daten von Nutzern unter 13 Jahren. Wenn du glaubst, dass ein Kind den Bot genutzt hat, kontaktiere uns bitte zur Entfernung der Daten.</p>
 
   <h2>7. Änderungen</h2>
   <p>Wir können diese Richtlinie von Zeit zu Zeit aktualisieren. Die fortgesetzte Nutzung des Bots nach Änderungen gilt als Annahme der neuen Richtlinie.</p>

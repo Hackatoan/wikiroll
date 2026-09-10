@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>นโยบายความเป็นส่วนตัว — WikiRoll</title>
-  <meta name="description" content="นโยบายความเป็นส่วนตัวสำหรับ WikiRoll บอท Discord ที่ให้สมาชิกในเซิร์ฟเวอร์สุ่มและสะสมตัวละครจาก Wikipedia และ Fandom wiki มากกว่า 150 แห่ง" />
+  <meta name="description" content="นโยบายความเป็นส่วนตัวสำหรับ WikiRoll บอท Discord ที่ให้สมาชิกในเซิร์ฟเวอร์สุ่มและสะสมตัวละครจาก Wikipedia และ Fandom wiki มากกว่า 280 แห่ง" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://wikiroll.hackatoa.com/th/privacy.html" />
   <meta name="theme-color" content="#0d1117" />
@@ -56,14 +56,15 @@
 </head>
 <body>
 <!-- i18n:switcher:start -->
-<div id="lang-switch" style="position:fixed;top:8px;right:10px;z-index:99999;font-family:system-ui,-apple-system,sans-serif"><button id="lang-btn" type="button" aria-label="Language" aria-haspopup="true" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;color:#8a8;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg></button><div id="lang-pop" role="menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;flex-direction:column;gap:8px;background:rgba(6,10,6,.95);border:1px solid #1a3d1a;border-radius:10px;padding:9px 12px;box-shadow:0 4px 16px rgba(0,0,0,.6);font-size:12px;white-space:nowrap"><a href="/privacy.html" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
+<nav aria-label="Language" style="position:fixed;top:8px;right:10px;z-index:99999;font-size:12px;font-family:system-ui,-apple-system,sans-serif;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;padding:5px 12px;display:flex;gap:9px;box-shadow:0 2px 10px rgba(0,0,0,.5);">
+  <a href="/privacy.html" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
   <a href="/es/privacy.html" hreflang="es" style="color:#8a8;text-decoration:none;">ES</a>
   <a href="/pt-br/privacy.html" hreflang="pt-BR" style="color:#8a8;text-decoration:none;">PT</a>
   <a href="/fr/privacy.html" hreflang="fr" style="color:#8a8;text-decoration:none;">FR</a>
   <a href="/de/privacy.html" hreflang="de" style="color:#8a8;text-decoration:none;">DE</a>
   <a href="/vi/privacy.html" hreflang="vi" style="color:#8a8;text-decoration:none;">VI</a>
-  <a href="/th/privacy.html" hreflang="th" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">TH</a></div></div>
-<script>(function(){var b=document.getElementById('lang-btn'),p=document.getElementById('lang-pop');if(!b||!p)return;var d=p.querySelector('a:not([aria-current])');if(d&&d.style&&d.style.color)b.style.color=d.style.color;b.addEventListener('click',function(e){e.stopPropagation();p.style.display=p.style.display==='flex'?'none':'flex';});p.addEventListener('click',function(e){e.stopPropagation();});document.addEventListener('click',function(){p.style.display='none';});})();</script>
+  <a href="/th/privacy.html" hreflang="th" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">TH</a>
+</nav>
 <!-- i18n:switcher:end -->
 <nav>
   <a class="logo" href="/th/">WikiRoll</a>
@@ -76,60 +77,60 @@
 
 <main>
   <h1>นโยบายความเป็นส่วนตัว</h1>
-  <p class="meta">อัปเดตล่าสุด: มิถุนายน 2026 &nbsp;·&nbsp; บอท Discord WikiRoll</p>
+  <p class="meta">อัปเดตล่าสุด: มิถุนายน 2026 &nbsp;·&nbsp; WikiRoll Discord Bot</p>
 
   <div class="card">
-    <p>WikiRoll รวบรวมข้อมูลเพียงเล็กน้อยที่สุดเท่าที่จำเป็นเพื่อเรียกใช้งานบอท เราไม่ขาย แบ่งปัน หรือสร้างรายได้จากข้อมูลของคุณไม่ว่าด้วยวิธีใดก็ตาม</p>
+    <p>WikiRoll จัดเก็บข้อมูลเพียงเล็กน้อยเท่าที่จำเป็นสำหรับการทำงานของบอท เราไม่มีการขาย แบ่งปัน หรือสร้างรายจากข้อมูลของคุณไม่ว่าในรูปแบบใด</p>
   </div>
 
-  <h2>1. สิ่งที่เราเก็บรวบรวม</h2>
-  <p>WikiRoll จัดเก็บข้อมูลต่อไปนี้ลงในฐานข้อมูล SQLite แบบローカルในเซิร์ฟเวอร์ของเรา:</p>
+  <h2>1. สิ่งที่เราจัดเก็บ</h2>
+  <p>WikiRoll จัดเก็บข้อมูลต่อไปนี้ไว้ในฐานข้อมูล SQLite ในเครื่องบนเซิร์ฟเวอร์ของเรา:</p>
   <ul>
-    <li><strong>Discord User ID</strong> — เพื่อเชื่อมโยงการเป็นเจ้าของตัวละคร รายการที่อยากได้ และคูลดาวน์เข้ากับบัญชีของคุณ</li>
-    <li><strong>ID เซิร์ฟเวอร์ Discord (กิลด์)</strong> — เพื่อจำกัดขอบเขตความเป็นเจ้าของและการตั้งค่าต่อเซิร์ฟเวอร์</li>
-    <li><strong>บันทึกข้อมูลตัวละคร</strong> — ชื่อ, URL วิกิแหล่งที่มา, URL ภาพย่อ และ ID หน้า Wikipedia/Fandom</li>
-    <li><strong>บันทึกความเป็นเจ้าของ</strong> — ผู้ใช้คนใดในเซิร์ฟเวอร์ใดที่เป็นเจ้าของตัวละครใด</li>
-    <li><strong>รายการสิ่งที่อยากได้</strong> — ชื่อตัวละครหรือแหล่งที่มาที่คุณใส่ไว้ในรายการสิ่งที่อยากได้</li>
-    <li><strong>คูลดาวน์การสุ่ม</strong> — แสตมป์เวลาของการสุ่มครั้งล่าสุดของคุณต่อเซิร์ฟเวอร์</li>
+    <li><strong>Discord User ID</strong> — เพื่อเชื่อมโยงความเป็นเจ้าของตัวละคร รายการที่อยากได้ (wishlist) และคูลดาวน์เข้ากับบัญชีของคุณ</li>
+    <li><strong>ไอดีเซิร์ฟเวอร์ Discord (กิลด์)</strong> — เพื่อจำกัดขอบเขตความเป็นเจ้าของและการตั้งค่าในแต่ละเซิร์ฟเวอร์</li>
+    <li><strong>บันทึกข้อมูลตัวละคร</strong> — ชื่อ, URL วิกิแหล่งที่มา, URL ภาพย่อ, และไอดีหน้า Wikipedia/Fandom</li>
+    <li><strong>บันทึกความเป็นเจ้าของ</strong> — ผู้ใช้คนใดในเซิร์ฟเวอร์ใดเป็นเจ้าของตัวละครใด</li>
+    <li><strong>รายการที่อยากได้</strong> — ชื่อตัวละครหรือแหล่งที่มาที่คุณใส่ไว้ในรายการที่อยากได้</li>
+    <li><strong>คูลดาวน์การสุ่ม</strong> — แสตมป์เวลาของการสุ่มครั้งล่าสุดของคุณในแต่ละเซิร์ฟเวอร์</li>
     <li><strong>URL รูปภาพที่ผู้ใช้ส่ง</strong> — URL ของ Discord CDN ที่คุณระบุผ่าน <code>/submitimage</code></li>
-    <li><strong>บันทึกการแลกเปลี่ยน</strong> — การแลกเปลี่ยนที่ใช้งานอยู่และเสร็จสิ้นระหว่างผู้ใช้</li>
+    <li><strong>บันทึกการแลกเปลี่ยน</strong> — การแลกเปลี่ยนที่ใช้งานอยู่และที่เสร็จสิ้นแล้วระหว่างผู้ใช้</li>
   </ul>
-  <p>เรา<strong>ไม่</strong>เก็บรวบรวม: ชื่อผู้ใช้, ที่อยู่อีเมล, เนื้อหาข้อความ (นอกเหนือจากอาร์กิวเมนต์คำสั่ง), ที่อยู่ IP หรือข้อมูลส่วนบุคคลอื่นใด</p>
+  <p>เรา<strong>ไม่</strong>จัดเก็บ: ชื่อผู้ใช้, ที่อยู่อีเมล, เนื้อหาข้อความ (นอกเหนือจากอาร์กิวเมนต์คำสั่ง), ที่อยู่ IP หรือข้อมูลส่วนบุคคลอื่นใด</p>
 
   <h2>2. วิธีที่เราใช้ข้อมูล</h2>
-  <p>ข้อมูลทั้งหมดที่รวบรวมจะถูกใช้เพื่อ1ดำเนินฟีเจอร์หลักของบอทเท่านั้น:</p>
+  <p>ข้อมูลทั้งหมดที่รวบรวมจะถูกนำไปใช้เพื่อการทำงานของคุณสมบัติหลักของบอทเท่านั้น:</p>
   <ul>
     <li>ติดตามความเป็นเจ้าของตัวละครภายในแต่ละเซิร์ฟเวอร์</li>
     <li>บังคับใช้คูลดาวน์การสุ่ม</li>
     <li>ส่งการแจ้งเตือนทาง DM เมื่อสุ่มได้ตัวละครที่อยู่ในรายการสิ่งที่อยากได้</li>
-    <li>ดำเนินการแลกเปลี่ยนระหว่างผู้ใช้</li>
+    <li>ประมวลผลการแลกเปลี่ยนระหว่างผู้ใช้</li>
   </ul>
 
   <h2>3. การเก็บรักษาข้อมูล</h2>
-  <p>ข้อมูลของคุณจะถูกเก็บไว้ตราบเท่าที่คุณใช้งานบอท คุณสามารถ:</p>
+  <p>ข้อมูลของคุณจะถูกเก็บรักษาไว้ตราบเท่าที่คุณใช้งานบอท คุณสามารถ:</p>
   <ul>
     <li>ลบตัวละครแต่ละตัวออกจากคอลเลกชันของคุณด้วย <code>/remove</code></li>
-    <li>ล้างรายการที่อยากได้ของคุณด้วย <code>/wishlist remove</code></li>
+    <li>ล้างรายการที่อยากได้ (wishlist) ของคุณด้วย <code>/wishlist remove</code></li>
     <li>ขอให้ลบข้อมูลของคุณทั้งหมดโดยการเปิด <a href="https://github.com/Hackatoan/wikiroll/issues" target="_blank">GitHub Issue</a></li>
   </ul>
-  <p>หากบอทถูกนำออกจากเซิร์ฟเวอร์ ข้อมูลของเซิร์ฟเวอร์นั้นอาจถูกเก็บไว้ในฐานข้อมูลอย่างไม่มีกำหนด แอดมินเซิร์ฟเวอร์สามารถติดต่อเราเพื่อขอให้ลบข้อมูลได้</p>
+  <p>หากบอทถูกนำออกจากเซิร์ฟเวอร์ ข้อมูลของเซิร์ฟเวอร์นั้นอาจถูกเก็บไว้ในฐานข้อมูลอย่างไม่มีกำหนด ผู้ดูแลเซิร์ฟเวอร์สามารถติดต่อเราเพื่อขอให้ลบข้อมูลได้</p>
 
   <h2>4. การแบ่งปันข้อมูล</h2>
-  <p>เราไม่ขาย ให้เช่า หรือแบ่งปันข้อมูลของคุณกับบุคคลที่สาม บอทจะดึงข้อมูลตัวละครจาก API สาธารณะของ Wikipedia และ Fandom — ข้อมูล Discord ของคุณจะไม่ถูกส่งไปยังบริการเหล่านั้นอย่างเด็ดขาด</p>
+  <p>เราไม่ขาย ให้เช่า หรือแบ่งปันข้อมูลของคุณกับบุคคลที่สาม บอทดึงข้อมูลตัวละครจาก API สาธารณะของ Wikipedia และ Fandom โดยข้อมูล Discord ของคุณจะไม่ถูกส่งไปยังบริการเหล่านั้นเด็ดขาด</p>
 
   <h2>5. ความปลอดภัย</h2>
-  <p>ข้อมูลถูกจัดเก็บไว้ในฐานข้อมูล SQLite บนเซิร์ฟเวอร์ที่โฮสต์เอง การเข้าถึงจำกัดเฉพาะผู้ดูแลระบบเซิร์ฟเวอร์เท่านั้น เราใช้มาตรการป้องกันที่สมเหตุสมผลแต่ไม่สามารถรับประกันความปลอดภัยสูงสุดได้</p>
+  <p>ข้อมูลถูกจัดเก็บไว้ในฐานข้อมูล SQLite บนเซิร์ฟเวอร์โฮสต์เอง การเข้าถึงจำกัดเฉพาะผู้ดูแลระบบเซิร์ฟเวอร์เท่านั้น เราใช้มาตรการป้องกันที่สมเหตุสมผลแต่ไม่สามารถรับประกันความปลอดภัยสูงสุดได้</p>
 
   <h2>6. เด็ก</h2>
-  <p>WikiRoll จะไม่เก็บรวบรวมข้อมูลจากผู้ใช้ที่มีอายุต่ำกว่า 13 ปีโดยเจตนา หากคุณเชื่อว่าเด็กได้ใช้งานบอท โปรดติดต่อเราเพื่อลบข้อมูล</p>
+  <p>WikiRoll จะไม่เก็บรวบรวมข้อมูลจากผู้ใช้ที่มีอายุต่ำกว่า 13 ปีโดยเจตนา หากคุณเชื่อว่าเด็กใช้งานบอทนี้ โปรดติดต่อเราเพื่อลบข้อมูล</p>
 
   <h2>7. การเปลี่ยนแปลง</h2>
-  <p>เราอาจปรับปรุงนโยบายนี้เป็นครั้งคราว การใช้งานบอทอย่างต่อเนื่องหลังจากมีการเปลี่ยนแปลงจะถือเป็นการยอมรับนโยบายใหม่</p>
+  <p>เราอาจปรับปรุงนโยบายนี้เป็นครั้งคราว การใช้งานบอทอย่างต่อเนื่องหลังจากมีการเปลี่ยนแปลงถือเป็นการยอมรับนโยบายใหม่</p>
 
   <h2>8. ติดต่อ</h2>
   <p>หากมีคำขอหรือคำถามเกี่ยวกับความเป็นส่วนตัว โปรดเปิดปัญหาที่ <a href="https://github.com/Hackatoan/wikiroll/issues" target="_blank">github.com/Hackatoan/wikiroll/issues</a> หรือไปที่ <a href="https://hackatoa.com" target="_blank">hackatoa.com</a>.</p>
 </main>
 
-<footer>WikiRoll &nbsp;·&nbsp; <a href="https://hackatoa.com">hackatoa.com</a> &nbsp;·&nbsp; <a href="/th/tos.html">ข้อกำหนดในการให้บริการ</a></footer>
+<footer>WikiRoll &nbsp;·&nbsp; <a href="https://hackatoa.com">hackatoa.com</a> &nbsp;·&nbsp; <a href="/th/tos.html">เงื่อนไขการให้บริการ</a></footer>
 </body>
 </html>

@@ -8,5 +8,5 @@
     { "file": "tos.html", "urlPath": "/tos.html" }
   ],
   "internalLinks": { "/": "/", "/privacy": "/privacy.html", "/tos": "/tos.html", "/privacy.html": "/privacy.html", "/tos.html": "/tos.html" },
-  "keepTerms": ["WikiRoll", "Wikipedia", "Fandom", "Discord", "Hackatoa", "top.gg", "Orbital Outpost"]
+  "keepTerms": ["WikiRoll", "Wikipedia", "Fandom", "Discord", "Hackatoa", "top.gg", "Discord Bot List", "The Caldera"]
 }

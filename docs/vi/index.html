@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WikiRoll — Sưu tầm Wiki</title>
-  <meta name="description" content="WikiRoll là một bot Discord cho phép thành viên máy chủ quay (roll) nhân vật từ Wikipedia và hơn 150 wiki Fandom — Naruto, Marvel, Harry Potter và nhiều hơn nữa. Hãy sở hữu, giao dịch và xây dựng bộ sưu tập của riêng bạn." />
+  <meta name="description" content="WikiRoll là một bot gacha Discord miễn phí: quay 10 nhân vật — 9 nhân vật ngẫu nhiên thực sự từ hơn 280 wiki Fandom (Naruto, Marvel, Harry Potter & nhiều hơn nữa) cộng với 1 nhân vật chắc chắn từ Wikipedia thật. Sưu tầm, giao dịch và thu thập." />
   <meta property="og:title" content="WikiRoll — Sưu tầm Wiki" />
-  <meta property="og:description" content="Quay nhân vật từ Wikipedia & hơn 150 wiki Fandom. Sưu tầm chúng. Trao đổi chúng. Xây dựng bộ sưu tập của bạn." />
+  <meta property="og:description" content="Quay 10 nhân vật — 9 nhân vật ngẫu nhiên thực sự từ hơn 280 wiki Fandom + 1 nhân vật chắc chắn từ Wikipedia thật. Sưu tầm chúng, giao dịch chúng, xây dựng bộ sưu tập của bạn." />
   <meta property="og:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#0d1117" />
@@ -14,19 +14,19 @@
   <meta property="og:site_name" content="Hackatoa" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="WikiRoll — Sưu tầm Wiki" />
-  <meta name="twitter:description" content="WikiRoll là một bot Discord cho phép thành viên máy chủ quay nhân vật từ Wikipedia và hơn 150 wiki Fandom — Naruto, Marvel, Harry Potter và nhiều hơn nữa." />
+  <meta name="twitter:description" content="Một bot gacha Discord miễn phí: quay 10 nhân vật — 9 nhân vật ngẫu nhiên thực sự từ hơn 280 wiki Fandom cộng với 1 nhân vật chắc chắn từ Wikipedia thật. Sưu tầm, giao dịch và thu thập." />
   <meta name="twitter:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta name="twitter:site" content="@jhackatoa" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Preston Harris" />
-  <meta name="keywords" content="WikiRoll, bot Discord, nhân vật Wikipedia, sưu tầm nhân vật, bot gacha Discord, bot wiki Fandom, bộ sưu tập nhân vật Discord" />
+  <meta name="keywords" content="WikiRoll, Discord bot, nhân vật Wikipedia, sưu tầm nhân vật, bot gacha Discord, bot wiki Fandom, bộ sưu tập nhân vật Discord" />
   <link rel="canonical" href="https://wikiroll.hackatoa.com/vi/" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "WikiRoll",
-    "description": "A Discord bot that lets server members roll and collect characters from Wikipedia and 280+ Fandom wikis. Claim them, trade them, build your collection.",
+    "description": "A free Discord bot that lets server members roll and collect characters — nine picked truly at random from 280+ Fandom wikis plus one guaranteed pull from real Wikipedia every roll. Claim them, trade them, build your collection.",
     "url": "https://wikiroll.hackatoa.com",
     "applicationCategory": "EntertainmentApplication",
     "operatingSystem": "Discord",
@@ -424,6 +424,38 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 36px rgba(255, 51, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
     }
+
+    .vote-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .btn-vote.dbl {
+      background: linear-gradient(135deg, #5865F2 0%, #4752c4 100%);
+      box-shadow: 0 4px 24px rgba(88,101,242,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .btn-vote.dbl:hover {
+      box-shadow: 0 8px 36px rgba(88,101,242,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-vote { justify-content: center; }
+    .vote-widgets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+      align-items: center;
+    }
+    .vote-widgets img {
+      max-width: 200px;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      opacity: 0.92;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .vote-widgets a:hover img { opacity: 1; transform: translateY(-1px); }
 
     /* ─── COMMUNITY SECTION ──────────────────────────────────────────── */
     .community-section {
@@ -1431,14 +1463,15 @@
 </head>
 <body>
 <!-- i18n:switcher:start -->
-<div id="lang-switch" style="position:fixed;top:8px;right:10px;z-index:99999;font-family:system-ui,-apple-system,sans-serif"><button id="lang-btn" type="button" aria-label="Language" aria-haspopup="true" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;color:#8a8;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg></button><div id="lang-pop" role="menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;flex-direction:column;gap:8px;background:rgba(6,10,6,.95);border:1px solid #1a3d1a;border-radius:10px;padding:9px 12px;box-shadow:0 4px 16px rgba(0,0,0,.6);font-size:12px;white-space:nowrap"><a href="/" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
+<nav aria-label="Language" style="position:fixed;top:8px;right:10px;z-index:99999;font-size:12px;font-family:system-ui,-apple-system,sans-serif;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;padding:5px 12px;display:flex;gap:9px;box-shadow:0 2px 10px rgba(0,0,0,.5);">
+  <a href="/" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
   <a href="/es/" hreflang="es" style="color:#8a8;text-decoration:none;">ES</a>
   <a href="/pt-br/" hreflang="pt-BR" style="color:#8a8;text-decoration:none;">PT</a>
   <a href="/fr/" hreflang="fr" style="color:#8a8;text-decoration:none;">FR</a>
   <a href="/de/" hreflang="de" style="color:#8a8;text-decoration:none;">DE</a>
   <a href="/vi/" hreflang="vi" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">VI</a>
-  <a href="/th/" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a></div></div>
-<script>(function(){var b=document.getElementById('lang-btn'),p=document.getElementById('lang-pop');if(!b||!p)return;var d=p.querySelector('a:not([aria-current])');if(d&&d.style&&d.style.color)b.style.color=d.style.color;b.addEventListener('click',function(e){e.stopPropagation();p.style.display=p.style.display==='flex'?'none':'flex';});p.addEventListener('click',function(e){e.stopPropagation();});document.addEventListener('click',function(){p.style.display='none';});})();</script>
+  <a href="/th/" hreflang="th" style="color:#8a8;text-decoration:none;">TH</a>
+</nav>
 <!-- i18n:switcher:end -->
 
   <!-- ─── NAV ──────────────────────────────────────────────────────────── -->
@@ -1477,13 +1510,13 @@
 
       <div class="container hero-grid">
         <div>
-          <div class="hero-eyebrow animate-in">Discord Bot · 280+ Wiki</div>
+          <div class="hero-eyebrow animate-in">Discord Bot · Hơn 280 Wiki</div>
           <h1 class="hero-heading animate-in delay-1">
             <span class="hero-heading-line1">Sưu tầm Wiki.</span>
-            <span class="hero-heading-line2">Làm chủ cốt truyện.</span>
+            <span class="hero-heading-line2">Làm chủ Truyền thuyết.</span>
           </h1>
           <p class="hero-subtext animate-in delay-2">
-            Quay nhân vật từ Wikipedia &amp; hơn 150 wiki Fandom. Sở hữu chúng. Giao dịch chúng. Xây dựng bộ sưu tập của bạn.
+            Quay 10 nhân vật — 9 nhân vật ngẫu nhiên thực sự từ hơn 280 wiki Fandom, cộng thêm 1 nhân vật đảm bảo từ Wikipedia thực. Sở hữu chúng. Giao dịch chúng. Xây dựng bộ sưu tập của bạn.
           </p>
           <div class="hero-buttons animate-in delay-3">
             <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands"
@@ -1497,7 +1530,7 @@
             </a>
           </div>
           <div class="hero-badges animate-in delay-4">
-            <span class="badge"><span class="badge-dot"></span>280+ Wiki Fandom</span>
+            <span class="badge"><span class="badge-dot"></span>Hơn 280 Fandom Wiki</span>
             <span class="badge"><span class="badge-dot"></span>Miễn phí</span>
             <span class="badge"><span class="badge-dot"></span>Mã nguồn mở</span>
             <span class="badge" id="wr-server-badge" style="display:none"><span class="badge-dot" style="background:#57F287"></span><span id="wr-server-count">—</span> Máy chủ</span>
@@ -1510,8 +1543,8 @@
             <div class="wiki-card card-back-3"></div>
             <div class="wiki-card card-back-2"></div>
             <div class="wiki-card card-front">
-              <div class="card-timer">Còn 4:32</div>
-              <div class="card-wiki-badge">⚡ Wiki Naruto</div>
+              <div class="card-timer">Còn lại 4:32</div>
+              <div class="card-wiki-badge">⚡ Naruto Wiki</div>
               <div class="card-character-icon">🦊</div>
               <div class="card-character-name">Kurama</div>
               <div class="card-gold-stars">
@@ -1533,8 +1566,8 @@
       <div class="container">
         <div class="features-header">
           <div class="section-label">Tính năng</div>
-          <h2 class="section-heading">Mọi thứ bạn cần để<br/>xây dựng bộ sưu tập tuyệt đỉnh.</h2>
-          <p class="section-subtext">Từ lượt quay đến danh sách ước nguyện, mọi tính năng của bot đều xoay quanh cảm giác hồi hộp khi gacha.</p>
+          <h2 class="section-heading">Mọi thứ bạn cần để<br/>xây dựng bộ sưu tập đỉnh cao.</h2>
+          <p class="section-subtext">Từ lượt quay đến danh sách ước nguyện, mọi tính năng của bot đều được thiết kế xoay quanh cảm giác hồi hộp khi quay trúng.</p>
         </div>
 
         <div class="features-grid">
@@ -1542,41 +1575,41 @@
             <span class="feature-icon">🎲</span>
             <div class="feature-title">Quay &amp; Nhận</div>
             <p class="feature-desc">Quay 10 nhân vật trong một bài đăng. Nhấn để nhận trước khi thời hạn 5 phút kết thúc. Ai đến trước được phục vụ trước.</p>
-            <span class="feature-tag tag-violet">Thời hạn 5 phút</span>
+            <span class="feature-tag tag-violet">Khung giờ 5 phút</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">📚</span>
-            <div class="feature-title">Wikipedia + hơn 150 Fandom</div>
-            <p class="feature-desc">Nhân vật từ Naruto, Marvel, Harry Potter, Star Wars, Genshin, Elder Scrolls và hàng chục tựa khác — cùng với các bài viết Wikipedia ngẫu nhiên.</p>
-            <span class="feature-tag tag-gold">Hơn 150 nguồn</span>
+            <div class="feature-title">Wikipedia + hơn 280 Fandom</div>
+            <p class="feature-desc">Các nhân vật được lấy từ Naruto, Marvel, Harry Potter, Star Wars, Genshin, Elder Scrolls và hàng chục tựa khác — cộng thêm các bài viết Wikipedia ngẫu nhiên.</p>
+            <span class="feature-tag tag-gold">Hơn 280 nguồn</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">🔄</span>
-            <div class="feature-title">Hệ thống Giao dịch</div>
-            <p class="feature-desc">Đề xuất giao dịch với các thành viên khác. Chấp nhận hoặc từ chối qua các nút bấm. Bộ sưu tập lớn mạnh nhờ đàm phán.</p>
+            <div class="feature-title">Hệ thống giao dịch</div>
+            <p class="feature-desc">Đề uật giao dịch với các thành viên khác. Chấp nhận hoặc từ chối qua các nút bấm. Bộ sưu tập lớn mạnh qua thương lượng.</p>
             <span class="feature-tag tag-violet">Giao dịch P2P</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">⭐</span>
             <div class="feature-title">Danh sách ước nguyện &amp; Thông báo</div>
-            <p class="feature-desc">Thêm nhân vật vào danh sách ước và nhận tin nhắn trực tiếp ngay khi họ xuất hiện trong một lượt quay. Không bao giờ bỏ lỡ nhân vật bạn muốn.</p>
-            <span class="feature-tag tag-gold">Tin nhắn trực tiếp tức thì</span>
+            <p class="feature-desc">Thêm nhân vật vào danh sách mong ước và nhận tin nhắn trực tiếp ngay khi họ xuất hiện trong một lượt quay. Không bao giờ bỏ lỡ nhân vật bạn muốn.</p>
+            <span class="feature-tag tag-gold">Nhắn tin trực tiếp ngay lập tức</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">🎯</span>
-            <div class="feature-title">Tăng sức mạnh lượt quay</div>
-            <p class="feature-desc">Thêm cả một wiki Fandom hoặc từ khóa vào danh sách ước để các nhân vật đó xuất hiện thường xuyên gấp 3 lần trong các lượt quay của bạn.</p>
+            <div class="feature-title">Tăng cường lượt quay của bạn</div>
+            <p class="feature-desc">Thêm cả wiki Fandom hoặc từ khóa vào danh sách mong ước để các nhân vật đó xuất hiện thường xuyên gấp 3 lần trong các lượt quay của bạn.</p>
             <span class="feature-tag tag-violet">Tăng 3×</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">⚙️</span>
             <div class="feature-title">Tùy chỉnh theo máy chủ</div>
-            <p class="feature-desc">Quản trị viên có thể điều chỉnh thời gian hồi chiêu của lượt quay, thời gian nhận và thêm các nguồn wiki Fandom tùy chỉnh dành riêng cho máy chủ của họ.</p>
+            <p class="feature-desc">Quản trị viên có thể điều chỉnh thời gian hồi chiêu của lượt quay, thời gian nhận thưởng và thêm các nguồn wiki Fandom tùy chỉnh dành riêng cho máy chủ của họ.</p>
             <span class="feature-tag tag-gold">Điều khiển của quản trị viên</span>
           </div>
         </div>
@@ -1598,7 +1631,7 @@
             <div class="step-num">1</div>
             <code class="step-cmd">w.roll</code>
             <div class="step-title">Nhập lệnh</div>
-            <p class="step-desc">Gõ <code style="font-family:var(--font-mono);font-size:12px;color:var(--indigo-light)">w.roll</code> trong bất kỳ kênh nào có WikiRoll đang hoạt động.</p>
+            <p class="step-desc">Gõ <code style="font-family:var(--font-mono);font-size:12px;color:var(--indigo-light)">w.roll</code> trong bất kỳ kênh nào mà WikiRoll đang hoạt động.</p>
           </div>
 
           <div class="step-connector" aria-hidden="true">
@@ -1612,7 +1645,7 @@
             <div class="step-num">2</div>
             <code class="step-cmd">Pick a card</code>
             <div class="step-title">Chọn từ 10 nhân vật</div>
-            <p class="step-desc">Bot đăng 10 thẻ từ khắp các wiki. Hãy thả cảm xúc hoặc bấm vào để nhận thẻ bạn muốn.</p>
+            <p class="step-desc">Bot sẽ đăng 10 thẻ bài từ các wiki khác nhau. Thả cảm xúc hoặc nhấp để nhận nhân vật bạn muốn.</p>
           </div>
 
           <div class="step-connector" aria-hidden="true">
@@ -1626,7 +1659,7 @@
             <div class="step-num">3</div>
             <code class="step-cmd">w.collection</code>
             <div class="step-title">Xây dựng bộ sưu tập của bạn</div>
-            <p class="step-desc">Các nhân vật bạn đã nhận sẽ được lưu trữ. Trao đổi, duyệt và khoe bộ sưu tập của bạn bất cứ lúc nào.</p>
+            <p class="step-desc">Các nhân vật bạn đã nhận sẽ được lưu trữ. Giao dịch, duyệt xem và khoe bộ sưu tập của bạn bất cứ lúc nào.</p>
           </div>
         </div>
       </div>
@@ -1640,7 +1673,7 @@
         <div class="commands-header">
           <div class="section-label">Lệnh</div>
           <h2 class="section-heading">Tổng quan về mọi lệnh.</h2>
-          <p class="section-subtext">Tất cả các lệnh gạch chéo đều có các lệnh tiền tố tương đương bắt đầu bằng <code style="font-family:var(--font-mono);font-size:14px;color:var(--indigo-light);background:rgba(139,92,246,0.1);padding:2px 7px;border-radius:4px">w.</code></p>
+          <p class="section-subtext">Tất cả các slash command đều có các lệnh tiền tố tương ứng bắt đầu bằng <code style="font-family:var(--font-mono);font-size:14px;color:var(--indigo-light);background:rgba(139,92,246,0.1);padding:2px 7px;border-radius:4px">w.</code></p>
         </div>
 
         <div class="commands-layout">
@@ -1652,13 +1685,13 @@
                 <div class="cmd-dot dot-yellow"></div>
                 <div class="cmd-dot dot-green"></div>
               </div>
-              <span class="cmd-block-title">Lệnh gạch chéo</span>
+              <span class="cmd-block-title">Slash Commands</span>
             </div>
             <div class="cmd-list">
               <div class="cmd-row">
                 <span class="cmd-name">/roll</span>
                 <span class="cmd-prefix">w.roll</span>
-                <span class="cmd-desc">Quay 10 nhân vật ngẫu nhiên từ tất cả các wiki đã bật.</span>
+                <span class="cmd-desc">Quay 10 nhân vật — 9 nhân vật ngẫu nhiên thực sự từ hơn 280 wiki, cộng với 1 nhân vật đảm bảo từ Wikipedia thực.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/collection [@user]</span>
@@ -1668,37 +1701,47 @@
               <div class="cmd-row">
                 <span class="cmd-name">/search &lt;name&gt;</span>
                 <span class="cmd-prefix">w.s &lt;name&gt;</span>
-                <span class="cmd-desc">Tìm kiếm một nhân vật cụ thể trong tất cả bộ sưu tập.</span>
+                <span class="cmd-desc">Tìm kiếm một nhân vật cụ thể trong tất cả các bộ sưu tập.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/info &lt;name&gt;</span>
                 <span class="cmd-prefix">w.info &lt;name&gt;</span>
-                <span class="cmd-desc">Xem thông tin chi tiết về nhân vật, bao gồm cả nguồn wiki.</span>
+                <span class="cmd-desc">Xem thông tin chi tiết về một nhân vật, bao gồm cả nguồn wiki.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/trade @user</span>
                 <span class="cmd-prefix">w.trade @user</span>
-                <span class="cmd-desc">Bắt đầu một lời đề nghị giao dịch với thành viên khác trên máy chủ.</span>
+                <span class="cmd-desc">Bắt đầu một đề nghị giao dịch với thành viên khác trong máy chủ.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/remove &lt;name&gt;</span>
                 <span class="cmd-prefix">w.remove &lt;name&gt;</span>
-                <span class="cmd-desc">Xóa một nhân vật khỏi bộ sưu tập của bạn.</span>
+                <span class="cmd-desc">Xóa nhân vật khỏi bộ sưu tập của bạn.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/wishlist add/addsource</span>
                 <span class="cmd-prefix">w.wl add/src</span>
-                <span class="cmd-desc">Thêm vào danh sách ước nguyện một nhân vật hoặc toàn bộ nguồn wiki Fandom (tăng 3× điểm).</span>
+                <span class="cmd-desc">Thêm nhân vật hoặc toàn bộ nguồn wiki Fandom vào danh sách mong muốn (tăng 3×).</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/submitimage &lt;name&gt; &lt;url&gt;</span>
                 <span class="cmd-prefix">w.si</span>
-                <span class="cmd-desc">Gửi một hình ảnh tùy chỉnh cho thẻ nhân vật.</span>
+                <span class="cmd-desc">Gửi ảnh tùy chỉnh cho thẻ nhân vật.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/daily</span>
                 <span class="cmd-prefix">w.daily</span>
-                <span class="cmd-desc">Lượt quay miễn phí mỗi ngày! Duy trì chuỗi ngày để nhận thưởng thêm.</span>
+                <span class="cmd-desc">Lượt quay miễn phí mỗi ngày + 💠 Mảnh ngọc. Duy trì chuỗi để nhận thêm phần thưởng &amp; Mảnh ngọc.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/shop</span>
+                <span class="cmd-prefix">w.shop</span>
+                <span class="cmd-desc">Dùng 💠 Mảnh — nhận ngay một lần quay thêm, nhiều quyền lợi khác sẽ sớm ra mắt.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/balance</span>
+                <span class="cmd-prefix">w.balance</span>
+                <span class="cmd-desc">Kiểm tra số dư 💠 Mảnh của bạn.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/leaderboard</span>
@@ -1708,12 +1751,12 @@
               <div class="cmd-row">
                 <span class="cmd-name">/vote</span>
                 <span class="cmd-prefix">w.vote</span>
-                <span class="cmd-desc">Bình chọn cho WikiRoll trên top.gg.</span>
+                <span class="cmd-desc">Bình chọn cho WikiRoll trên top.gg để nhận 💠 Mảnh.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/server</span>
                 <span class="cmd-prefix">w.server</span>
-                <span class="cmd-desc">Nhận lời mời tham gia Discord cộng đồng The Caldera.</span>
+                <span class="cmd-desc">Nhận lời mời tham gia cộng đồng Discord của The Caldera.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/about</span>
@@ -1721,14 +1764,24 @@
                 <span class="cmd-desc">Thông tin bot, số liệu thống kê và tất cả các liên kết.</span>
               </div>
               <div class="cmd-row">
+                <span class="cmd-name">/support</span>
+                <span class="cmd-prefix">w.support</span>
+                <span class="cmd-desc">Nhận trợ giúp, báo cáo lỗi và tìm các liên kết hữu ích.</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/donate</span>
+                <span class="cmd-prefix">w.donate</span>
+                <span class="cmd-desc">Hỗ trợ WikiRoll và giúp duy trì hoạt động của bot.</span>
+              </div>
+              <div class="cmd-row">
                 <span class="cmd-name">/help</span>
                 <span class="cmd-prefix">w.help</span>
-                <span class="cmd-desc">Liệt kê tất cả các lệnh theo danh mục.</span>
+                <span class="cmd-desc">Liệt kê tất cả các lệnh được nhóm theo danh mục.</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/settings</span>
                 <span class="cmd-prefix">w.settings</span>
-                <span class="cmd-desc">Cấu hình thời gian hồi lượt quay, cửa sổ nhận thưởng, múi giờ &amp; kênh thông báo.</span>
+                <span class="cmd-desc">Cấu hình thời gian hồi chiêu quay, cửa sổ nhận thưởng, múi giờ &amp; kênh thông báo.</span>
                 <span class="cmd-admin">Quản trị viên</span>
               </div>
               <div class="cmd-row">
@@ -1760,14 +1813,16 @@
                 <div class="cmd-dot dot-yellow"></div>
                 <div class="cmd-dot dot-green"></div>
               </div>
-              <span class="cmd-block-title">Phím tắt tiền tố  ( w. )</span>
+              <span class="cmd-block-title">Lối tắt tiền tố  ( w. )</span>
             </div>
             <div class="prefix-list">
               <span class="prefix-chip"><span>w.roll</span> roll</span>
               <span class="prefix-chip"><span>w.daily</span> daily</span>
+              <span class="prefix-chip"><span>w.shop</span> shop</span>
+              <span class="prefix-chip"><span>w.balance</span> balance</span>
               <span class="prefix-chip"><span>w.c</span> collection</span>
               <span class="prefix-chip"><span>w.s</span> search</span>
-              <span class="prefix-chip"><span>w.info</span> info</span>
+              <span class="prefix-chip"><span>w.info</span> thông tin</span>
               <span class="prefix-chip"><span>w.remove</span> xóa</span>
               <span class="prefix-chip"><span>w.si</span> submitimage</span>
               <span class="prefix-chip"><span>w.trade</span> giao dịch</span>
@@ -1782,6 +1837,8 @@
               <span class="prefix-chip"><span>w.source</span> mã nguồn</span>
               <span class="prefix-chip"><span>w.setrc</span> setrollchannel</span>
               <span class="prefix-chip"><span>w.linkserver</span> liên kết máy chủ</span>
+              <span class="prefix-chip"><span>w.support</span> hỗ trợ</span>
+              <span class="prefix-chip"><span>w.donate</span> đóng góp</span>
             </div>
           </div>
         </div>
@@ -1795,22 +1852,37 @@
       <div class="container">
         <div class="vote-banner">
           <div>
-            <div class="vote-banner-tag">🗳️ Lượt quay thưởng miễn phí</div>
+            <div class="vote-banner-tag">💠 Kiếm Shards</div>
             <h2 class="vote-banner-title">Bình chọn cho WikiRoll.</h2>
             <p class="vote-banner-desc">
-              Bình chọn cho WikiRoll trên top.gg mất 5 giây và giúp bạn nhận được một lượt quay thưởng
-              bỏ qua thời gian hồi chiêu hàng giờ. Bạn có thể bình chọn sau mỗi 12 giờ — mọi lượt bình chọn đều có giá trị.
+              Việc bỏ phiếu mất 5 giây và mang lại cho bạn <strong>12 💠 Mảnh</strong> — hãy dùng chúng trong
+              <code>/shop</code> để nhận thêm lượt quay ngay lập tức (và nhiều đặc quyền khác sắp ra mắt). WikiRoll có trên
+              <strong>hai trang web bỏ phiếu</strong>, và mỗi trang cho phép bạn bỏ phiếu sau mỗi 12 tiếng, vì vậy bạn có thể
+              tích lũy Mảnh từ cả hai. Hãy hoàn thành <code>/daily</code> để nhận thêm nhiều phần thưởng hơn nữa.
             </p>
             <div class="vote-steps">
-              <div class="vote-step"><div class="vote-step-num">1</div> Nhấp vào Bình chọn trên top.gg</div>
+              <div class="vote-step"><div class="vote-step-num">1</div> Nhấp vào nút Bỏ phiếu</div>
               <div class="vote-step"><div class="vote-step-num">2</div> Xác nhận (không cần tài khoản)</div>
-              <div class="vote-step"><div class="vote-step-num">3</div> Nhận tin nhắn trực tiếp (DM) với tín dụng lượt quay thưởng của bạn</div>
-              <div class="vote-step"><div class="vote-step-num">4</div> Sử dụng /roll — tự động trừ credit</div>
+              <div class="vote-step"><div class="vote-step-num">3</div> Nhận tin nhắn trực tiếp với 💠 Mảnh của bạn</div>
+              <div class="vote-step"><div class="vote-step-num">4</div> Tiêu chúng trong /shop</div>
             </div>
           </div>
-          <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
-            🗳️ Bình chọn trên top.gg
-          </a>
+          <div class="vote-actions">
+            <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
+              🗳️ Bỏ phiếu trên top.gg
+            </a>
+            <a href="https://discordbotlist.com/bots/1343100226537259018/upvote" class="btn-vote dbl" target="_blank" rel="noopener">
+              🗳️ Bỏ phiếu trên Discord Bot List
+            </a>
+            <div class="vote-widgets">
+              <a href="https://top.gg/bot/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://top.gg/api/widget/1343100226537259018.svg" alt="WikiRoll trên top.gg" loading="lazy" width="200">
+              </a>
+              <a href="https://discordbotlist.com/bots/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://discordbotlist.com/api/v1/bots/1343100226537259018/widget" alt="WikiRoll trên Discord Bot List" loading="lazy" width="200">
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1829,11 +1901,11 @@
           <div class="community-card">
             <span class="community-card-icon">🌋</span>
             <div class="community-card-title">The Caldera</div>
-            <p class="community-card-desc">Discord chính thức cho WikiRoll và mọi dự án của Hackatoa. Chia sẻ bộ sưu tập, báo cáo lỗi, đề xuất wiki và trò chuyện.</p>
+            <p class="community-card-desc">Discord chính thức của WikiRoll và tất cả các dự án Hackatoa. Chia sẻ bộ sưu tập của bạn, báo cáo lỗi, đề xuất wiki và trò chuyện.</p>
             <div class="community-card-feature-list">
               <div class="community-feature">Trưng bày bộ sưu tập &amp; giao dịch</div>
               <div class="community-feature">Báo cáo lỗi &amp; yêu cầu tính năng</div>
-              <div class="community-feature">Trò chuyện về Homelab &amp; dev</div>
+              <div class="community-feature">Trò chuyện về Homelab &amp; phát triển</div>
               <div class="community-feature">Truy cập sớm các tính năng mới</div>
             </div>
             <a href="https://discord.gg/nrQFdACWbh" class="btn-community" target="_blank" rel="noopener">
@@ -1843,13 +1915,13 @@
           </div>
           <div class="community-card">
             <span class="community-card-icon">☕</span>
-            <div class="community-card-title">Hỗ trợ phát triển</div>
-            <p class="community-card-desc">WikiRoll hoàn toàn miễn phí và mã nguồn mở. Nếu bạn thấy thích ứng dụng này, một ly cà phê sẽ giúp duy trì hoạt động của máy chủ cá nhân và thúc đẩy các tính năng mới ra đời.</p>
+            <div class="community-card-title">Hỗ trợ Phát triển</div>
+            <p class="community-card-desc">WikiRoll là mã nguồn mở và hoàn toàn miễn phí. Nếu bạn thấy thích, một ly cà phê sẽ giúp duy trì máy chủ và ra mắt các tính năng mới.</p>
             <div class="community-card-feature-list">
-              <div class="community-feature">Duy trì hoạt động máy chủ</div>
-              <div class="community-feature">Tài trợ cho các tích hợp wiki mới</div>
-              <div class="community-feature">Hỗ trợ nhà phát triển indie độc lập</div>
-              <div class="community-feature">Lòng biết ơn sâu sắc</div>
+              <div class="community-feature">Duy trì hoạt động của máy chủ</div>
+              <div class="community-feature">Tài trợ tích hợp wiki mới</div>
+              <div class="community-feature">Hỗ trợ nhà phát triển indie solo</div>
+              <div class="community-feature">Biết ơn sâu sắc</div>
             </div>
             <a href="https://buymeacoffee.com/hackatoa" class="btn-community" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 3px 14px rgba(245,158,11,0.4);">
               ☕ Mời tôi một ly cà phê
@@ -1864,7 +1936,7 @@
     <!-- ─── CTA ──────────────────────────────────────────────────────── -->
     <section class="cta-section" id="add-bot">
       <div class="container">
-        <h2 class="cta-heading">Bắt đầu quay.<br/>Bắt đầu sưu tầm.</h2>
+        <h2 class="cta-heading">Bắt đầu cuộn.<br/>Bắt đầu sưu tầm.</h2>
         <p class="cta-sub">
           <span>Miễn phí sử dụng</span>
           <span class="cta-sub-dot"></span>

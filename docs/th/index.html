@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WikiRoll — สะสมวิกิ</title>
-  <meta name="description" content="WikiRoll คือบอท Discord ที่ให้สมาชิกในเซิร์ฟเวอร์สุ่มตัวละครจาก Wikipedia และ Fandom wiki กว่า 280+ แห่ง — นารูโตะ, มาร์เวล, แฮร์รี่ พ็อตเตอร์ และอื่น ๆ อีกมากมาย เป็นเจ้าของ, แลกเปลี่ยน, และสร้างคอลเลกชันของคุณ" />
+  <meta name="description" content="WikiRoll คือบอทกาชาบน Discord ฟรี: สุ่มตัวละคร 10 ตัว — สุ่มจริงจากวิกิ Fandom กว่า 280+ แห่ง (Naruto, Marvel, Harry Potter และอื่นๆ) และการันตีจาก Wikipedia จริง 1 ตัว อ้างสิทธิ์, แลกเปลี่ยน และสะสม" />
   <meta property="og:title" content="WikiRoll — สะสมวิกิ" />
-  <meta property="og:description" content="สุ่มตัวละครจาก Wikipedia และ Fandom wiki กว่า 280+ แห่ง เป็นเจ้าของ แลกเปลี่ยน และสร้างคอลเลกชันของคุณ" />
+  <meta property="og:description" content="สุ่มตัวละคร 10 ตัว — สุ่มจริงจากวิกิ Fandom กว่า 280+ แห่ง + การันตีจาก Wikipedia จริง 1 ตัว อ้างสิทธิ์, แลกเปลี่ยน และสร้างคอลเลกชันของคุณ" />
   <meta property="og:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#0d1117" />
@@ -14,19 +14,19 @@
   <meta property="og:site_name" content="Hackatoa" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="WikiRoll — สะสมวิกิ" />
-  <meta name="twitter:description" content="WikiRoll คือบอท Discord ที่ให้สมาชิกในเซิร์ฟเวอร์สุ่มตัวละครจาก Wikipedia และ Fandom wiki กว่า 280+ แห่ง — นารูโตะ, มาร์เวล, แฮร์รี่ พ็อตเตอร์ และอื่น ๆ" />
+  <meta name="twitter:description" content="บอทกาชาบน Discord ฟรี: สุ่มตัวละคร 10 ตัว — สุ่มจริงจากวิกิ Fandom กว่า 280+ แห่ง พร้อมการันตีจาก Wikipedia จริง 1 ตัว อ้างสิทธิ์, แลกเปลี่ยน และสะสม" />
   <meta name="twitter:image" content="https://wikiroll.hackatoa.com/og-image.png" />
   <meta name="twitter:site" content="@jhackatoa" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Preston Harris" />
-  <meta name="keywords" content="WikiRoll, บอท Discord, ตัวละคร Wikipedia, สะสมตัวละคร, บอทกาชา Discord, บอท Fandom wiki, คอลเลกชันตัวละคร Discord" />
+  <meta name="keywords" content="WikiRoll, บอท Discord, ตัวละคร Wikipedia, สะสมตัวละคร, บอทกาชา Discord, บอทวิกิ Fandom, คอลเลกชันตัวละคร Discord" />
   <link rel="canonical" href="https://wikiroll.hackatoa.com/th/" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "WikiRoll",
-    "description": "A Discord bot that lets server members roll and collect characters from Wikipedia and 280+ Fandom wikis. Claim them, trade them, build your collection.",
+    "description": "A free Discord bot that lets server members roll and collect characters — nine picked truly at random from 280+ Fandom wikis plus one guaranteed pull from real Wikipedia every roll. Claim them, trade them, build your collection.",
     "url": "https://wikiroll.hackatoa.com",
     "applicationCategory": "EntertainmentApplication",
     "operatingSystem": "Discord",
@@ -424,6 +424,38 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 36px rgba(255, 51, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
     }
+
+    .vote-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+    .btn-vote.dbl {
+      background: linear-gradient(135deg, #5865F2 0%, #4752c4 100%);
+      box-shadow: 0 4px 24px rgba(88,101,242,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .btn-vote.dbl:hover {
+      box-shadow: 0 8px 36px rgba(88,101,242,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-vote { justify-content: center; }
+    .vote-widgets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+      align-items: center;
+    }
+    .vote-widgets img {
+      max-width: 200px;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      opacity: 0.92;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .vote-widgets a:hover img { opacity: 1; transform: translateY(-1px); }
 
     /* ─── COMMUNITY SECTION ──────────────────────────────────────────── */
     .community-section {
@@ -1431,14 +1463,15 @@
 </head>
 <body>
 <!-- i18n:switcher:start -->
-<div id="lang-switch" style="position:fixed;top:8px;right:10px;z-index:99999;font-family:system-ui,-apple-system,sans-serif"><button id="lang-btn" type="button" aria-label="Language" aria-haspopup="true" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;color:#8a8;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg></button><div id="lang-pop" role="menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;flex-direction:column;gap:8px;background:rgba(6,10,6,.95);border:1px solid #1a3d1a;border-radius:10px;padding:9px 12px;box-shadow:0 4px 16px rgba(0,0,0,.6);font-size:12px;white-space:nowrap"><a href="/" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
+<nav aria-label="Language" style="position:fixed;top:8px;right:10px;z-index:99999;font-size:12px;font-family:system-ui,-apple-system,sans-serif;background:rgba(6,10,6,.92);border:1px solid #1a3d1a;border-radius:999px;padding:5px 12px;display:flex;gap:9px;box-shadow:0 2px 10px rgba(0,0,0,.5);">
+  <a href="/" hreflang="en" style="color:#8a8;text-decoration:none;">EN</a>
   <a href="/es/" hreflang="es" style="color:#8a8;text-decoration:none;">ES</a>
   <a href="/pt-br/" hreflang="pt-BR" style="color:#8a8;text-decoration:none;">PT</a>
   <a href="/fr/" hreflang="fr" style="color:#8a8;text-decoration:none;">FR</a>
   <a href="/de/" hreflang="de" style="color:#8a8;text-decoration:none;">DE</a>
   <a href="/vi/" hreflang="vi" style="color:#8a8;text-decoration:none;">VI</a>
-  <a href="/th/" hreflang="th" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">TH</a></div></div>
-<script>(function(){var b=document.getElementById('lang-btn'),p=document.getElementById('lang-pop');if(!b||!p)return;var d=p.querySelector('a:not([aria-current])');if(d&&d.style&&d.style.color)b.style.color=d.style.color;b.addEventListener('click',function(e){e.stopPropagation();p.style.display=p.style.display==='flex'?'none':'flex';});p.addEventListener('click',function(e){e.stopPropagation();});document.addEventListener('click',function(){p.style.display='none';});})();</script>
+  <a href="/th/" hreflang="th" aria-current="true" style="color:#fff;font-weight:700;text-decoration:none;">TH</a>
+</nav>
 <!-- i18n:switcher:end -->
 
   <!-- ─── NAV ──────────────────────────────────────────────────────────── -->
@@ -1455,7 +1488,7 @@
           GitHub
         </a>
         <a href="https://top.gg/bot/1343100226537259018/vote" class="nav-link nav-link-vote" target="_blank" rel="noopener">🗳️ โหวต</a>
-        <a href="https://discord.gg/nrQFdACWbh" class="nav-link nav-link-community" target="_blank" rel="noopener">🌋 คอมมูนิตี้</a>
+        <a href="https://discord.gg/nrQFdACWbh" class="nav-link nav-link-community" target="_blank" rel="noopener">🌋 คอมมิวนิตี้</a>
         <a href="https://buymeacoffee.com/hackatoa" class="nav-link nav-link-coffee" target="_blank" rel="noopener">☕ เลี้ยงกาแฟฉันหน่อย</a>
       </div>
     </div>
@@ -1480,10 +1513,10 @@
           <div class="hero-eyebrow animate-in">Discord Bot · 280+ วิกิ</div>
           <h1 class="hero-heading animate-in delay-1">
             <span class="hero-heading-line1">สะสมวิกิ</span>
-            <span class="hero-heading-line2">เป็นเจ้า-ของ-ตำนาน</span>
+            <span class="hero-heading-line2">ครอบครองเรื่องราว</span>
           </h1>
           <p class="hero-subtext animate-in delay-2">
-            สุ่มตัวละครจาก Wikipedia &amp; และ Fandom วิกิมากกว่า 280+ แห่ง ครอบครองพวกมัน แลกเปลี่ยนพวกมัน สร้างคอลเลกชันของคุณ
+            สุ่มตัวละคร 10 ตัว — แบบสุ่มแท้ๆ 9 ตัวจาก 280+ Fandom วิกิ บวกกับตัวการันตี 1 ตัวจาก Wikipedia จริงๆ เคลมเลย เทรดเลย สร้างคอลเลกชันของคุณ
           </p>
           <div class="hero-buttons animate-in delay-3">
             <a href="https://discord.com/api/oauth2/authorize?client_id=1343100226537259018&permissions=19456&scope=bot%20applications.commands"
@@ -1497,7 +1530,7 @@
             </a>
           </div>
           <div class="hero-badges animate-in delay-4">
-            <span class="badge"><span class="badge-dot"></span>280+ Fandom Wikis</span>
+            <span class="badge"><span class="badge-dot"></span>280+ Fandom วิกิ</span>
             <span class="badge"><span class="badge-dot"></span>ฟรี</span>
             <span class="badge"><span class="badge-dot"></span>โอเพนซอร์ส</span>
             <span class="badge" id="wr-server-badge" style="display:none"><span class="badge-dot" style="background:#57F287"></span><span id="wr-server-count">—</span> เซิร์ฟเวอร์</span>
@@ -1511,13 +1544,13 @@
             <div class="wiki-card card-back-2"></div>
             <div class="wiki-card card-front">
               <div class="card-timer">เหลือเวลา 4:32</div>
-              <div class="card-wiki-badge">⚡ Naruto Wiki</div>
+              <div class="card-wiki-badge">⚡ นารูโตะ วิกิ</div>
               <div class="card-character-icon">🦊</div>
               <div class="card-character-name">คุรามะ</div>
               <div class="card-gold-stars">
                 <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
               </div>
-              <div class="card-character-source">เก้าหาง · สถิติร่างสถิต</div>
+              <div class="card-character-source">เก้าหาง · จสึจิริกิ</div>
               <div class="card-claim-btn">รับสิทธิ์ตอนนี้</div>
             </div>
           </div>
@@ -1533,7 +1566,7 @@
       <div class="container">
         <div class="features-header">
           <div class="section-label">ฟีเจอร์</div>
-          <h2 class="section-heading">ทุกสิ่งที่คุณต้องการเพื่อ<br/>สร้างคอลเลกชันขั้นสุดยอดของคุณ</h2>
+          <h2 class="section-heading">ทุกสิ่งที่คุณต้องการเพื่อ<br/>สร้างคอลเลกชันขั้นสูงสุดของคุณ</h2>
           <p class="section-subtext">ตั้งแต่การสุ่มจนถึงวิชลิสต์ ทุกส่วนของบอทถูกออกแบบมาเพื่อความตื่นเต้นของการเปิดกาชา</p>
         </div>
 
@@ -1541,43 +1574,43 @@
           <div class="feature-card">
             <span class="feature-icon">🎲</span>
             <div class="feature-title">สุ่ม &amp; รับ</div>
-            <p class="feature-desc">สุ่ม 10 ตัวละครในโพสต์เดียว คลิกเพื่อรับก่อนหมดเวลา 5 นาที มาก่อนได้ก่อน</p>
+            <p class="feature-desc">สุ่ม 10 ตัวละครในโพสต์เดียว คลิกเพื่อรับสิทธิ์ก่อนหมดเวลา 5 นาที มาก่อนได้ก่อน</p>
             <span class="feature-tag tag-violet">หน้าต่างเวลา 5 นาที</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">📚</span>
-            <div class="feature-title">Wikipedia + Fandom กว่า 280+</div>
-            <p class="feature-desc">ตัวละครที่สุ่มได้จาก Naruto, Marvel, Harry Potter, Star Wars, Genshin, Elder Scrolls และอื่น ๆ อีกมากมาย — รวมถึงบทความ Wikipedia แบบสุ่ม</p>
-            <span class="feature-tag tag-gold">แหล่งข้อมูลกว่า 280+</span>
+            <div class="feature-title">Wikipedia + Fandom กว่า 280+ แห่ง</div>
+            <p class="feature-desc">ตัวละครที่ดึงมาจาก Naruto, Marvel, Harry Potter, Star Wars, Genshin, Elder Scrolls และอื่น ๆ อีกมากมาย — รวมถึงบทความ Wikipedia แบบสุ่ม</p>
+            <span class="feature-tag tag-gold">แหล่งที่มา 280+</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">🔄</span>
             <div class="feature-title">ระบบแลกเปลี่ยน</div>
-            <p class="feature-desc">เสนอการแลกเปลี่ยนกับสมาชิกคนอื่น ยอมรับหรือปฏิเสธผ่านปุ่ม คอลเลกชันเติบโตผ่านการเจรจา</p>
-            <span class="feature-tag tag-violet">การแลกเปลี่ยนระหว่างผู้เล่น</span>
+            <p class="feature-desc">เสนอแลกเปลี่ยนกับสมาชิกคนอื่น ยอมรับหรือปฏิเสธผ่านปุ่ม คอลเลกชันเติบโตได้ผ่านการเจรจา</p>
+            <span class="feature-tag tag-violet">การแลกเปลี่ยนแบบ P2P</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">⭐</span>
             <div class="feature-title">วิชลิสต์ &amp; การแจ้งเตือน</div>
-            <p class="feature-desc">เพิ่มตัวละครลงในวิชลิสต์ของคุณและรับข้อความส่วนตัว (DM) ทันทีที่ตัวละครนั้นปรากฏในการสุ่ม ไม่พลาดตัวละครที่คุณต้องการ</p>
+            <p class="feature-desc">เพิ่มตัวละครลงในวิชลิสต์ของคุณและรับข้อความส่วนตัวทันทีที่ตัวละครนั้นปรากฏในการสุ่ม ไม่พลาดตัวละครที่คุณต้องการ</p>
             <span class="feature-tag tag-gold">รับ DM ทันที</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">🎯</span>
             <div class="feature-title">บูสต์การสุ่มของคุณ</div>
-            <p class="feature-desc">เพิ่มวิชลิสต์ทั้ง Fandom wiki หรือคีย์เวิร์ดเพื่อให้ตัวละครเหล่านั้นปรากฏบ่อยขึ้น 3 เท่าในการสุ่มของคุณ</p>
-            <span class="feature-tag tag-violet">บูสต์ 3×</span>
+            <p class="feature-desc">เพิ่มวิกิ Fandom ทั้งหมดหรือคีย์เวิร์ดลงในวิชลิสต์เพื่อให้ตัวละครเหล่านั้นปรากฏบ่อยขึ้นถึง 3 เท่าในการสุ่มของคุณ</p>
+            <span class="feature-tag tag-violet">บูสต์ 3 เท่า</span>
           </div>
 
           <div class="feature-card">
             <span class="feature-icon">⚙️</span>
             <div class="feature-title">ปรับแต่งได้ตามเซิร์ฟเวอร์</div>
-            <p class="feature-desc">ผู้ดูแลระบบสามารถปรับคูลดาวน์การสุ่ม, ระยะเวลาเคลม และเพิ่มแหล่งที่มา Fandom wiki แบบกำหนดเองเฉพาะสำหรับเซิร์ฟเวอร์ของตนได้</p>
-            <span class="feature-tag tag-gold">การควบคุมของผู้ดูแลระบบ</span>
+            <p class="feature-desc">แอดมินสามารถปรับเวลาคูลดาวน์ในการสุ่ม ระยะเวลาในการเคลม และเพิ่มแหล่งข้อมูลวิกิ Fandom เฉพาะตัวสำหรับเซิร์ฟเวอร์ของตนได้</p>
+            <span class="feature-tag tag-gold">การควบคุมของแอดมิน</span>
           </div>
         </div>
       </div>
@@ -1598,7 +1631,7 @@
             <div class="step-num">1</div>
             <code class="step-cmd">w.roll</code>
             <div class="step-title">พิมพ์คำสั่ง</div>
-            <p class="step-desc">วาง <code style="font-family:var(--font-mono);font-size:12px;color:var(--indigo-light)">w.roll</code> ในช่องแชทใดก็ได้ที่มี WikiRoll เปิดใช้งานอยู่</p>
+            <p class="step-desc">หย่อน <code style="font-family:var(--font-mono);font-size:12px;color:var(--indigo-light)">w.roll</code> ลงในช่องแชทใดก็ได้ที่มี WikiRoll เปิดใช้งานอยู่</p>
           </div>
 
           <div class="step-connector" aria-hidden="true">
@@ -1611,8 +1644,8 @@
           <div class="step">
             <div class="step-num">2</div>
             <code class="step-cmd">Pick a card</code>
-            <div class="step-title">เลือกตัวละคร 10 ตัว</div>
-            <p class="step-desc">บอทจะโพสต์การ์ด 10 ใบจากวิกิต่างๆ กดรีแอคชันหรือคลิกเพื่อเคลมใบที่คุณต้องการ</p>
+            <div class="step-title">เลือกจากตัวละคร 10 ตัว</div>
+            <p class="step-desc">บอทจะโพสต์การ์ด 10 ใบจากวิกิต่างๆ กดรีแอคชันหรือคลิกเพื่อรับใบที่คุณต้องการ</p>
           </div>
 
           <div class="step-connector" aria-hidden="true">
@@ -1626,7 +1659,7 @@
             <div class="step-num">3</div>
             <code class="step-cmd">w.collection</code>
             <div class="step-title">สร้างคอลเลกชันของคุณ</div>
-            <p class="step-desc">ตัวละครที่คุณเคลมจะถูกเก็บไว้ สามารถแลกเปลี่ยน ดู และอวดคอลเลกชันของคุณได้ตลอดเวลา</p>
+            <p class="step-desc">ตัวละครที่คุณรับไว้จะถูกเก็บรักษาไว้ แลกเปลี่ยน เรียกดู และอวดคอลเลกชันของคุณได้ตลอดเวลา</p>
           </div>
         </div>
       </div>
@@ -1639,8 +1672,8 @@
       <div class="container">
         <div class="commands-header">
           <div class="section-label">คำสั่ง</div>
-          <h2 class="section-heading">รวมคำสั่งทั้งหมดไว้ในที่เดียว</h2>
-          <p class="section-subtext">คำสั่งสแลชทั้งหมดมีคำสั่งนำหน้าแบบเดียวกันที่ขึ้นต้นด้วย <code style="font-family:var(--font-mono);font-size:14px;color:var(--indigo-light);background:rgba(139,92,246,0.1);padding:2px 7px;border-radius:4px">w.</code></p>
+          <h2 class="section-heading">ภาพรวมของคำสั่งทั้งหมด</h2>
+          <p class="section-subtext">คำสั่งสแลชทั้งหมดมีคำสั่งคำนำหน้า (prefix) ที่เทียบเท่ากันซึ่งเริ่มต้นด้วย <code style="font-family:var(--font-mono);font-size:14px;color:var(--indigo-light);background:rgba(139,92,246,0.1);padding:2px 7px;border-radius:4px">w.</code></p>
         </div>
 
         <div class="commands-layout">
@@ -1658,12 +1691,12 @@
               <div class="cmd-row">
                 <span class="cmd-name">/roll</span>
                 <span class="cmd-prefix">w.roll</span>
-                <span class="cmd-desc">สุ่มตัวละคร 10 ตัวจากวิกิทั้งหมดที่เปิดใช้งาน</span>
+                <span class="cmd-desc">สุ่ม 10 ตัวละคร — สุ่มแท้จริง 9 ตัวจาก 280+ วิกิ พร้อมการันตี 1 ตัวจาก Wikipedia จริง</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/collection [@user]</span>
                 <span class="cmd-prefix">w.c [@user]</span>
-                <span class="cmd-desc">เรียกดูคอลเลกชันของคุณหรือของคนอื่น</span>
+                <span class="cmd-desc">เรียกดูคอลเลกชันของคุณ หรือของคนอื่น</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/search &lt;name&gt;</span>
@@ -1688,37 +1721,57 @@
               <div class="cmd-row">
                 <span class="cmd-name">/wishlist add/addsource</span>
                 <span class="cmd-prefix">w.wl add/src</span>
-                <span class="cmd-desc">ใส่ตัวละครหรือแหล่งข้อมูลวิกิ Fandom ทั้งหมดลงใน Wishlist (บูสต์ 3 เท่า)</span>
+                <span class="cmd-desc">เพิ่มตัวละครหรือแหล่งข้อมูลวิกิ Fandom ทั้งหมดลงในวิชลิสต์ (บูสต์ 3 เท่า)</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/submitimage &lt;name&gt; &lt;url&gt;</span>
                 <span class="cmd-prefix">w.si</span>
-                <span class="cmd-desc">ส่งรูปภาพกำหนดเองสำหรับตัวละครการ์ด</span>
+                <span class="cmd-desc">ส่งรูปภาพกำหนดเองสำหรับ 1 การ์ดตัวละคร</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/daily</span>
                 <span class="cmd-prefix">w.daily</span>
-                <span class="cmd-desc">สุ่มฟรีประจำวัน! สร้างสตรีกเพื่อรับโบนัสเพิ่มเติม</span>
+                <span class="cmd-desc">สุ่มฟรีประจำวัน + 💠 ชาร์ด สร้างสตรีกต่อเนื่องเพื่อรับสิทธิ์เคลมโบนัส &amp; ชาร์ด</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/shop</span>
+                <span class="cmd-prefix">w.shop</span>
+                <span class="cmd-desc">ใช้ 💠 Shards — สุ่มเพิ่มได้ทันทีตอนนี้ และสิทธิประโยชน์อื่น ๆ อีกมากมายเร็ว ๆ นี้</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/balance</span>
+                <span class="cmd-prefix">w.balance</span>
+                <span class="cmd-desc">ตรวจสอบยอดคงเหลือ 💠 Shard ของคุณ</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/leaderboard</span>
                 <span class="cmd-prefix">w.lb</span>
-                <span class="cmd-desc">ผู้สะสมอันดับต้นๆ ในเซิร์ฟเวอร์นี้จัดอันดับตามขนาดคอลเลกชัน</span>
+                <span class="cmd-desc">นักสะสมอันดับต้น ๆ ในเซิร์ฟเวอร์นี้จัดอันดับตามขนาดคอลเลกชัน</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/vote</span>
                 <span class="cmd-prefix">w.vote</span>
-                <span class="cmd-desc">โหวตให้ WikiRoll บน top.gg</span>
+                <span class="cmd-desc">โหวตให้ WikiRoll บน top.gg เพื่อรับ 💠 Shards</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/server</span>
                 <span class="cmd-prefix">w.server</span>
-                <span class="cmd-desc">รับลิงก์เชิญเข้าสู่คอมมิวนิตี้ Discord ของ The Caldera</span>
+                <span class="cmd-desc">รับลิงก์เชิญเข้าร่วมชุมชน Discord ของ The Caldera</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/about</span>
                 <span class="cmd-prefix">w.about</span>
                 <span class="cmd-desc">ข้อมูลบอท สถิติ และลิงก์ทั้งหมด</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/support</span>
+                <span class="cmd-prefix">w.support</span>
+                <span class="cmd-desc">รับความช่วยเหลือ รายงานบั๊ก และค้นหาลิงก์ที่มีประโยชน์</span>
+              </div>
+              <div class="cmd-row">
+                <span class="cmd-name">/donate</span>
+                <span class="cmd-prefix">w.donate</span>
+                <span class="cmd-desc">สนับสนุน WikiRoll และช่วยให้บอทเปิดให้บริการต่อไป</span>
               </div>
               <div class="cmd-row">
                 <span class="cmd-name">/help</span>
@@ -1746,7 +1799,7 @@
               <div class="cmd-row">
                 <span class="cmd-name">/linkserver start/confirm/status</span>
                 <span class="cmd-prefix">w.linkserver</span>
-                <span class="cmd-desc">เชื่อมโยงสองเซิร์ฟเวอร์เข้าด้วยกันเพื่อแชร์การเป็นเจ้าของตัวละครที่อ้างสิทธิ์ไว้</span>
+                <span class="cmd-desc">เชื่อมโยงสองเซิร์ฟเวอร์เข้าด้วยกันเพื่อแชร์การเป็นเจ้าของตัวละครที่อ้างสิทธิ์</span>
                 <span class="cmd-admin">ผู้ดูแลระบบ</span>
               </div>
             </div>
@@ -1765,23 +1818,27 @@
             <div class="prefix-list">
               <span class="prefix-chip"><span>w.roll</span> roll</span>
               <span class="prefix-chip"><span>w.daily</span> daily</span>
+              <span class="prefix-chip"><span>w.shop</span> shop</span>
+              <span class="prefix-chip"><span>w.balance</span> balance</span>
               <span class="prefix-chip"><span>w.c</span> collection</span>
               <span class="prefix-chip"><span>w.s</span> search</span>
-              <span class="prefix-chip"><span>w.info</span> info</span>
-              <span class="prefix-chip"><span>w.remove</span> ลบออก</span>
+              <span class="prefix-chip"><span>w.info</span> ข้อมูล</span>
+              <span class="prefix-chip"><span>w.remove</span> เอาออก</span>
               <span class="prefix-chip"><span>w.si</span> submitimage</span>
               <span class="prefix-chip"><span>w.trade</span> แลกเปลี่ยน</span>
-              <span class="prefix-chip"><span>w.wl add</span> เพิ่มในรายการที่อยากได้</span>
+              <span class="prefix-chip"><span>w.wl add</span> เพิ่มลงรายการที่อยากได้</span>
               <span class="prefix-chip"><span>w.wl src</span> เพิ่มแหล่งที่มาของรายการที่อยากได้</span>
-              <span class="prefix-chip"><span>w.lb</span>กระดานผู้นำ</span>
-              <span class="prefix-chip"><span>w.vote</span>โหวต</span>
-              <span class="prefix-chip"><span>w.server</span>เซิร์ฟเวอร์</span>
+              <span class="prefix-chip"><span>w.lb</span> กระดานผู้นำ</span>
+              <span class="prefix-chip"><span>w.vote</span> โหวต</span>
+              <span class="prefix-chip"><span>w.server</span> เซิร์ฟเวอร์</span>
               <span class="prefix-chip"><span>w.about</span> เกี่ยวกับ</span>
               <span class="prefix-chip"><span>w.help</span> ช่วยเหลือ</span>
-              <span class="prefix-chip"><span>w.settings</span> ตั้งค่า</span>
+              <span class="prefix-chip"><span>w.settings</span> การตั้งค่า</span>
               <span class="prefix-chip"><span>w.source</span> ซอร์สโค้ด</span>
               <span class="prefix-chip"><span>w.setrc</span> setrollchannel</span>
               <span class="prefix-chip"><span>w.linkserver</span> linkserver</span>
+              <span class="prefix-chip"><span>w.support</span> สนับสนุน</span>
+              <span class="prefix-chip"><span>w.donate</span> บริจาค</span>
             </div>
           </div>
         </div>
@@ -1795,22 +1852,37 @@
       <div class="container">
         <div class="vote-banner">
           <div>
-            <div class="vote-banner-tag">🗳️ โรลโบนัสฟรี</div>
-            <h2 class="vote-banner-title">โหวตให้กับ WikiRoll</h2>
+            <div class="vote-banner-tag">💠 รับ Shards</div>
+            <h2 class="vote-banner-title">โหวตให้ WikiRoll</h2>
             <p class="vote-banner-desc">
-              การโหวตให้ WikiRoll บน top.gg ใช้เวลาเพียง 5 วินาทีและทำให้คุณได้รับโรลโบนัสที่
-              สามารถข้ามเวลาคูลดาวน์รายชั่วโมงได้ คุณสามารถโหวตได้ทุกๆ 12 ชั่วโมง — ทุกคะแนนโหวตมีความหมาย
+              การโหวตใช้เวลาเพียง 5 วินาทีและทำให้คุณได้รับ <strong>12 💠 Shards</strong> — นำไปใช้ใน
+              <code>/shop</code> เพื่อสุ่มกาชาเพิ่มทันที (และสิทธิประโยชน์อื่นๆ เร็วๆ นี้) WikiRoll อยู่บน
+              <strong>เว็บไซต์โหวตสองแห่ง</strong>, และแต่ละแห่งให้คุณโหวตได้ทุกๆ 12 ชั่วโมง ดังนั้นคุณจึงสามารถ
+              สะสม Shards จากทั้งสองแห่งได้ ทำเควสต์ <code>/daily</code> ของคุณเพื่อรับเพิ่มเข้าไปอีก
             </p>
             <div class="vote-steps">
-              <div class="vote-step"><div class="vote-step-num">1</div> คลิกโหวตบน top.gg</div>
+              <div class="vote-step"><div class="vote-step-num">1</div> คลิกปุ่มโหวต</div>
               <div class="vote-step"><div class="vote-step-num">2</div> ยืนยัน (ไม่ต้องมีบัญชี)</div>
-              <div class="vote-step"><div class="vote-step-num">3</div> รับข้อความส่วนตัวพร้อมเครดิตโรลโบนัสของคุณ</div>
-              <div class="vote-step"><div class="vote-step-num">4</div> ใช้ /roll — หักเครดิตอัตโนมัติ</div>
+              <div class="vote-step"><div class="vote-step-num">3</div> รับ DM พร้อม 💠 Shards ของคุณ</div>
+              <div class="vote-step"><div class="vote-step-num">4</div> ใช้พวกมันใน /shop</div>
             </div>
           </div>
-          <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
-            🗳️ โหวตบน top.gg
-          </a>
+          <div class="vote-actions">
+            <a href="https://top.gg/bot/1343100226537259018/vote" class="btn-vote" target="_blank" rel="noopener">
+              🗳️ โหวตบน top.gg
+            </a>
+            <a href="https://discordbotlist.com/bots/1343100226537259018/upvote" class="btn-vote dbl" target="_blank" rel="noopener">
+              🗳️ โหวตบน Discord Bot List
+            </a>
+            <div class="vote-widgets">
+              <a href="https://top.gg/bot/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://top.gg/api/widget/1343100226537259018.svg" alt="WikiRoll บน top.gg" loading="lazy" width="200">
+              </a>
+              <a href="https://discordbotlist.com/bots/1343100226537259018" target="_blank" rel="noopener">
+                <img src="https://discordbotlist.com/api/v1/bots/1343100226537259018/widget" alt="WikiRoll บน Discord Bot List" loading="lazy" width="200">
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1821,19 +1893,19 @@
     <section class="community-section" id="community">
       <div class="container">
         <div style="text-align:center;margin-bottom:52px;">
-          <div class="section-label">คอมมูนิตี้</div>
-          <h2 class="section-heading">วิธีเล่นเพิ่มเติม</h2>
-          <p class="section-subtext">สนับสนุนบอทและเชื่อมต่อกับนักสะสมคนอื่นๆ</p>
+          <div class="section-label">ชุมชน</div>
+          <h2 class="section-heading">วิธีเล่นที่มากกว่าเดิม</h2>
+          <p class="section-subtext">สนับสนุนบอทและเชื่อมต่อกับเหล่านักสะสมคนอื่นๆ</p>
         </div>
         <div class="community-inner">
           <div class="community-card">
             <span class="community-card-icon">🌋</span>
             <div class="community-card-title">The Caldera</div>
-            <p class="community-card-desc">Discord อย่างเป็นทางการสำหรับ WikiRoll และโปรเจกต์ทั้งหมดของ Hackatoa แชร์คอลเลกชันของคุณ แจ้งบัตร เสนอวิกิ และพูดคุยกัน</p>
+            <p class="community-card-desc">ดิสคอร์ดอย่างเป็นทางการสำหรับ WikiRoll และโปรเจกต์ทั้งหมดของ Hackatoa ร่วมแชร์คอลเลกชันของคุณ รายการบั๊ก เสนอวิกิ และพูดคุยกันได้ที่นี่</p>
             <div class="community-card-feature-list">
-              <div class="community-feature">โชว์เคสคอลเลกชัน &amp; การแลกเปลี่ยน</div>
-              <div class="community-feature">รายงานบั๊ก &amp; ขอฟีเจอร์ใหม่</div>
-              <div class="community-feature">โฮมแล็บ &amp; แชทนักพัฒนา</div>
+              <div class="community-feature">การจัดแสดงคอลเลกชัน &amp; การแลกเปลี่ยน</div>
+              <div class="community-feature">รายงานข้อผิดพลาด &amp; ขอฟีเจอร์ใหม่</div>
+              <div class="community-feature">โฮมแล็บ &amp; พูดคุยเรื่องพัฒนา</div>
               <div class="community-feature">เข้าถึงฟีเจอร์ใหม่ก่อนใคร</div>
             </div>
             <a href="https://discord.gg/nrQFdACWbh" class="btn-community" target="_blank" rel="noopener">
@@ -1844,12 +1916,12 @@
           <div class="community-card">
             <span class="community-card-icon">☕</span>
             <div class="community-card-title">สนับสนุนการพัฒนา</div>
-            <p class="community-card-desc">WikiRoll เป็นซอฟต์แวร์เสรีและโอเพนซอร์ส หากคุณชื่นชอบ การสนับสนุนค่ากาแฟจะช่วยให้โฮมแล็บของเราเปิดใช้งานได้ต่อเนื่องและมีฟีเจอร์ใหม่ๆ ออกมาเรื่อยๆ</p>
+            <p class="community-card-desc">WikiRoll เปิดให้ใช้งานฟรีและเป็นโอเพนซอร์ส หากคุณสนุกกับมัน การสนับสนุนกาแฟสักแก้วจะช่วยให้โฮมแล็บทำงานต่อไปและมีฟีเจอร์ใหม่ๆ ออกมา</p>
             <div class="community-card-feature-list">
-              <div class="community-feature">เก็บบำรุงรักษาเซิร์ฟเวอร์</div>
+              <div class="community-feature">เก็บบำรุงรักษาเซิร์ฟเวอร์ให้ออนไลน์</div>
               <div class="community-feature">สนับสนุนการเชื่อมต่อวิกิใหม่ๆ</div>
               <div class="community-feature">สนับสนุนนักพัฒนาอินดี้เดี่ยว</div>
-              <div class="community-feature">ความขอบคุณชั่วนิรันดร์</div>
+              <div class="community-feature">ความขอบคุณอย่างไม่มีที่สิ้นสุด</div>
             </div>
             <a href="https://buymeacoffee.com/hackatoa" class="btn-community" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 3px 14px rgba(245,158,11,0.4);">
               ☕ เลี้ยงกาแฟฉันสักแก้ว
@@ -1864,11 +1936,11 @@
     <!-- ─── CTA ──────────────────────────────────────────────────────── -->
     <section class="cta-section" id="add-bot">
       <div class="container">
-        <h2 class="cta-heading">เริ่มสุ่มเลย<br/>เริ่มสะสมเลย</h2>
+        <h2 class="cta-heading">เริ่มสุ่มเลย<br/>เริ่มสะสมกันเลย</h2>
         <p class="cta-sub">
           <span>ใช้งานฟรี</span>
           <span class="cta-sub-dot"></span>
-          <span>โฮสต์เองได้</span>
+          <span>โฮสต์ด้วยตัวเอง</span>
           <span class="cta-sub-dot"></span>
           <span>โอเพนซอร์ส</span>
         </p>
@@ -1894,7 +1966,7 @@
       <div class="footer-links">
         <a href="https://top.gg/bot/1343100226537259018/vote" class="footer-link" target="_blank" rel="noopener">🗳️ โหวต</a>
         <span class="footer-sep">·</span>
-        <a href="https://discord.gg/nrQFdACWbh" class="footer-link" target="_blank" rel="noopener">🌋 คอมมูนิตี้</a>
+        <a href="https://discord.gg/nrQFdACWbh" class="footer-link" target="_blank" rel="noopener">🌋 คอมมิวนิตี้</a>
         <span class="footer-sep">·</span>
         <a href="https://buymeacoffee.com/hackatoa" class="footer-link" target="_blank" rel="noopener">☕ เลี้ยงกาแฟฉันหน่อย</a>
         <span class="footer-sep">·</span>

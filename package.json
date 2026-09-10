@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "deploy": "node src/deploy-commands.js"
+    "deploy": "node src/deploy-commands.js",
+    "sync-dbl": "node src/sync-dbl-commands.js"
   },
   "dependencies": {
     "discord.js": "^14.18.0",

@@ -4,7 +4,7 @@ import { t } from '../i18n.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('server')
-    .setDescription('Join the Orbital Outpost — the official WikiRoll community Discord'),
+    .setDescription('Join The Caldera — the official WikiRoll community Discord'),
 
   async execute(interaction) {
     const embed = new EmbedBuilder()

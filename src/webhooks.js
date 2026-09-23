@@ -75,12 +75,14 @@ export function startWebhookServer(client, port = 3015) {
       const rawBody = await readRawBody(req);
       const sigHeader = req.headers['x-topgg-signature'];
 
-      if (secret && sigHeader) {
-        if (!verifyTopggSignature(rawBody, sigHeader, secret)) {
-          res.writeHead(401);
-          res.end('Unauthorized');
-          return;
-        }
+      // Fail closed: without a configured secret there's no way to verify
+      // the request, so it must be rejected rather than trusted — otherwise
+      // anyone who can reach this port can grant themselves free Shards for
+      // any Discord user id.
+      if (!secret || !sigHeader || !verifyTopggSignature(rawBody, sigHeader, secret)) {
+        res.writeHead(401);
+        res.end('Unauthorized');
+        return;
       }
 
       let body;
@@ -107,7 +109,9 @@ export function startWebhookServer(client, port = 3015) {
       const rawBody = await readRawBody(req);
       const auth    = req.headers['authorization'];
 
-      if (secret && auth !== secret) {
+      // Fail closed: same reasoning as /topgg/vote above — an unset secret
+      // must not mean "accept anything".
+      if (!secret || auth !== secret) {
         res.writeHead(401);
         res.end('Unauthorized');
         return;

@@ -561,6 +561,12 @@ async function getCharacterCategoryMembers(wikiBase, api) {
 // ── Fandom: get one random character page ────────────────────────────────
 
 async function fetchOneFandomChar(wikiBase) {
+  // SECURITY: guild-supplied sources are only checked by isSafeWikiUrl() once,
+  // at /source add time — but they're stored and re-fetched on every roll
+  // indefinitely afterward. A source whose DNS pointed somewhere safe at
+  // approval time could be repointed at an internal address later, and this
+  // function would keep fetching it forever without this re-check.
+  if (!(await isSafeWikiUrl(wikiBase))) return null;
   const domain = new URL(wikiBase).hostname;
   const api = `${wikiBase}/api.php`;
   try {
@@ -778,6 +784,9 @@ export async function searchFandomWiki(query, fandomBase) {
 }
 
 export async function fetchWikiPage(title, fandomBase = null) {
+  // Same re-check as fetchOneFandomChar: fandomBase can come from a stored
+  // guild source whose DNS may have changed since it was approved.
+  if (fandomBase && !(await isSafeWikiUrl(fandomBase))) return null;
   const base = fandomBase ? `${fandomBase}/api.php` : 'https://en.wikipedia.org/w/api.php';
   const source = fandomBase ? new URL(fandomBase).hostname : 'wikipedia';
   const baseUrl = fandomBase ?? 'https://en.wikipedia.org';

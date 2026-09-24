@@ -158,6 +158,7 @@
   "source.line": "• **{name}** — {url}",
   "source.none": "*No custom sources added. Using Wikipedia only.*",
   "source.invalidUrl": "❌ Invalid URL.",
+  "source.badWiki": "❌ Couldn't add `{url}` — it doesn't look like a reachable, public wiki. Double-check the URL.",
   "source.added": "✅ Added **{name}** ({url}) as a roll source!",
   "source.removed": "Removed **{url}** from sources.",
   "settings.cooldownSet": "✅ Roll cooldown set to **{mins} minutes**.",

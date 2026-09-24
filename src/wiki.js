@@ -450,6 +450,41 @@ async function fetchRandomWikipedia(limit = 10) {
   }
 }
 
+// ── Fandom: Category:Characters member-list cache ─────────────────────────
+// fetchOneFandomChar only needs ONE random title per call, but the underlying
+// categorymembers query returns up to 500 titles. Every roll samples ~16
+// wikis, so without caching we'd re-fetch the same 500-title listing from the
+// same wikis over and over, roll after roll, guild after guild. Cache the
+// filtered member list per wiki for a while — category membership changes
+// slowly — and only re-fetch once it goes stale.
+const CATEGORY_MEMBERS_TTL = 60 * 60 * 1000; // 1 hour
+const categoryMembersCache = new Map(); // wikiBase -> { members: string[], fetchedAt: number }
+
+async function getCharacterCategoryMembers(wikiBase, api) {
+  const cached = categoryMembersCache.get(wikiBase);
+  if (cached && (Date.now() - cached.fetchedAt) < CATEGORY_MEMBERS_TTL) {
+    return cached.members;
+  }
+  try {
+    const catData = await queryWiki({
+      action: 'query',
+      list: 'categorymembers',
+      cmtitle: 'Category:Characters',
+      cmlimit: 500,
+      cmtype: 'page',
+      cmnamespace: 0,
+    }, api);
+    const members = (catData.query?.categorymembers ?? [])
+      .map(m => m.title)
+      .filter(tt => !isListLike(tt));
+    categoryMembersCache.set(wikiBase, { members, fetchedAt: Date.now() });
+    return members;
+  } catch {
+    // Keep serving a stale cache on transient failure rather than going empty.
+    return cached?.members ?? [];
+  }
+}
+
 // ── Fandom: get one random character page ────────────────────────────────
 
 async function fetchOneFandomChar(wikiBase) {
@@ -462,17 +497,7 @@ async function fetchOneFandomChar(wikiBase) {
     // Sample a large slice, drop obvious non-character (list/gallery/etc.)
     // titles, then pick randomly from what remains.
     try {
-      const catData = await queryWiki({
-        action: 'query',
-        list: 'categorymembers',
-        cmtitle: 'Category:Characters',
-        cmlimit: 500,
-        cmtype: 'page',
-        cmnamespace: 0,
-      }, api);
-      const members = (catData.query?.categorymembers ?? [])
-        .map(m => m.title)
-        .filter(tt => !isListLike(tt));
+      const members = await getCharacterCategoryMembers(wikiBase, api);
       if (members.length > 0) {
         title = members[Math.floor(Math.random() * members.length)];
       }

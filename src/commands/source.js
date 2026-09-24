@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
 import { stmts } from '../database.js';
 import { t } from '../i18n.js';
+import { validateFandomWiki } from '../wiki.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -51,8 +52,15 @@ export default {
 
     if (sub === 'add') {
       const name = interaction.options.getString('name') ?? parsed.hostname;
+
+      await interaction.deferReply();
+      const safe = await validateFandomWiki(cleanUrl);
+      if (!safe) {
+        return interaction.editReply(t(guildId, 'source.badWiki', { url: cleanUrl }));
+      }
+
       stmts.addSource.run(guildId, cleanUrl, name, interaction.user.id);
-      return interaction.reply({ content: t(guildId, 'source.added', { name, url: cleanUrl }) });
+      return interaction.editReply(t(guildId, 'source.added', { name, url: cleanUrl }));
     }
 
     if (sub === 'remove') {

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import dns from 'node:dns/promises';
+import net from 'node:net';
 import { getWikiWeightMap, setWikiWeight } from './database.js';
 
 const UA = 'WikiRoll Discord Bot/1.0 (contact@hackatoa.com)';
@@ -306,6 +308,77 @@ export const BUILTIN_FANDOMS = [
   // Independent MediaWiki instances
   'https://consumerrights.wiki',
 ];
+
+// ── SSRF guard ────────────────────────────────────────────────────────────
+// Guild admins can point the bot at an arbitrary "wiki" host via /source add
+// and /wishlist addsource. Without validation, the bot would happily send
+// requests (with the outbound HTTP client the whole app uses) to whatever
+// host/IP is supplied, including infrastructure on the bot operator's own
+// LAN or cloud metadata endpoints. Block anything that isn't a public
+// http(s) host before it's ever persisted or fetched.
+
+function isPrivateIPv4(ip) {
+  const p = ip.split('.').map(Number);
+  if (p.length !== 4 || p.some(n => Number.isNaN(n) || n < 0 || n > 255)) return true; // malformed -> block
+  const [a, b, c] = p;
+  if (a === 0) return true;                              // "this" network
+  if (a === 10) return true;                              // RFC1918
+  if (a === 127) return true;                             // loopback
+  if (a === 169 && b === 254) return true;                // link-local / cloud metadata (169.254.169.254)
+  if (a === 172 && b >= 16 && b <= 31) return true;        // RFC1918
+  if (a === 192 && b === 168) return true;                 // RFC1918
+  if (a === 192 && b === 0 && c === 0) return true;        // IETF protocol assignments
+  if (a === 192 && b === 0 && c === 2) return true;        // TEST-NET-1
+  if (a === 198 && (b === 18 || b === 19)) return true;     // benchmarking
+  if (a === 198 && b === 51 && c === 100) return true;      // TEST-NET-2
+  if (a === 203 && b === 0 && c === 113) return true;       // TEST-NET-3
+  if (a === 100 && b >= 64 && b <= 127) return true;        // CGNAT
+  if (a >= 224) return true;                                // multicast + reserved + broadcast
+  return false;
+}
+
+function isPrivateIPv6(ip) {
+  const addr = ip.toLowerCase();
+  if (addr === '::1' || addr === '::') return true;         // loopback / unspecified
+  if (addr.startsWith('fe80:')) return true;                // link-local
+  if (addr.startsWith('fc') || addr.startsWith('fd')) return true; // unique local (fc00::/7)
+  const mapped = addr.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/) || addr.match(/^::(\d+\.\d+\.\d+\.\d+)$/);
+  if (mapped) return isPrivateIPv4(mapped[1]);
+  return false;
+}
+
+function isPrivateIP(ip) {
+  const version = net.isIP(ip);
+  if (version === 4) return isPrivateIPv4(ip);
+  if (version === 6) return isPrivateIPv6(ip);
+  return true; // not a recognizable IP -> treat as unsafe
+}
+
+// Resolve + reject any host that isn't a public http(s) endpoint. Used before
+// a wiki URL is ever stored or queried, so a guild admin can't aim the bot's
+// outbound requests at internal infrastructure (LAN services, cloud metadata,
+// etc.) via /source add or /wishlist addsource.
+export async function isSafeWikiUrl(rawUrl) {
+  let parsed;
+  try { parsed = new URL(rawUrl); } catch { return false; }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return false;
+
+  const hostname = parsed.hostname.toLowerCase();
+  if (!hostname || hostname === 'localhost' || hostname.endsWith('.localhost') || hostname.endsWith('.local')) {
+    return false;
+  }
+
+  if (net.isIP(hostname)) return !isPrivateIP(hostname);
+
+  let addresses;
+  try {
+    addresses = await dns.lookup(hostname, { all: true });
+  } catch {
+    return false;
+  }
+  if (!addresses.length) return false;
+  return addresses.every(a => !isPrivateIP(a.address));
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -635,6 +708,7 @@ export async function searchWikipedia(query) {
 
 // Check a wiki base URL is reachable and has a working API
 export async function validateFandomWiki(base) {
+  if (!(await isSafeWikiUrl(base))) return false;
   try {
     const api = base.includes('wikipedia.org')
       ? 'https://en.wikipedia.org/w/api.php'

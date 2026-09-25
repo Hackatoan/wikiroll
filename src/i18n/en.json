@@ -231,6 +231,7 @@
   "px.wlRemoved": "Removed **{char}** from your wishlist.",
   "px.uWlAddsrc": "Usage: `w.wl addsource <fandom_url_or_keyword>`",
   "px.invalidUrl2": "Invalid URL.",
+  "px.wlBadWiki": "❌ `{name}` doesn't look like a working wiki — couldn't reach its API. Double-check the URL.",
   "px.wlSrcAdded": "✅ `{name}` added as a boosted source (3× roll weight)!",
   "px.wlNoSrc": "No boosted sources yet. Use `w.wl addsource <url_or_keyword>`",
   "px.wlSources": "**Your boosted sources:**\n{list}",

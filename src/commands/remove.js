@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { stmts } from '../database.js';
 import { t } from '../i18n.js';
 
@@ -34,9 +34,14 @@ export default {
     }
 
     const char = owned[0];
-    stmts.removeChar.run(guildId, userId, char.id);
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId(`remove_confirm_${char.id}_${userId}`).setLabel(t(guildId, 'btn.confirm')).setStyle(ButtonStyle.Danger).setEmoji('💔'),
+      new ButtonBuilder().setCustomId(`remove_cancel_${char.id}_${userId}`).setLabel(t(guildId, 'btn.cancel')).setStyle(ButtonStyle.Secondary)
+    );
     await interaction.reply({
-      content: t(guildId, 'remove.removed', { char: char.name }),
+      content: t(guildId, 'remove.confirmPrompt', { char: char.name }),
+      components: [row],
+      ephemeral: true,
     });
   },
 };

@@ -13,8 +13,37 @@ function fmtTimeLeft(secs) {
 
 export async function handleButtonInteraction(interaction) {
   const [type, ...parts] = interaction.customId.split('_');
-  if (type === 'trade') return handleTrade(interaction, parts);
-  if (type === 'shop')  return handleShop(interaction, parts);
+  if (type === 'trade')  return handleTrade(interaction, parts);
+  if (type === 'shop')   return handleShop(interaction, parts);
+  if (type === 'remove') return handleRemove(interaction, parts);
+}
+
+// ── Remove confirmation ─────────────────────────────────────────────────────
+
+async function handleRemove(interaction, [action, charIdStr, userId]) {
+  const g = interaction.guildId;
+
+  if (interaction.user.id !== userId) {
+    return interaction.reply({ content: t(g, 'btn.notForYou'), flags: 64 });
+  }
+
+  if (action === 'cancel') {
+    return interaction.update({ content: t(g, 'remove.cancelled'), components: [] });
+  }
+
+  if (action === 'confirm') {
+    const charId = parseInt(charIdStr);
+    const owner = stmts.getOwner.get(g, charId);
+    if (!owner || owner.user_id !== userId) {
+      return interaction.update({ content: t(g, 'remove.alreadyGone'), components: [] });
+    }
+    const [char] = getCharsByIds([charId]);
+    stmts.removeChar.run(g, userId, charId);
+    return interaction.update({
+      content: t(g, 'remove.removed', { char: char?.name ?? 'Character' }),
+      components: [],
+    });
+  }
 }
 
 // ── Shop purchases ──────────────────────────────────────────────────────────

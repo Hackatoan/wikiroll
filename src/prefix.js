@@ -3,7 +3,7 @@
  * Mirrors slash commands but via chat messages.
  */
 import { db, stmts, getCharsByIds, getSettings, getLinkedGuildIds, getUserCollectionCrossGuild, getOwnerCrossGuild, addShards, getShards } from './database.js';
-import { fetchTenCharacters, searchWikipedia, fetchWikiPage } from './wiki.js';
+import { fetchTenCharacters, searchWikipedia, fetchWikiPage, validateFandomWiki } from './wiki.js';
 import {
   buildRollEmbeds, buildClaimSelect, buildCollectionEmbed,
   buildSearchEmbed, buildCharInfoEmbed, buildWishlistEmbeds,
@@ -423,6 +423,11 @@ async function prefixWishlist(message, args, guildId, userId) {
         const parsed = new URL(rest.startsWith('http') ? rest : `https://${rest}`);
         sourceType = 'fandom'; sourceValue = `${parsed.protocol}//${parsed.hostname}`; displayName = parsed.hostname;
       } catch { return message.reply(t(message.guild?.id, 'px.invalidUrl2')); }
+      // Same host validation the slash-command /wishlist addsource performs
+      // (see wiki.js isSafeWikiUrl) — this text-command path was storing
+      // guild-supplied hosts without it.
+      const valid = await validateFandomWiki(sourceValue);
+      if (!valid) return message.reply(t(message.guild?.id, 'px.wlBadWiki', { name: displayName }));
     } else {
       sourceType = 'search'; sourceValue = rest; displayName = rest;
     }

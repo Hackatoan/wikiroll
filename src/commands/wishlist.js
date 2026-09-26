@@ -7,6 +7,26 @@ import { t } from '../i18n.js';
 // Temporary storage for multi-version wishlist selections (5-min TTL)
 export const pendingWishCandidates = new Map();
 
+// Run async `fn` over `items` with at most `limit` in flight at once. Used to
+// keep `/wishlist add <name>` from opening 250+ simultaneous connections to
+// Fandom (one per BUILTIN_FANDOMS wiki) on every search — that's an unbatched
+// burst that risks tripping Fandom's own rate limiting / abuse detection and
+// spikes the bot's outbound connection count for a single slash command.
+async function mapWithConcurrency(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
+const FANDOM_SEARCH_CONCURRENCY = 20;
+
 function titleMatches(query, title) {
   const q = query.toLowerCase();
   const t = title.toLowerCase();
@@ -110,10 +130,12 @@ export default {
       const local = stmts.searchChars.all(guildId, `%${name}%`);
       for (const c of local) addCandidate(c, true);
 
-      // Wikipedia + all Fandom wikis in parallel
-      const [wikiTitles, ...fandomResults] = await Promise.all([
+      // Wikipedia + all Fandom wikis, throttled to FANDOM_SEARCH_CONCURRENCY
+      // in-flight requests at a time (was: all 250+ wikis hit at once).
+      const [wikiTitles, fandomResults] = await Promise.all([
         searchWikipedia(name),
-        ...BUILTIN_FANDOMS.map(base => searchFandomWiki(name, base).catch(() => null)),
+        mapWithConcurrency(BUILTIN_FANDOMS, FANDOM_SEARCH_CONCURRENCY, base =>
+          searchFandomWiki(name, base).catch(() => null)),
       ]);
 
       if (wikiTitles.length) {

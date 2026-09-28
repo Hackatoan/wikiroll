@@ -753,6 +753,11 @@ export async function validateFandomWiki(base) {
 
 // Search a specific Fandom wiki for a character by name
 export async function searchFandomWiki(query, fandomBase) {
+  // Same re-check as fetchOneFandomChar/fetchWikiPage: fandomBase may come
+  // from a stored guild source whose DNS has changed since /source add, or
+  // from a caller wired up later against guild-supplied input, so this must
+  // not be the one fetch path in this file that skips the SSRF guard.
+  if (!(await isSafeWikiUrl(fandomBase))) return null;
   const api = `${fandomBase}/api.php`;
   const source = new URL(fandomBase).hostname;
   try {

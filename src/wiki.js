@@ -354,6 +354,18 @@ function isPrivateIP(ip) {
   return true; // not a recognizable IP -> treat as unsafe
 }
 
+// Per-hostname cache for the DNS-dependent part of isSafeWikiUrl(). This is
+// called on EVERY roll for EVERY fandom picked (fetchOneFandomChar re-checks
+// it every time, not just at /source add time — see comment there), and the
+// vast majority of those hostnames are the ~300 hardcoded BUILTIN_FANDOMS
+// entries, which never change. Without caching, a single /roll can trigger a
+// dozen-plus fresh DNS lookups for the exact same static hostnames that were
+// just as safe a second ago. Guild-supplied sources still get re-verified —
+// just at most once per TTL window instead of on literally every fetch — so
+// the "repointed after approval" protection this guard exists for is intact.
+const SAFE_HOST_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+const safeHostCache = new Map(); // hostname -> { safe: boolean, checkedAt: number }
+
 // Resolve + reject any host that isn't a public http(s) endpoint. Used before
 // a wiki URL is ever stored or queried, so a guild admin can't aim the bot's
 // outbound requests at internal infrastructure (LAN services, cloud metadata,
@@ -370,14 +382,21 @@ export async function isSafeWikiUrl(rawUrl) {
 
   if (net.isIP(hostname)) return !isPrivateIP(hostname);
 
+  const cached = safeHostCache.get(hostname);
+  if (cached && (Date.now() - cached.checkedAt) < SAFE_HOST_CACHE_TTL) {
+    return cached.safe;
+  }
+
   let addresses;
   try {
     addresses = await dns.lookup(hostname, { all: true });
   } catch {
+    safeHostCache.set(hostname, { safe: false, checkedAt: Date.now() });
     return false;
   }
-  if (!addresses.length) return false;
-  return addresses.every(a => !isPrivateIP(a.address));
+  const safe = addresses.length > 0 && addresses.every(a => !isPrivateIP(a.address));
+  safeHostCache.set(hostname, { safe, checkedAt: Date.now() });
+  return safe;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────

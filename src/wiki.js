@@ -454,6 +454,13 @@ function clampWeight(articles) {
 
 // Fetch a wiki's article count via the MediaWiki siteinfo API.
 async function fetchWikiSize(base) {
+  // SECURITY: same re-check as fetchOneFandomChar/searchFandomWiki/fetchWikiPage.
+  // This is called from refreshWikiWeights with every guild's stored source URL
+  // (see index.js: stmts.getAllSourceUrls.all()) — unlike those other fetch
+  // paths, this one was issuing the outbound request with no isSafeWikiUrl
+  // check at all, so a source whose DNS was repointed at internal
+  // infrastructure after being added would get hit here unconditionally.
+  if (!base.includes('wikipedia.org') && !(await isSafeWikiUrl(base))) return null;
   const api = base.includes('wikipedia.org')
     ? 'https://en.wikipedia.org/w/api.php'
     : `${base}/api.php`;

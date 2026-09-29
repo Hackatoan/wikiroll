@@ -193,7 +193,10 @@ export default {
       const name   = interaction.options.getString('name');
       const local  = stmts.searchChars.all(guildId, `%${name}%`);
       if (!local.length) return interaction.reply({ content: t(guildId, 'wl.charNotFound', { name }), ephemeral: true });
-      stmts.removeWish.run(userId, guildId, local[0].id);
+      const removed = stmts.removeWish.run(userId, guildId, local[0].id);
+      if (removed.changes === 0) {
+        return interaction.reply({ content: t(guildId, 'wl.notInWishlist', { char: local[0].name }), ephemeral: true });
+      }
       return interaction.reply({ content: t(guildId, 'wl.removed', { char: local[0].name }), ephemeral: true });
     }
 
@@ -262,7 +265,10 @@ export default {
       const val = raw.includes('.fandom.com')
         ? (() => { try { const u = new URL(raw.startsWith('http') ? raw : `https://${raw}`); return `${u.protocol}//${u.hostname}`; } catch { return raw; } })()
         : raw;
-      stmts.removeWishSource.run(userId, guildId, val);
+      const removed = stmts.removeWishSource.run(userId, guildId, val);
+      if (removed.changes === 0) {
+        return interaction.reply({ content: t(guildId, 'wl.sourceNotFound', { val }), ephemeral: true });
+      }
       return interaction.reply({ content: t(guildId, 'wl.sourceRemoved', { val }), ephemeral: true });
     }
   },

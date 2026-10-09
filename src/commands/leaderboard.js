@@ -24,23 +24,31 @@ export default {
 
     await interaction.deferReply();
 
-    // Fetch Discord usernames
+    // Batch-fetch guild members and users (reduce API calls from N to ~2)
+    const userIds = rows.map(r => r.user_id);
+    const memberCache = new Map();
+
+    // Fetch all members at once
+    await interaction.guild.members.fetch({ user: userIds }).then(members => {
+      members.forEach(m => memberCache.set(m.id, m.displayName));
+    }).catch(() => {});
+
+    // For members not in guild, fetch users concurrently
+    const notInGuild = userIds.filter(id => !memberCache.has(id));
+    if (notInGuild.length > 0) {
+      await Promise.allSettled(
+        notInGuild.map(id =>
+          interaction.client.users.fetch(id).then(u => memberCache.set(id, u.username))
+        )
+      );
+    }
+
+    // Build lines with cached names
     const lines = [];
     for (let i = 0; i < rows.length; i++) {
       const { user_id, total } = rows[i];
       const medal = MEDALS[i] ?? `**${i + 1}.**`;
-      let name;
-      try {
-        const member = await interaction.guild.members.fetch(user_id);
-        name = member.displayName;
-      } catch {
-        try {
-          const user = await interaction.client.users.fetch(user_id);
-          name = user.username;
-        } catch {
-          name = `<@${user_id}>`;
-        }
-      }
+      const name = memberCache.get(user_id) ?? `<@${user_id}>`;
       const highlight = user_id === interaction.user.id ? t(interaction.guildId, 'lb.you') : '';
       lines.push(t(interaction.guildId, 'lb.entry', { medal, name, total, you: highlight }));
     }

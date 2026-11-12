@@ -442,6 +442,20 @@ export function getUserTotalCrossGuild(guildIds, userId) {
   `).get(userId, ...guildIds)?.total ?? 0;
 }
 
+// Get rank (1-indexed count of users with total >= threshold)
+export function getUserRankCrossGuild(guildIds, minTotal) {
+  const ph = guildIds.map(() => '?').join(',');
+  return db.prepare(`
+    SELECT COUNT(*) AS rank FROM (
+      SELECT user_id
+      FROM ownership
+      WHERE guild_id IN (${ph})
+      GROUP BY user_id
+      HAVING COUNT(DISTINCT character_id) >= ?
+    )
+  `).get(...guildIds, minTotal)?.rank ?? 0;
+}
+
 // ── Shards (soft currency) ──────────────────────────────────────────────────
 
 export function getShards(userId) {

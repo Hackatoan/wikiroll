@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getLinkedGuildIds, getLeaderboardCrossGuild, getUserTotalCrossGuild } from '../database.js';
+import { getLinkedGuildIds, getLeaderboardCrossGuild, getUserTotalCrossGuild, getUserRankCrossGuild } from '../database.js';
 import { t } from '../i18n.js';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -59,8 +59,7 @@ export default {
     if (!callerInTop) {
       const callerTotal = getUserTotalCrossGuild(linkedGuilds, interaction.user.id);
       if (callerTotal > 0) {
-        const everyone = getLeaderboardCrossGuild(linkedGuilds, 1_000_000);
-        const rank = everyone.filter(r => r.total >= callerTotal).length;
+        const rank = getUserRankCrossGuild(linkedGuilds, callerTotal);
         footerText += t(interaction.guildId, 'lb.footerRank', { rank, n: callerTotal });
       }
     }

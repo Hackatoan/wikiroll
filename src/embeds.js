@@ -55,6 +55,34 @@ export function buildClaimSelect(rollId, characters, claimedIndices = new Set(),
   return [new ActionRowBuilder().addComponents(select)];
 }
 
+// /collection sort orders. One-letter keys so the choice fits in the
+// pagination button customId (col_<user>_<page>[_<sort>]). 'n' = newest
+// first, which is the order getUserCollectionCrossGuild already returns.
+export const COLLECTION_SORTS = { n: 'newest', o: 'oldest', a: 'name', s: 'source' };
+const SORT_ALIASES = { newest: 'n', oldest: 'o', name: 'a', 'a-z': 'a', az: 'a', source: 's' };
+
+export function parseCollectionSort(word) {
+  if (!word) return null;
+  const w = String(word).toLowerCase();
+  return COLLECTION_SORTS[w] ? w : SORT_ALIASES[w] ?? null;
+}
+
+// Returns a sorted copy; unknown/default key keeps the incoming (newest) order.
+export function sortCollection(chars, sort) {
+  const byName = (a, b) => (a.name ?? '').localeCompare(b.name ?? '', undefined, { sensitivity: 'base' });
+  switch (sort) {
+    case 'o': return [...chars].reverse();
+    case 'a': return [...chars].sort(byName);
+    case 's': return [...chars].sort((a, b) =>
+      (a.source || 'wikipedia').localeCompare(b.source || 'wikipedia') || byName(a, b));
+    default:  return chars;
+  }
+}
+
+export function collectionPageId(userId, page, sort) {
+  return `col_${userId}_${page}` + (sort && sort !== 'n' ? `_${sort}` : '');
+}
+
 export function buildCollectionEmbed(user, chars, page = 1, gid) {
   const perPage = 12;
   const start = (page - 1) * perPage;

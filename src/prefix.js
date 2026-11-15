@@ -7,7 +7,7 @@ import { fetchTenCharacters, searchWikipedia, fetchWikiPage, validateFandomWiki 
 import {
   buildRollEmbeds, buildClaimSelect, buildCollectionEmbed,
   buildSearchEmbed, buildCharInfoEmbed, buildWishlistEmbeds,
-  buildSettingsEmbed,
+  buildSettingsEmbed, sortCollection, collectionPageId, parseCollectionSort,
 } from './embeds.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 import { t } from './i18n.js';
@@ -261,12 +261,14 @@ async function prefixDaily(message, guildId, userId) {
 // ── Collection ────────────────────────────────────────────────────────────
 
 async function prefixCollection(message, args, guildId) {
-  // w.collection [@user] [page]
+  // w.collection [@user] [page] [newest|oldest|name|source]
   const mention = message.mentions.users.first();
   const target  = mention ?? message.author;
   const page    = parseInt(args.find(a => /^\d+$/.test(a))) || 1;
 
-  const chars      = getUserCollectionCrossGuild(getLinkedGuildIds(guildId), target.id);
+  const sort    = args.map(parseCollectionSort).find(Boolean) ?? 'n';
+
+  const chars      = sortCollection(getUserCollectionCrossGuild(getLinkedGuildIds(guildId), target.id), sort);
   const totalPages = Math.max(1, Math.ceil(chars.length / 12));
   const safePage   = Math.min(page, totalPages);
   const embed      = buildCollectionEmbed(target, chars, safePage, message.guild?.id);
@@ -274,8 +276,8 @@ async function prefixCollection(message, args, guildId) {
   const rows = [];
   if (totalPages > 1) {
     const ar = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`col_${target.id}_${safePage - 1}`).setLabel(t(message.guild?.id, 'btn.prev')).setStyle(ButtonStyle.Secondary).setDisabled(safePage <= 1),
-      new ButtonBuilder().setCustomId(`col_${target.id}_${safePage + 1}`).setLabel(t(message.guild?.id, 'btn.next')).setStyle(ButtonStyle.Secondary).setDisabled(safePage >= totalPages)
+      new ButtonBuilder().setCustomId(collectionPageId(target.id, safePage - 1, sort)).setLabel(t(message.guild?.id, 'btn.prev')).setStyle(ButtonStyle.Secondary).setDisabled(safePage <= 1),
+      new ButtonBuilder().setCustomId(collectionPageId(target.id, safePage + 1, sort)).setLabel(t(message.guild?.id, 'btn.next')).setStyle(ButtonStyle.Secondary).setDisabled(safePage >= totalPages)
     );
     rows.push(ar);
   }

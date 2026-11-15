@@ -12,6 +12,7 @@ import {
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 import { t } from './i18n.js';
 import { SHOP_ITEMS } from './commands/shop.js';
+import { buildProfileEmbed } from './commands/profile.js';
 
 const PREFIX = 'w.';
 
@@ -56,6 +57,7 @@ export async function handlePrefix(message) {
       case 'daily':      return await prefixDaily(message, guildId, userId);
       case 'c':
       case 'collection': return await prefixCollection(message, args, guildId);
+      case 'profile':    return await message.reply({ embeds: [buildProfileEmbed(message.mentions.users.first() ?? message.author, guildId)] });
       case 'search':
       case 's':          return await prefixSearch(message, args.join(' '), guildId);
       case 'info':       return await prefixInfo(message, args.join(' '), guildId);

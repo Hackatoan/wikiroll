@@ -8,10 +8,6 @@ export const db = new Database('/data/wikiroll.db');
 function initDatabase() {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
-  try { db.exec(`ALTER TABLE cooldowns ADD COLUMN last_claim INTEGER`); } catch {}
-  try { db.exec(`ALTER TABLE guild_settings ADD COLUMN roll_channel TEXT`); } catch {}
-  try { db.exec(`ALTER TABLE guild_settings ADD COLUMN language TEXT`); } catch {}
-  try { db.exec(`ALTER TABLE rolls ADD COLUMN daily_claims INTEGER DEFAULT 0`); } catch {}
   db.exec(`
     CREATE TABLE IF NOT EXISTS characters (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -147,6 +143,12 @@ function initDatabase() {
       updated_at INTEGER
     );
   `);
+  // Column migrations for DBs created by older versions — must run after
+  // CREATE TABLE so a fresh DB has the tables to alter.
+  try { db.exec(`ALTER TABLE cooldowns ADD COLUMN last_claim INTEGER`); } catch {}
+  try { db.exec(`ALTER TABLE guild_settings ADD COLUMN roll_channel TEXT`); } catch {}
+  try { db.exec(`ALTER TABLE guild_settings ADD COLUMN language TEXT`); } catch {}
+  try { db.exec(`ALTER TABLE rolls ADD COLUMN daily_claims INTEGER DEFAULT 0`); } catch {}
 }
 
 // Run immediately so tables exist before stmts are prepared below

@@ -5,7 +5,7 @@ import { dirname, join } from 'path';
 import { initDatabase, stmts, getLinkedGuildIds, getUserCollectionCrossGuild } from './database.js';
 import { handleButtonInteraction, handleSelectInteraction } from './interactions/buttons.js';
 import { handlePrefix, isPrefix } from './prefix.js';
-import { buildCollectionEmbed } from './embeds.js';
+import { buildCollectionEmbed, sortCollection, collectionPageId } from './embeds.js';
 import { startWebhookServer } from './webhooks.js';
 import { startStatsPoster } from './stats-poster.js';
 import { refreshWikiWeights } from './wiki.js';
@@ -76,14 +76,14 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 async function handleCollectionPage(interaction) {
-  const [, targetId, pageStr] = interaction.customId.split('_');
+  const [, targetId, pageStr, sort = 'n'] = interaction.customId.split('_');
   const page = parseInt(pageStr);
   if (page < 1) return interaction.deferUpdate();
 
   const target = await interaction.client.users.fetch(targetId).catch(() => null);
   if (!target) return interaction.deferUpdate();
 
-  const chars      = getUserCollectionCrossGuild(getLinkedGuildIds(interaction.guildId), targetId);
+  const chars      = sortCollection(getUserCollectionCrossGuild(getLinkedGuildIds(interaction.guildId), targetId), sort);
   const perPage    = 12;
   const totalPages = Math.max(1, Math.ceil(chars.length / perPage));
   const safePage   = Math.min(page, totalPages);
@@ -95,12 +95,12 @@ async function handleCollectionPage(interaction) {
   if (totalPages > 1) {
     const ar = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId(`col_${targetId}_${safePage - 1}`)
+        .setCustomId(collectionPageId(targetId, safePage - 1, sort))
         .setLabel('◀ Prev')
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(safePage <= 1),
       new ButtonBuilder()
-        .setCustomId(`col_${targetId}_${safePage + 1}`)
+        .setCustomId(collectionPageId(targetId, safePage + 1, sort))
         .setLabel('Next ▶')
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(safePage >= totalPages)

@@ -56,6 +56,9 @@ client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isChatInputCommand()) {
       const cmd = client.commands.get(interaction.commandName);
       if (cmd) await cmd.execute(interaction);
+    } else if (interaction.isAutocomplete()) {
+      const cmd = client.commands.get(interaction.commandName);
+      if (cmd?.autocomplete) await cmd.autocomplete(interaction);
     } else if (interaction.isButton()) {
       if (interaction.customId.startsWith('col_')) {
         await handleCollectionPage(interaction);

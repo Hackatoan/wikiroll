@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { stmts } from '../database.js';
+import { stmts, getUserCollectionCrossGuild } from '../database.js';
+import { nameChoices } from '../embeds.js';
 import { t } from '../i18n.js';
 
 export default {
@@ -7,8 +8,15 @@ export default {
     .setName('remove')
     .setDescription('Remove (divorce) a character from your collection')
     .addStringOption(o =>
-      o.setName('name').setDescription('Character name').setRequired(true)
+      o.setName('name').setDescription('Character name').setRequired(true).setAutocomplete(true)
     ),
+
+  // Suggest only characters the user owns in this server (what /remove can act on)
+  async autocomplete(interaction) {
+    const q = interaction.options.getFocused().toLowerCase();
+    const owned = getUserCollectionCrossGuild([interaction.guildId], interaction.user.id);
+    await interaction.respond(nameChoices(owned.filter(c => c.name?.toLowerCase().includes(q))));
+  },
 
   async execute(interaction) {
     const query   = interaction.options.getString('name');
@@ -16,7 +24,10 @@ export default {
     const userId  = interaction.user.id;
 
     const results = stmts.searchChars.all(guildId, `%${query}%`);
-    const owned   = results.filter(c => c.owner_id === userId);
+    let owned     = results.filter(c => c.owner_id === userId);
+    // An exact name match (e.g. picked from autocomplete) wins over partial matches
+    const exact   = owned.filter(c => c.name.toLowerCase() === query.toLowerCase());
+    if (exact.length === 1) owned = exact;
 
     if (!owned.length) {
       return interaction.reply({

@@ -79,6 +79,12 @@ export function sortCollection(chars, sort) {
   }
 }
 
+// Discord autocomplete choices from character rows: unique names, ≤100 chars, max 25.
+export function nameChoices(chars) {
+  const names = [...new Set(chars.map(c => c.name).filter(Boolean))];
+  return names.slice(0, 25).map(n => { const v = n.slice(0, 100); return { name: v, value: v }; });
+}
+
 export function collectionPageId(userId, page, sort) {
   return `col_${userId}_${page}` + (sort && sort !== 'n' ? `_${sort}` : '');
 }

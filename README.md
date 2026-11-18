@@ -12,6 +12,7 @@ A gacha-style collection bot. Roll to summon characters sourced from Wikipedia a
 
 - Roll / claim / collection / trade / wishlist / leaderboard
 - `/collection sort:` — newest, oldest, A–Z, or by source wiki (`w.c name` etc.)
+- Name autocomplete on `/info` (all characters) and `/remove` (only ones you own)
 - `/profile` collector card — total, server rank, top sources, daily streak, latest claim
 - Characters from Wikipedia and 150+ Fandom wikis
 - Per-guild `/language` (6 languages)

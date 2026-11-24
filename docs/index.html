@@ -275,6 +275,11 @@
       color: var(--text-primary);
       background: rgba(139, 92, 246, 0.08);
     }
+    .nav-link:focus-visible {
+      outline: 2px solid var(--indigo-light);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
 
     .nav-link-coffee {
       color: var(--gold);
@@ -424,6 +429,10 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 36px rgba(255, 51, 102, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
     }
+    .btn-vote:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
 
     .vote-actions {
       display: flex;
@@ -521,6 +530,10 @@
     .btn-community:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 24px rgba(124, 58, 237, 0.55);
+    }
+    .btn-community:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
     }
 
     .community-card-feature-list {
@@ -650,6 +663,10 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 32px rgba(124, 58, 237, 0.6), inset 0 1px 0 rgba(255,255,255,0.18);
     }
+    .btn-primary:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
     .btn-primary:active { transform: translateY(0); }
 
     .btn-secondary {
@@ -669,6 +686,10 @@
       transform: translateY(-2px);
       border-color: rgba(240, 244, 255, 0.35);
       background: rgba(240, 244, 255, 0.05);
+    }
+    .btn-secondary:focus-visible {
+      outline: 2px solid var(--indigo-light);
+      outline-offset: 3px;
     }
 
     /* GitHub SVG icon inline */
@@ -1173,6 +1194,10 @@
       transition: background 0.15s;
     }
     .cmd-row:hover { background: rgba(139,92,246,0.06); }
+    .cmd-row:focus-visible {
+      outline: 2px solid var(--indigo-light);
+      outline-offset: -2px;
+    }
 
     .cmd-name {
       font-family: var(--font-mono);
@@ -1331,6 +1356,10 @@
       transform: translateY(-3px);
       box-shadow: 0 12px 40px rgba(124, 58, 237, 0.65), inset 0 1px 0 rgba(255,255,255,0.2);
     }
+    .btn-primary-large:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
     .btn-primary-large:hover::before {
       opacity: 0.5;
     }
@@ -1360,6 +1389,10 @@
       transition: color 0.15s;
     }
     .footer-brand a:hover { color: var(--indigo-light); }
+    .footer-brand a:focus-visible {
+      outline: 2px solid var(--indigo-light);
+      outline-offset: 2px;
+    }
 
     .footer-links {
       display: flex;
@@ -1381,6 +1414,11 @@
     .footer-link:hover {
       color: var(--text-secondary);
       background: rgba(139,92,246,0.07);
+    }
+    .footer-link:focus-visible {
+      outline: 2px solid var(--indigo-light);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
     }
 
     .footer-sep {
